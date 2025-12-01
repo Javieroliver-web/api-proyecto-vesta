@@ -1,6 +1,6 @@
-package com.vesta.api.repositories;
+package com.vesta.api.repository; // ANTES: repositories
 
-import com.vesta.api.models.Usuario;
+import com.vesta.api.entity.Usuario; // ANTES: models
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;

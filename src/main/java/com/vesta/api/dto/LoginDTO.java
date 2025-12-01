@@ -1,9 +1,9 @@
-package com.vesta.api.dtos;
+package com.vesta.api.dto;
 
 import lombok.Data;
 
 @Data
-public class LoginRequest {
+public class LoginDTO {
     private String email;
     private String password;
 }

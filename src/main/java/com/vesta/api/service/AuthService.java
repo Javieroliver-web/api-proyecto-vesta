@@ -1,16 +1,13 @@
 package com.vesta.api.service;
 
-// Imports corregidos según tus archivos actuales
-import com.vesta.api.dtos.LoginRequest;
-import com.vesta.api.dtos.LoginResponse; // Asegúrate de tener esta clase en el paquete dtos
-import com.vesta.api.models.Usuario;     // Corregido de .entity a .models
-import com.vesta.api.repositories.UsuarioRepository; // Corregido de .repository a .repositories
+import com.vesta.api.dto.LoginDTO;         // Cambio Sprintix
+import com.vesta.api.dto.AuthResponseDTO;  // Cambio Sprintix
+import com.vesta.api.entity.Usuario;
+import com.vesta.api.repository.UsuarioRepository;
 import com.vesta.api.util.JWTUtil;
 import com.vesta.api.util.PasswordUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -21,28 +18,19 @@ public class AuthService {
     @Autowired
     private JWTUtil jwtUtil;
 
-    public LoginResponse login(LoginRequest request) {
+    public AuthResponseDTO login(LoginDTO request) {
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado o credenciales inválidas."));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        boolean passwordMatch = PasswordUtil.verifyUserPassword(
-                request.getPassword(),
-                usuario.getPassword(),
-                "" 
-        );
-
-        if (!passwordMatch) {
-            throw new RuntimeException("Credenciales inválidas.");
+        boolean match = PasswordUtil.verifyUserPassword(request.getPassword(), usuario.getPassword(), "");
+        
+        if (!match) {
+            throw new RuntimeException("Credenciales inválidas");
         }
 
         String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
-
-        return new LoginResponse(token, usuario.getRol(), usuario.getNombreCompleto());
-    }
-
-    public String encriptarPassword(String passwordPlana) {
-        String salt = PasswordUtil.getSalt(30);
-        String hash = PasswordUtil.generateSecurePassword(passwordPlana, salt);
-        return salt + ":" + hash;
+        
+        // Devolvemos el DTO de respuesta estándar
+        return new AuthResponseDTO(token, usuario.getRol(), usuario.getNombreCompleto());
     }
 }

@@ -1,13 +1,11 @@
-package com.vesta.api.dtos;
+package com.vesta.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-public class LoginResponse {
+public class AuthResponseDTO {
     private String token;
     private String rol;
     private String nombre;
