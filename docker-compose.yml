@@ -1,11 +1,12 @@
 services:
+  # SERVICIO DE BASE DE DATOS
   db:
     image: postgres:17
-    container_name: postgres-db-jpa
+    container_name: vesta_db_container
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypass
-      POSTGRES_DB: mydb
+      POSTGRES_USER: vesta_user      # <--- Coincide con application.properties
+      POSTGRES_PASSWORD: vesta_password # <--- Coincide con application.properties
+      POSTGRES_DB: vesta_db          # <--- Coincide con application.properties
     ports:
       - "5432:5432"
     networks:
@@ -13,14 +14,21 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  app:
+  # SERVICIO API (Tu aplicación Java)
+  api:  # Renombrado de 'app' a 'api' para claridad
     build:
       context: .
-    container_name: java-jpa-app
+      dockerfile: Dockerfile
+    container_name: vesta_api_container
     depends_on:
       - db
+    ports:
+      - "8080:8080"  # <--- ¡IMPORTANTE! Para acceder desde localhost
     networks:
       - backend
+    environment:
+      # Asegura que Spring sepa esperar a la DB o reintentar
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/vesta_db
 
 networks:
   backend:
