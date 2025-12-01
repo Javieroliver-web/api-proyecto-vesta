@@ -1,37 +1,68 @@
+version: '3.8'
+
 services:
-  # SERVICIO DE BASE DE DATOS
+  # 1. BASE DE DATOS
   db:
     image: postgres:17
     container_name: vesta_db_container
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: vesta_user      # <--- Coincide con application.properties
-      POSTGRES_PASSWORD: vesta_password # <--- Coincide con application.properties
-      POSTGRES_DB: vesta_db          # <--- Coincide con application.properties
+      POSTGRES_USER: vesta_user
+      POSTGRES_PASSWORD: vesta_password
+      POSTGRES_DB: vesta_db
     ports:
       - "5433:5432"
-    networks:
-      - backend
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - vesta_pgdata:/var/lib/postgresql/data
+    networks:
+      - vesta_net  # Se une a la red compartida
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vesta_user -d vesta_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # SERVICIO API (Tu aplicación Java)
-  api:  # Renombrado de 'app' a 'api' para claridad
+  # 2. API BACKEND
+  api:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: vesta_api_container
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/vesta_db
+      SPRING_DATASOURCE_USERNAME: vesta_user
+      SPRING_DATASOURCE_PASSWORD: vesta_password
+      JWT_SECRET: "ClaveSecretaSuperSeguraParaVestaProyecto2024"
+      JWT_EXPIRATION: 86400000
+    networks:
+      - vesta_net
+
+  # 3. PGADMIN (Opcional)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: vesta_pgadmin_container
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@vesta.es
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - vesta_net
     depends_on:
       - db
-    ports:
-      - "8080:8080"  # <--- ¡IMPORTANTE! Para acceder desde localhost
-    networks:
-      - backend
-    environment:
-      # Asegura que Spring sepa esperar a la DB o reintentar
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/vesta_db
 
+# DEFINICIÓN DE LA RED COMPARTIDA
 networks:
-  backend:
+  vesta_net:
+    name: vesta_network_shared  # <--- NOMBRE FIJO IMPORTANTE
+    driver: bridge
 
 volumes:
-  pgdata:
+  vesta_pgdata:
