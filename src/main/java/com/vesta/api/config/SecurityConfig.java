@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
@@ -14,18 +16,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Desactivamos CSRF porque usamos Tokens (Stateless)
             .csrf(csrf -> csrf.disable())
-            // Permitimos acceso público a la autenticación
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() // Login y Registro públicos
-                .anyRequest().authenticated() // Todo lo demás requiere Token
+                // Rutas públicas (Login, Registro, Ver Seguros)
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/seguros/**").permitAll() 
+                .requestMatchers("/api/cookies/**").permitAll()
+                // El resto requiere Token
+                .anyRequest().authenticated()
             )
-            // No guardar sesión en el servidor (Stateless)
             .sessionManagement(sess -> sess
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             );
 
         return http.build();
+    }
+
+    // Bean para encriptar contraseñas (Estándar de la industria)
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
