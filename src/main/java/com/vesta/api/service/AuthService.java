@@ -27,6 +27,8 @@ public class AuthService {
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        // Verificamos la contraseña usando el encoder
+        // 'request.getPassword()' viene del DTO corregido con @JsonProperty("contrasena")
         if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
             throw new RuntimeException("Credenciales inválidas");
         }
@@ -43,11 +45,17 @@ public class AuthService {
 
         Usuario usuario = new Usuario();
         usuario.setNombreCompleto(request.getNombreCompleto());
-        usuario.setEmail(request.getEmail());
+        usuario.setEmail(request.getEmail()); // Viene de @JsonProperty("correoElectronico")
         usuario.setMovil(request.getMovil());
+        
+        // Asignar rol por defecto si viene nulo
         usuario.setRol(request.getTipoUsuario() != null ? request.getTipoUsuario() : "USUARIO");
+        
+        // IMPORTANTE: Aquí usamos getContrasena() porque así se llama en tu RegistroDTO
+        // Y lo encriptamos antes de guardar
         usuario.setPassword(passwordEncoder.encode(request.getContrasena()));
-        usuario.setEmailConfirmado(true); // Auto-confirmar para el prototipo
+        
+        usuario.setEmailConfirmado(true); // Auto-confirmar para simplificar el prototipo
 
         usuarioRepository.save(usuario);
 
