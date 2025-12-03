@@ -24,16 +24,27 @@ public class AuthService {
 
     // Login
     public AuthResponseDTO login(LoginDTO request) {
+        // DEBUG: Ver qué llega
+        System.out.println("🔍 DEBUG - Email recibido: " + request.getEmail());
+        System.out.println("🔍 DEBUG - Password recibido: " + (request.getPassword() != null ? "***" : "NULL"));
+        
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + request.getEmail()));
 
-        // Verificamos la contraseña usando el encoder
-        // 'request.getPassword()' viene del DTO corregido con @JsonProperty("contrasena")
-        if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
+        System.out.println("🔍 DEBUG - Usuario encontrado: " + usuario.getNombreCompleto());
+        System.out.println("🔍 DEBUG - Hash en BD: " + usuario.getPassword().substring(0, 20) + "...");
+        
+        // Verificamos la contraseña usando BCrypt
+        boolean passwordMatch = passwordEncoder.matches(request.getPassword(), usuario.getPassword());
+        System.out.println("🔍 DEBUG - Password match: " + passwordMatch);
+        
+        if (!passwordMatch) {
             throw new RuntimeException("Credenciales inválidas");
         }
 
         String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
+        System.out.println("✅ DEBUG - Login exitoso, token generado");
+        
         return new AuthResponseDTO(token, usuario.getRol(), usuario.getNombreCompleto());
     }
 
@@ -45,17 +56,11 @@ public class AuthService {
 
         Usuario usuario = new Usuario();
         usuario.setNombreCompleto(request.getNombreCompleto());
-        usuario.setEmail(request.getEmail()); // Viene de @JsonProperty("correoElectronico")
+        usuario.setEmail(request.getEmail());
         usuario.setMovil(request.getMovil());
-        
-        // Asignar rol por defecto si viene nulo
         usuario.setRol(request.getTipoUsuario() != null ? request.getTipoUsuario() : "USUARIO");
-        
-        // IMPORTANTE: Aquí usamos getContrasena() porque así se llama en tu RegistroDTO
-        // Y lo encriptamos antes de guardar
         usuario.setPassword(passwordEncoder.encode(request.getContrasena()));
-        
-        usuario.setEmailConfirmado(true); // Auto-confirmar para simplificar el prototipo
+        usuario.setEmailConfirmado(true);
 
         usuarioRepository.save(usuario);
 

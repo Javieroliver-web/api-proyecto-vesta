@@ -5,11 +5,16 @@ import com.vesta.api.dto.LoginDTO;
 import com.vesta.api.dto.RegistroDTO;
 import com.vesta.api.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "*") // Para permitir peticiones desde el frontend
 public class AuthController {
 
     @Autowired
@@ -18,18 +23,50 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         try {
-            return ResponseEntity.ok(authService.login(loginDTO));
+            System.out.println("🔐 Login request recibido para: " + loginDTO.getEmail());
+            
+            AuthResponseDTO response = authService.login(loginDTO);
+            
+            System.out.println("✅ Login exitoso para: " + loginDTO.getEmail());
+            return ResponseEntity.ok(response);
+            
         } catch (RuntimeException e) {
-            return ResponseEntity.status(401).body(e.getMessage());
+            System.err.println("❌ Error en login: " + e.getMessage());
+            
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            error.put("status", "error");
+            
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegistroDTO registroDTO) {
+    public ResponseEntity<?> registrar(@RequestBody RegistroDTO registroDTO) {
         try {
-            return ResponseEntity.ok(authService.registrar(registroDTO));
+            System.out.println("📝 Registro request recibido para: " + registroDTO.getEmail());
+            
+            AuthResponseDTO response = authService.registrar(registroDTO);
+            
+            System.out.println("✅ Registro exitoso para: " + registroDTO.getEmail());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            System.err.println("❌ Error en registro: " + e.getMessage());
+            
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            error.put("status", "error");
+            
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
+    }
+    
+    @GetMapping("/test")
+    public ResponseEntity<Map<String, String>> test() {
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "OK");
+        response.put("message", "Auth API funcionando correctamente");
+        return ResponseEntity.ok(response);
     }
 }

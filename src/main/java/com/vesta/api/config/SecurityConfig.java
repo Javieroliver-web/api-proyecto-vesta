@@ -17,6 +17,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.disable()) // Añadido para evitar problemas CORS en auth
             .authorizeHttpRequests(auth -> auth
                 // Rutas públicas (Login, Registro, Ver Seguros)
                 .requestMatchers("/api/auth/**").permitAll()
@@ -27,12 +28,14 @@ public class SecurityConfig {
             )
             .sessionManagement(sess -> sess
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            );
+            )
+            // IMPORTANTE: Desactivar el formulario de login por defecto
+            .formLogin(form -> form.disable())
+            .httpBasic(basic -> basic.disable());
 
         return http.build();
     }
 
-    // Bean para encriptar contraseñas (Estándar de la industria)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
