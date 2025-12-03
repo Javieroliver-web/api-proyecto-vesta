@@ -15,14 +15,14 @@ services:
     volumes:
       - vesta_pgdata:/var/lib/postgresql/data
     networks:
-      - vesta_net  # Se une a la red compartida
+      - vesta_net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U vesta_user -d vesta_db"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # 2. API BACKEND
+  # 2. API BACKEND (Ahora sí, solo 2 contenedores como Sprintix)
   api:
     build:
       context: .
@@ -43,25 +43,10 @@ services:
     networks:
       - vesta_net
 
-  # 3. PGADMIN (Opcional)
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: vesta_pgadmin_container
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@vesta.es
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
-    networks:
-      - vesta_net
-    depends_on:
-      - db
-
-# DEFINICIÓN DE LA RED COMPARTIDA
+# RED COMPARTIDA (Igual que Sprintix)
 networks:
   vesta_net:
-    name: vesta_network_shared  # <--- NOMBRE FIJO IMPORTANTE
+    name: vesta_network_shared
     driver: bridge
 
 volumes:
