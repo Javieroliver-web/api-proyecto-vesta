@@ -23,15 +23,21 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         try {
-            System.out.println("🔐 Login request recibido para: " + loginDTO.getEmail());
+            System.out.println("=== INICIO LOGIN ===");
+            System.out.println("🔐 Login request recibido");
+            System.out.println("📧 Email: " + loginDTO.getEmail());
+            System.out.println("🔑 Password recibido: " + (loginDTO.getPassword() != null ? "SÍ" : "NO"));
+            System.out.println("📦 DTO completo: " + loginDTO);
             
             AuthResponseDTO response = authService.login(loginDTO);
             
             System.out.println("✅ Login exitoso para: " + loginDTO.getEmail());
+            System.out.println("=== FIN LOGIN ===");
             return ResponseEntity.ok(response);
             
         } catch (RuntimeException e) {
             System.err.println("❌ Error en login: " + e.getMessage());
+            e.printStackTrace();
             
             Map<String, String> error = new HashMap<>();
             error.put("message", e.getMessage());

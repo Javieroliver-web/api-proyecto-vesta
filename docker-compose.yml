@@ -1,10 +1,9 @@
 version: '3.8'
 
 services:
-  # 1. BASE DE DATOS
   db:
     image: postgres:17
-    container_name: vesta_db_container
+    container_name: vesta-db  # Sin guiones bajos
     restart: unless-stopped
     environment:
       POSTGRES_USER: vesta_user
@@ -22,12 +21,11 @@ services:
       timeout: 5s
       retries: 5
 
-  # 2. API BACKEND (Ahora sí, solo 2 contenedores como Sprintix)
   api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: vesta_api_container
+    container_name: vesta-api  # Sin guiones bajos
     restart: unless-stopped
     depends_on:
       db:
@@ -35,7 +33,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/vesta_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://vesta-db:5432/vesta_db  # Actualizado
       SPRING_DATASOURCE_USERNAME: vesta_user
       SPRING_DATASOURCE_PASSWORD: vesta_password
       JWT_SECRET: "ClaveSecretaSuperSeguraParaVestaProyecto2024"
@@ -43,7 +41,6 @@ services:
     networks:
       - vesta_net
 
-# RED COMPARTIDA (Igual que Sprintix)
 networks:
   vesta_net:
     name: vesta_network_shared
