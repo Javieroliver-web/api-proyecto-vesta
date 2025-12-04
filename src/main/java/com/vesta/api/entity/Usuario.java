@@ -8,7 +8,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "usuarios")
-@Data @NoArgsConstructor @AllArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +37,27 @@ public class Usuario {
 
     @Column(name = "usu_fecha_creacion")
     private LocalDateTime fechaCreacion = LocalDateTime.now();
+
+    // === CAMPOS RGPD ===
+    
+    @Column(name = "usu_acepta_terminos")
+    private Boolean aceptaTerminos = false;
+
+    @Column(name = "usu_acepta_privacidad")
+    private Boolean aceptaPrivacidad = false;
+
+    @Column(name = "usu_fecha_aceptacion_terminos")
+    private LocalDateTime fechaAceptacionTerminos;
+
+    @Column(name = "usu_acepta_comunicaciones")
+    private Boolean aceptaComunicaciones = false; // Marketing
+
+    @Column(name = "usu_datos_eliminados")
+    private Boolean datosEliminados = false; // Soft delete para cumplir RGPD
+
+    @Column(name = "usu_fecha_eliminacion")
+    private LocalDateTime fechaEliminacion;
+
+    @Column(name = "usu_razon_eliminacion", length = 200)
+    private String razonEliminacion;
 }
