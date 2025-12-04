@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List; // <--- ESTA IMPORTACIÓN FALTABA
 import java.util.UUID;
 
 @Service
