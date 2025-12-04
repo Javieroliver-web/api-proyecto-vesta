@@ -24,28 +24,30 @@ public class AuthService {
 
     // Login
     public AuthResponseDTO login(LoginDTO request) {
-        // DEBUG: Ver qué llega
+        // DEBUG: Ver qué llega (útil para desarrollo)
         System.out.println("🔍 DEBUG - Email recibido: " + request.getEmail());
-        System.out.println("🔍 DEBUG - Password recibido: " + (request.getPassword() != null ? "***" : "NULL"));
         
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + request.getEmail()));
 
-        System.out.println("🔍 DEBUG - Usuario encontrado: " + usuario.getNombreCompleto());
-        System.out.println("🔍 DEBUG - Hash en BD: " + usuario.getPassword().substring(0, 20) + "...");
-        
         // Verificamos la contraseña usando BCrypt
         boolean passwordMatch = passwordEncoder.matches(request.getPassword(), usuario.getPassword());
-        System.out.println("🔍 DEBUG - Password match: " + passwordMatch);
         
         if (!passwordMatch) {
+            System.out.println("❌ DEBUG - Contraseña incorrecta para: " + request.getEmail());
             throw new RuntimeException("Credenciales inválidas");
         }
 
         String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
         System.out.println("✅ DEBUG - Login exitoso, token generado");
         
-        return new AuthResponseDTO(token, usuario.getRol(), usuario.getNombreCompleto());
+        // CORRECCIÓN: Ahora devolvemos también el ID del usuario
+        return new AuthResponseDTO(
+            token, 
+            usuario.getRol(), 
+            usuario.getNombreCompleto(),
+            usuario.getId() // <--- CAMBIO CLAVE AQUÍ
+        );
     }
 
     // Registro
@@ -58,13 +60,23 @@ public class AuthService {
         usuario.setNombreCompleto(request.getNombreCompleto());
         usuario.setEmail(request.getEmail());
         usuario.setMovil(request.getMovil());
+        // Asignar rol por defecto si viene nulo
         usuario.setRol(request.getTipoUsuario() != null ? request.getTipoUsuario() : "USUARIO");
+        // Encriptar contraseña
         usuario.setPassword(passwordEncoder.encode(request.getContrasena()));
         usuario.setEmailConfirmado(true);
 
-        usuarioRepository.save(usuario);
+        // Guardamos para obtener el ID generado
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
 
-        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
-        return new AuthResponseDTO(token, usuario.getRol(), usuario.getNombreCompleto());
+        String token = jwtUtil.generateToken(usuarioGuardado.getEmail(), usuarioGuardado.getRol());
+        
+        // CORRECCIÓN: Devolvemos el ID recién creado
+        return new AuthResponseDTO(
+            token, 
+            usuarioGuardado.getRol(), 
+            usuarioGuardado.getNombreCompleto(),
+            usuarioGuardado.getId() // <--- CAMBIO CLAVE AQUÍ
+        );
     }
 }
