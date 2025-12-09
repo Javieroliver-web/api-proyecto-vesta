@@ -105,11 +105,17 @@ public class DerechosController {
         return ResponseEntity.ok(response);
     }
 
-    // Listar solicitudes de un usuario
+    // Listar solicitudes de un usuario específico
     @GetMapping("/mis-solicitudes/{usuarioId}")
     public ResponseEntity<List<SolicitudDatos>> misSolicitudes(@PathVariable Long usuarioId) {
         List<SolicitudDatos> solicitudes = solicitudRepository.findByUsuarioIdOrderByFechaSolicitudDesc(usuarioId);
         return ResponseEntity.ok(solicitudes);
+    }
+
+    // --- NUEVO ENDPOINT PARA ADMIN: Listar TODAS las solicitudes ---
+    @GetMapping("/todas")
+    public ResponseEntity<List<SolicitudDatos>> listarTodasLasSolicitudes() {
+        return ResponseEntity.ok(solicitudRepository.findAll());
     }
 
     // DTO interno
