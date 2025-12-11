@@ -3,11 +3,13 @@ package com.vesta.api.controller;
 import com.vesta.api.entity.Usuario;
 import com.vesta.api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus; // Importante
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.crypto.password.PasswordEncoder; // Importante si permites cambiar contraseña
 
 import java.util.List;
+import java.util.Map; // Importante
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -18,7 +20,7 @@ public class UsuarioController {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // Para encriptar si cambian la contraseña
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public ResponseEntity<List<Usuario>> listarUsuarios() {
@@ -32,34 +34,46 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // CAMBIO: Ahora recibimos un Map<String, Object> para mayor flexibilidad
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario detalles) {
+    public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         return usuarioRepository.findById(id)
                 .map(usuario -> {
-                    // LÓGICA DE ACTUALIZACIÓN PARCIAL ("PATCH" style)
-                    // Solo actualizamos si el campo viene en el JSON (no es null)
+                    // 1. Validar Cambio de Contraseña (Si se solicita)
+                    if (updates.containsKey("newPassword")) {
+                        String currentPassword = (String) updates.get("currentPassword");
+                        String newPassword = (String) updates.get("newPassword");
 
-                    if (detalles.getNombreCompleto() != null) {
-                        usuario.setNombreCompleto(detalles.getNombreCompleto());
-                    }
-                    
-                    if (detalles.getEmail() != null) {
-                        usuario.setEmail(detalles.getEmail());
+                        // Verificar que enviaron la contraseña actual
+                        if (currentPassword == null || currentPassword.isEmpty()) {
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(Map.of("message", "Debes ingresar tu contraseña actual."));
+                        }
+
+                        // Verificar que la contraseña actual sea correcta
+                        if (!passwordEncoder.matches(currentPassword, usuario.getPassword())) {
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(Map.of("message", "La contraseña actual es incorrecta."));
+                        }
+
+                        // Si todo es correcto, encriptar y asignar la nueva
+                        usuario.setPassword(passwordEncoder.encode(newPassword));
                     }
 
-                    if (detalles.getMovil() != null) {
-                        usuario.setMovil(detalles.getMovil());
+                    // 2. Actualizar otros campos (Opcional)
+                    if (updates.containsKey("nombreCompleto")) {
+                        usuario.setNombreCompleto((String) updates.get("nombreCompleto"));
+                    }
+                    if (updates.containsKey("movil")) {
+                        usuario.setMovil((String) updates.get("movil"));
+                    }
+                    if (updates.containsKey("rol")) { // Solo admin debería poder, pero por ahora lo dejamos
+                        usuario.setRol((String) updates.get("rol"));
+                    }
+                    if (updates.containsKey("email")) {
+                        usuario.setEmail((String) updates.get("email"));
                     }
 
-                    if (detalles.getRol() != null) {
-                        usuario.setRol(detalles.getRol());
-                    }
-
-                    // Si también quisieras permitir cambiar contraseña aquí:
-                    if (detalles.getPassword() != null && !detalles.getPassword().isEmpty()) {
-                        usuario.setPassword(passwordEncoder.encode(detalles.getPassword()));
-                    }
-                    
                     Usuario actualizado = usuarioRepository.save(usuario);
                     return ResponseEntity.ok(actualizado);
                 })

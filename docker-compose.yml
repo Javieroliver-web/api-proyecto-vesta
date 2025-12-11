@@ -36,7 +36,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://vesta-db:5432/vesta_db  # Actualizado
       SPRING_DATASOURCE_USERNAME: vesta_user
       SPRING_DATASOURCE_PASSWORD: vesta_password
-      JWT_SECRET: "ClaveSecretaSuperSeguraParaVestaProyecto2024"
+      JWT_SECRET: "ClaveSecretaSuperSeguraParaVestaProyecto2025"
       JWT_EXPIRATION: 86400000
     networks:
       - vesta_net
