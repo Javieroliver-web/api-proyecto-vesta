@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/siniestros")
@@ -72,5 +73,10 @@ public class SiniestroController {
             "estado", siniestro.getEstado(),
             "analisisIA", analisisIA
         ));
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<Siniestro>> listarSiniestros() {
+        return ResponseEntity.ok(siniestroRepository.findAll());
     }
 }
