@@ -6,12 +6,21 @@ import com.vesta.api.dto.RegistroDTO;
 import com.vesta.api.entity.Usuario;
 import com.vesta.api.repository.UsuarioRepository;
 import com.vesta.api.util.JWTUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Servicio de autenticación
+ * Maneja login y registro de usuarios
+ */
 @Service
 public class AuthService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -22,37 +31,52 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Login
+    /**
+     * Autenticar usuario
+     * 
+     * @param request Credenciales de login
+     * @return Respuesta con token y datos del usuario
+     */
+    @Transactional(readOnly = true)
     public AuthResponseDTO login(LoginDTO request) {
-        // DEBUG: Ver qué llega (útil para desarrollo)
-        System.out.println("🔍 DEBUG - Email recibido: " + request.getEmail());
-        
+        logger.debug("Intentando login para email: {}", request.getEmail());
+
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + request.getEmail()));
+                .orElseThrow(() -> {
+                    logger.warn("Usuario no encontrado: {}", request.getEmail());
+                    return new RuntimeException("Usuario no encontrado con email: " + request.getEmail());
+                });
 
         // Verificamos la contraseña usando BCrypt
         boolean passwordMatch = passwordEncoder.matches(request.getPassword(), usuario.getPassword());
-        
+
         if (!passwordMatch) {
-            System.out.println("❌ DEBUG - Contraseña incorrecta para: " + request.getEmail());
+            logger.warn("Contraseña incorrecta para usuario: {}", request.getEmail());
             throw new RuntimeException("Credenciales inválidas");
         }
 
         String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
-        System.out.println("✅ DEBUG - Login exitoso, token generado");
-        
-        // CORRECCIÓN: Ahora devolvemos también el ID del usuario
+        logger.info("Login exitoso para usuario: {} con rol: {}", usuario.getEmail(), usuario.getRol());
+
         return new AuthResponseDTO(
-            token, 
-            usuario.getRol(), 
-            usuario.getNombreCompleto(),
-            usuario.getId() // <--- CAMBIO CLAVE AQUÍ
-        );
+                token,
+                usuario.getRol(),
+                usuario.getNombreCompleto(),
+                usuario.getId());
     }
 
-    // Registro
+    /**
+     * Registrar nuevo usuario
+     * 
+     * @param request Datos del nuevo usuario
+     * @return Respuesta con token y datos del usuario creado
+     */
+    @Transactional
     public AuthResponseDTO registrar(RegistroDTO request) {
+        logger.debug("Intentando registrar usuario: {}", request.getEmail());
+
         if (usuarioRepository.existsByEmail(request.getEmail())) {
+            logger.warn("Intento de registro con email ya existente: {}", request.getEmail());
             throw new RuntimeException("El email ya está registrado");
         }
 
@@ -68,15 +92,15 @@ public class AuthService {
 
         // Guardamos para obtener el ID generado
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
+        logger.info("Usuario registrado exitosamente: {} con ID: {}", usuarioGuardado.getEmail(),
+                usuarioGuardado.getId());
 
         String token = jwtUtil.generateToken(usuarioGuardado.getEmail(), usuarioGuardado.getRol());
-        
-        // CORRECCIÓN: Devolvemos el ID recién creado
+
         return new AuthResponseDTO(
-            token, 
-            usuarioGuardado.getRol(), 
-            usuarioGuardado.getNombreCompleto(),
-            usuarioGuardado.getId() // <--- CAMBIO CLAVE AQUÍ
-        );
+                token,
+                usuarioGuardado.getRol(),
+                usuarioGuardado.getNombreCompleto(),
+                usuarioGuardado.getId());
     }
 }
