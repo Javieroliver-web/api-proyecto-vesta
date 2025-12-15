@@ -39,19 +39,19 @@ public class AuthService {
      */
     @Transactional(readOnly = true)
     public AuthResponseDTO login(LoginDTO request) {
-        logger.debug("Intentando login para email: {}", request.getEmail());
+        logger.debug("Intentando login para email: {}", request.getCorreoElectronico());
 
-        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+        Usuario usuario = usuarioRepository.findByEmail(request.getCorreoElectronico())
                 .orElseThrow(() -> {
-                    logger.warn("Usuario no encontrado: {}", request.getEmail());
-                    return new RuntimeException("Usuario no encontrado con email: " + request.getEmail());
+                    logger.warn("Usuario no encontrado: {}", request.getCorreoElectronico());
+                    return new RuntimeException("Usuario no encontrado con email: " + request.getCorreoElectronico());
                 });
 
         // Verificamos la contraseña usando BCrypt
-        boolean passwordMatch = passwordEncoder.matches(request.getPassword(), usuario.getPassword());
+        boolean passwordMatch = passwordEncoder.matches(request.getContrasena(), usuario.getPassword());
 
         if (!passwordMatch) {
-            logger.warn("Contraseña incorrecta para usuario: {}", request.getEmail());
+            logger.warn("Contraseña incorrecta para usuario: {}", request.getCorreoElectronico());
             throw new RuntimeException("Credenciales inválidas");
         }
 
@@ -73,16 +73,16 @@ public class AuthService {
      */
     @Transactional
     public AuthResponseDTO registrar(RegistroDTO request) {
-        logger.debug("Intentando registrar usuario: {}", request.getEmail());
+        logger.debug("Intentando registrar usuario: {}", request.getCorreoElectronico());
 
-        if (usuarioRepository.existsByEmail(request.getEmail())) {
-            logger.warn("Intento de registro con email ya existente: {}", request.getEmail());
+        if (usuarioRepository.existsByEmail(request.getCorreoElectronico())) {
+            logger.warn("Intento de registro con email ya existente: {}", request.getCorreoElectronico());
             throw new RuntimeException("El email ya está registrado");
         }
 
         Usuario usuario = new Usuario();
         usuario.setNombreCompleto(request.getNombreCompleto());
-        usuario.setEmail(request.getEmail());
+        usuario.setEmail(request.getCorreoElectronico());
         usuario.setMovil(request.getMovil());
         // Asignar rol por defecto si viene nulo
         usuario.setRol(request.getTipoUsuario() != null ? request.getTipoUsuario() : "USUARIO");

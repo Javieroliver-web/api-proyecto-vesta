@@ -1,0 +1,1127 @@
+﻿{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-12-15T21:37:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_vesta_complete",
+      "_type": "workspace",
+      "name": "Vesta API - Proyecto Completo",
+      "description": "Colección completa de todos los endpoints del proyecto Vesta",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8080",
+        "token": ""
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "token"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "fld_auth",
+      "_type": "request_group",
+      "name": "1. Autenticación",
+      "description": "Endpoints de autenticación y registro de usuarios",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1000,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_auth_register",
+      "_type": "request",
+      "name": "Registro de Usuario",
+      "description": "Registrar un nuevo usuario en el sistema",
+      "url": "{{ _.base_url }}/api/auth/register",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"nombreCompleto\": \"Usuario Demo\",\n\t\"movil\": \"+34600123456\",\n\t\"correoElectronico\": \"demo@vesta.com\",\n\t\"contrasena\": \"123456\",\n\t\"tipoUsuario\": \"USUARIO\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_auth"
+    },
+    {
+      "_id": "req_auth_login",
+      "_type": "request",
+      "name": "Login",
+      "description": "Iniciar sesión y obtener token JWT",
+      "url": "{{ _.base_url }}/api/auth/login",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"correoElectronico\": \"demo@vesta.com\",\n\t\"contrasena\": \"123456\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_auth"
+    },
+    {
+      "_id": "req_auth_test",
+      "_type": "request",
+      "name": "Test Auth API",
+      "description": "Verificar que la API de autenticación funciona",
+      "url": "{{ _.base_url }}/api/auth/test",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -80,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_auth"
+    },
+    {
+      "_id": "fld_productos",
+      "_type": "request_group",
+      "name": "2. Productos",
+      "description": "Gestión del catálogo de productos de seguros",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -900,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_productos_list",
+      "_type": "request",
+      "name": "Listar Productos",
+      "description": "Obtener todos los productos disponibles",
+      "url": "{{ _.base_url }}/api/productos",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_productos"
+    },
+    {
+      "_id": "req_productos_detail",
+      "_type": "request",
+      "name": "Detalle Producto",
+      "description": "Obtener detalles de un producto específico",
+      "url": "{{ _.base_url }}/api/productos/1",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_productos"
+    },
+    {
+      "_id": "req_productos_search",
+      "_type": "request",
+      "name": "Buscar Productos",
+      "description": "Buscar productos por nombre o descripción",
+      "url": "{{ _.base_url }}/api/productos/buscar",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "q",
+          "value": "viaje",
+          "disabled": false
+        }
+      ],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -80,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_productos"
+    },
+    {
+      "_id": "req_productos_category",
+      "_type": "request",
+      "name": "Filtrar por Categoría",
+      "description": "Obtener productos de una categoría específica",
+      "url": "{{ _.base_url }}/api/productos/categoria/Viaje",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -70,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_productos"
+    },
+    {
+      "_id": "fld_polizas",
+      "_type": "request_group",
+      "name": "3. Pólizas",
+      "description": "Gestión de pólizas de seguros contratadas",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -800,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_polizas_user",
+      "_type": "request",
+      "name": "Mis Pólizas",
+      "description": "Obtener pólizas del usuario autenticado",
+      "url": "{{ _.base_url }}/api/polizas/usuario",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_polizas"
+    },
+    {
+      "_id": "req_polizas_contratar",
+      "_type": "request",
+      "name": "Contratar Seguro",
+      "description": "Contratar un nuevo seguro",
+      "url": "{{ _.base_url }}/api/polizas/contratar",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"productoId\": 1,\n\t\"duracion\": 365\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_polizas"
+    },
+    {
+      "_id": "fld_siniestros",
+      "_type": "request_group",
+      "name": "4. Siniestros",
+      "description": "Gestión de siniestros con análisis IA",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -700,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_siniestros_list",
+      "_type": "request",
+      "name": "Listar Siniestros (Admin)",
+      "description": "Obtener todos los siniestros reportados",
+      "url": "{{ _.base_url }}/api/siniestros",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_siniestros"
+    },
+    {
+      "_id": "req_siniestros_report",
+      "_type": "request",
+      "name": "Reportar Siniestro",
+      "description": "Reportar un nuevo siniestro con imagen",
+      "url": "{{ _.base_url }}/api/siniestros",
+      "method": "POST",
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "polizaId",
+            "value": "1",
+            "type": "text",
+            "id": "pair_1"
+          },
+          {
+            "name": "descripcion",
+            "value": "Se me cayó el móvil y se rompió la pantalla",
+            "type": "text",
+            "id": "pair_2"
+          },
+          {
+            "name": "file",
+            "type": "file",
+            "fileName": "",
+            "id": "pair_3"
+          }
+        ]
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_siniestros"
+    },
+    {
+      "_id": "req_siniestros_update",
+      "_type": "request",
+      "name": "Actualizar Estado Siniestro",
+      "description": "Cambiar estado de un siniestro (Admin)",
+      "url": "{{ _.base_url }}/api/siniestros/1/estado",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"estado\": \"APROBADO\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -80,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_siniestros"
+    },
+    {
+      "_id": "fld_ordenes",
+      "_type": "request_group",
+      "name": "5. Órdenes",
+      "description": "Gestión de órdenes y ventas",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -600,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_ordenes_list",
+      "_type": "request",
+      "name": "Listar Órdenes (Admin)",
+      "description": "Obtener todas las órdenes del sistema",
+      "url": "{{ _.base_url }}/api/ordenes",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_ordenes"
+    },
+    {
+      "_id": "req_ordenes_checkout",
+      "_type": "request",
+      "name": "Procesar Checkout",
+      "description": "Procesar una compra de seguros",
+      "url": "{{ _.base_url }}/api/ordenes/checkout",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"usuarioId\": 1,\n\t\"items\": [\n\t\t{\n\t\t\t\"seguroId\": \"ins-001\",\n\t\t\t\"cantidad\": 1\n\t\t}\n\t]\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_ordenes"
+    },
+    {
+      "_id": "fld_usuarios",
+      "_type": "request_group",
+      "name": "6. Usuarios",
+      "description": "Gestión de usuarios (Admin)",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -500,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_usuarios_list",
+      "_type": "request",
+      "name": "Listar Usuarios (Admin)",
+      "description": "Obtener todos los usuarios del sistema",
+      "url": "{{ _.base_url }}/api/usuarios",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_usuarios"
+    },
+    {
+      "_id": "req_usuarios_get",
+      "_type": "request",
+      "name": "Obtener Usuario",
+      "description": "Obtener detalles de un usuario",
+      "url": "{{ _.base_url }}/api/usuarios/1",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_usuarios"
+    },
+    {
+      "_id": "req_usuarios_update",
+      "_type": "request",
+      "name": "Actualizar Usuario",
+      "description": "Actualizar datos de usuario",
+      "url": "{{ _.base_url }}/api/usuarios/1",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"nombreCompleto\": \"Usuario Actualizado\",\n\t\"movil\": \"+34600999888\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -80,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_usuarios"
+    },
+    {
+      "_id": "req_usuarios_password",
+      "_type": "request",
+      "name": "Cambiar Contraseña",
+      "description": "Cambiar contraseña de usuario",
+      "url": "{{ _.base_url }}/api/usuarios/1",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"currentPassword\": \"123456\",\n\t\"newPassword\": \"nuevapass123\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -70,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_usuarios"
+    },
+    {
+      "_id": "req_usuarios_delete",
+      "_type": "request",
+      "name": "Eliminar Usuario (Admin)",
+      "description": "Eliminar un usuario del sistema",
+      "url": "{{ _.base_url }}/api/usuarios/1",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -60,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_usuarios"
+    },
+    {
+      "_id": "fld_cookies",
+      "_type": "request_group",
+      "name": "7. RGPD - Cookies",
+      "description": "Gestión de consentimiento de cookies",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -400,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_cookies_save",
+      "_type": "request",
+      "name": "Guardar Consentimiento",
+      "description": "Guardar preferencias de cookies del usuario",
+      "url": "{{ _.base_url }}/api/cookies/consentimiento",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"usuarioId\": 1,\n\t\"cookiesAnaliticas\": true,\n\t\"cookiesMarketing\": false\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_cookies"
+    },
+    {
+      "_id": "req_cookies_get",
+      "_type": "request",
+      "name": "Obtener Consentimiento",
+      "description": "Obtener consentimiento de cookies de un usuario",
+      "url": "{{ _.base_url }}/api/cookies/consentimiento/1",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_cookies"
+    },
+    {
+      "_id": "fld_derechos",
+      "_type": "request_group",
+      "name": "8. RGPD - Derechos ARCO",
+      "description": "Gestión de derechos ARCO (Acceso, Rectificación, Cancelación, Oposición)",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -300,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_derechos_acceso",
+      "_type": "request",
+      "name": "Solicitar Acceso",
+      "description": "Solicitar acceso a datos personales (Art. 15 RGPD)",
+      "url": "{{ _.base_url }}/api/derechos/solicitar-acceso",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"usuarioId\": 1\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_derechos"
+    },
+    {
+      "_id": "req_derechos_rectificacion",
+      "_type": "request",
+      "name": "Solicitar Rectificación",
+      "description": "Solicitar rectificación de datos (Art. 16 RGPD)",
+      "url": "{{ _.base_url }}/api/derechos/solicitar-rectificacion",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"usuarioId\": 1,\n\t\"descripcion\": \"Cambio de dirección a Calle Nueva 123\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_derechos"
+    },
+    {
+      "_id": "req_derechos_portabilidad",
+      "_type": "request",
+      "name": "Solicitar Portabilidad",
+      "description": "Solicitar portabilidad de datos (Art. 20 RGPD)",
+      "url": "{{ _.base_url }}/api/derechos/solicitar-portabilidad",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"usuarioId\": 1\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -80,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_derechos"
+    },
+    {
+      "_id": "req_derechos_supresion",
+      "_type": "request",
+      "name": "Solicitar Supresión (Derecho al Olvido)",
+      "description": "Solicitar eliminación de datos (Art. 17 RGPD)",
+      "url": "{{ _.base_url }}/api/derechos/solicitar-supresion",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"usuarioId\": 1,\n\t\"descripcion\": \"Ya no deseo usar el servicio\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -70,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_derechos"
+    },
+    {
+      "_id": "req_derechos_mis",
+      "_type": "request",
+      "name": "Mis Solicitudes",
+      "description": "Ver historial de solicitudes RGPD del usuario",
+      "url": "{{ _.base_url }}/api/derechos/mis-solicitudes/1",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -60,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_derechos"
+    },
+    {
+      "_id": "req_derechos_todas",
+      "_type": "request",
+      "name": "Todas las Solicitudes (Admin)",
+      "description": "Ver todas las solicitudes RGPD del sistema",
+      "url": "{{ _.base_url }}/api/derechos/todas",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -50,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_derechos"
+    },
+    {
+      "_id": "fld_innovation",
+      "_type": "request_group",
+      "name": "9. Innovación - IA",
+      "description": "Endpoints de características innovadoras con IA",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -200,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_innovation_chat",
+      "_type": "request",
+      "name": "Chatbot Legal",
+      "description": "Hacer una pregunta al chatbot legal",
+      "url": "{{ _.base_url }}/api/innovation/chat",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"pregunta\": \"¿Qué cubre el seguro de viaje?\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_innovation"
+    },
+    {
+      "_id": "req_innovation_recommend",
+      "_type": "request",
+      "name": "Recomendador Contextual",
+      "description": "Obtener recomendación personalizada basada en contexto",
+      "url": "{{ _.base_url }}/api/innovation/recommendation",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "email",
+          "value": "demo@vesta.com",
+          "disabled": false
+        }
+      ],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_innovation"
+    },
+    {
+      "_id": "fld_gamificacion",
+      "_type": "request_group",
+      "name": "10. Gamificación",
+      "description": "Sistema de logros y recompensas",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -100,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_gamif_progreso",
+      "_type": "request",
+      "name": "Obtener Progreso",
+      "description": "Obtener progreso y logros del usuario",
+      "url": "{{ _.base_url }}/api/gamificacion/progreso/1",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_gamificacion"
+    },
+    {
+      "_id": "req_gamif_verificar",
+      "_type": "request",
+      "name": "Verificar Logros",
+      "description": "Verificar y desbloquear logros pendientes",
+      "url": "{{ _.base_url }}/api/gamificacion/verificar/1",
+      "method": "POST",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_gamificacion"
+    },
+    {
+      "_id": "fld_seguros",
+      "_type": "request_group",
+      "name": "11. Seguros (Legacy)",
+      "description": "API legacy de seguros (sistema antiguo)",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -50,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_seguros_list",
+      "_type": "request",
+      "name": "Listar Seguros",
+      "description": "Obtener todos los seguros (sistema legacy)",
+      "url": "{{ _.base_url }}/api/seguros",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "page",
+          "value": "0",
+          "disabled": true
+        },
+        {
+          "name": "size",
+          "value": "10",
+          "disabled": true
+        }
+      ],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_seguros"
+    },
+    {
+      "_id": "req_seguros_detail",
+      "_type": "request",
+      "name": "Detalle Seguro",
+      "description": "Obtener detalles de un seguro específico",
+      "url": "{{ _.base_url }}/api/seguros/ins-001",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_seguros"
+    },
+    {
+      "_id": "req_seguros_categoria",
+      "_type": "request",
+      "name": "Seguros por Categoría",
+      "description": "Filtrar seguros por categoría",
+      "url": "{{ _.base_url }}/api/seguros/categoria/Viaje",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -80,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_seguros"
+    }
+  ]
+}

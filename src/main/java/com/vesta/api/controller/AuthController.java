@@ -36,15 +36,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponseDTO>> login(@Valid @RequestBody LoginDTO loginDTO) {
         try {
-            logger.info("Login request recibido para email: {}", loginDTO.getEmail());
+            logger.info("Login request recibido para email: {}", loginDTO.getCorreoElectronico());
 
             AuthResponseDTO response = authService.login(loginDTO);
 
-            logger.info("Login exitoso para: {}", loginDTO.getEmail());
+            logger.info("Login exitoso para: {}", loginDTO.getCorreoElectronico());
             return ResponseEntity.ok(ApiResponse.success("Login exitoso", response));
 
         } catch (RuntimeException e) {
-            logger.error("Error en login para {}: {}", loginDTO.getEmail(), e.getMessage());
+            logger.error("Error en login para {}: {}", loginDTO.getCorreoElectronico(), e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.error(e.getMessage()));
@@ -60,17 +60,17 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponseDTO>> registrar(@Valid @RequestBody RegistroDTO registroDTO) {
         try {
-            logger.info("Registro request recibido para: {}", registroDTO.getEmail());
+            logger.info("Registro request recibido para: {}", registroDTO.getCorreoElectronico());
 
             AuthResponseDTO response = authService.registrar(registroDTO);
 
-            logger.info("Registro exitoso para: {}", registroDTO.getEmail());
+            logger.info("Registro exitoso para: {}", registroDTO.getCorreoElectronico());
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(ApiResponse.success("Usuario registrado exitosamente", response));
 
         } catch (RuntimeException e) {
-            logger.error("Error en registro para {}: {}", registroDTO.getEmail(), e.getMessage());
+            logger.error("Error en registro para {}: {}", registroDTO.getCorreoElectronico(), e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.error(e.getMessage()));

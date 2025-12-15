@@ -9,12 +9,12 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginDTO {
-    
+
     // El frontend envía "correoElectronico"
     @JsonProperty("correoElectronico")
-    private String email;
+    private String correoElectronico;
 
     // El frontend envía "contrasena"
     @JsonProperty("contrasena")
-    private String password;
+    private String contrasena;
 }
