@@ -29,6 +29,9 @@ RUN addgroup -S spring && adduser -S spring -G spring
 # Copiar JAR desde stage de build
 COPY --from=build /app/app.jar app.jar
 
+# Crear directorio uploads con permisos para el usuario spring
+RUN mkdir -p /app/uploads && chown -R spring:spring /app/uploads
+
 # Cambiar a usuario no-root
 USER spring:spring
 

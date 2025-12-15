@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/seguros/**").permitAll()
                         .requestMatchers("/api/cookies/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll() // Permitir acceso a imágenes de siniestros
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())

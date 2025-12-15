@@ -17,6 +17,7 @@ import java.nio.file.Path; // Importar
 import java.nio.file.Paths; // Importar
 import java.nio.file.StandardCopyOption; // Importar
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,14 +50,32 @@ public class SiniestroController {
             Poliza poliza = polizaRepository.findById(polizaId)
                     .orElseThrow(() -> new RuntimeException("Póliza no encontrada"));
 
-            // 2. GUARDAR ARCHIVO FÍSICAMENTE (NUEVO)
-            String nombreArchivo = file.getOriginalFilename();
-            // Definir ruta relativa "uploads/"
-            Path rutaArchivo = Paths.get("uploads").resolve(nombreArchivo).toAbsolutePath();
+            // 2. GUARDAR ARCHIVO FÍSICAMENTE
+            String nombreArchivo = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+            // Definir ruta relativa "uploads/" en el directorio de trabajo actual
+            Path uploadDir = Paths.get("uploads").toAbsolutePath();
+
             // Crear carpeta si no existe
-            Files.createDirectories(rutaArchivo.getParent());
-            // Guardar el archivo (sobrescribir si existe)
-            Files.copy(file.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+            try {
+                Files.createDirectories(uploadDir);
+                System.out.println("📁 Directorio uploads creado/verificado: " + uploadDir);
+            } catch (IOException e) {
+                System.err.println("❌ Error al crear directorio uploads: " + e.getMessage());
+                throw new RuntimeException("No se pudo crear el directorio de uploads");
+            }
+
+            Path rutaArchivo = uploadDir.resolve(nombreArchivo);
+
+            // Guardar el archivo
+            try {
+                Files.copy(file.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("💾 Archivo guardado exitosamente: " + rutaArchivo);
+            } catch (IOException e) {
+                System.err.println("❌ Error al guardar archivo: " + e.getMessage());
+                e.printStackTrace();
+                throw new RuntimeException("Error al guardar el archivo: " + e.getMessage());
+            }
 
             // 3. Análisis
             String analisisIA = aiService.analizarImagen(nombreArchivo);
@@ -67,8 +86,7 @@ public class SiniestroController {
             siniestro.setPoliza(poliza);
             siniestro.setDescripcion(descripcion);
             siniestro.setFecha(LocalDate.now());
-            // Guardamos la ruta relativa para acceder vía URL luego
-            siniestro.setImagenUrl("uploads/" + nombreArchivo); 
+            siniestro.setImagenUrl("uploads/" + nombreArchivo);
             siniestro.setAnalisisIA(analisisIA);
             siniestro.setFraudeScore(fraudeScore);
 
@@ -80,10 +98,25 @@ public class SiniestroController {
 
             siniestroRepository.save(siniestro);
 
-            return ResponseEntity.ok(Map.of("mensaje", "Siniestro reportado con éxito"));
+            System.out.println("✅ Siniestro guardado exitosamente con ID: " + siniestro.getId());
 
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "Error al guardar la imagen"));
+            // Devolver respuesta completa con todos los datos que espera el frontend
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "Siniestro reportado con éxito");
+            response.put("analisisIA", analisisIA);
+            response.put("fraudeScore", fraudeScore);
+            response.put("estado", siniestro.getEstado());
+            response.put("siniestroId", siniestro.getId());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error general en reportarSiniestro: " + e.getMessage());
+            e.printStackTrace();
+
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Error al procesar el siniestro: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
 
