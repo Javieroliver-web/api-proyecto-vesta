@@ -1,10 +1,8 @@
 package com.vesta.api.controller;
 
-import com.vesta.api.dto.ApiResponse;
-import com.vesta.api.dto.AuthResponseDTO;
-import com.vesta.api.dto.LoginDTO;
-import com.vesta.api.dto.RegistroDTO;
+import com.vesta.api.dto.*;
 import com.vesta.api.service.AuthService;
+import com.vesta.api.service.PasswordResetService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Controlador de autenticación
- * Maneja login y registro de usuarios
+ * Maneja login, registro y recuperación de contraseña
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -26,6 +24,9 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private PasswordResetService passwordResetService;
 
     /**
      * Endpoint de login
@@ -71,6 +72,72 @@ public class AuthController {
 
         } catch (RuntimeException e) {
             logger.error("Error en registro para {}: {}", registroDTO.getCorreoElectronico(), e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    /**
+     * Endpoint para solicitar recuperación de contraseña
+     * Genera un código de 6 dígitos y lo envía por email
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<String>> forgotPassword(@Valid @RequestBody ForgotPasswordDTO dto) {
+        try {
+            logger.info("Solicitud de recuperación de contraseña para: {}", dto.getEmail());
+
+            passwordResetService.generateResetToken(dto.getEmail());
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            "Se ha enviado un código de verificación a tu correo electrónico",
+                            "EMAIL_SENT"));
+        } catch (RuntimeException e) {
+            logger.error("Error en forgot-password para {}: {}", dto.getEmail(), e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    /**
+     * Endpoint para validar un token de recuperación
+     */
+    @PostMapping("/validate-reset-token")
+    public ResponseEntity<ApiResponse<Boolean>> validateResetToken(@RequestBody String token) {
+        try {
+            boolean isValid = passwordResetService.validateToken(token);
+
+            if (isValid) {
+                return ResponseEntity.ok(ApiResponse.success("Token válido", true));
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(ApiResponse.error("Token inválido o expirado"));
+            }
+        } catch (Exception e) {
+            logger.error("Error validando token: {}", e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error("Error al validar el token"));
+        }
+    }
+
+    /**
+     * Endpoint para resetear la contraseña con un token válido
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<String>> resetPassword(@Valid @RequestBody ResetPasswordDTO dto) {
+        try {
+            logger.info("Solicitud de reset de contraseña con token");
+
+            passwordResetService.resetPassword(dto.getToken(), dto.getNewPassword());
+
+            return ResponseEntity.ok(
+                    ApiResponse.success("Contraseña actualizada exitosamente", "PASSWORD_RESET"));
+        } catch (RuntimeException e) {
+            logger.error("Error en reset-password: {}", e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.error(e.getMessage()));

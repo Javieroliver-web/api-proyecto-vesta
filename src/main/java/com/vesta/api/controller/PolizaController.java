@@ -30,6 +30,23 @@ public class PolizaController {
     private ProductoRepository productoRepository;
 
     /**
+     * Obtener TODAS las pólizas (solo para ADMIN)
+     * Esto permite al administrador ver todas las ventas
+     */
+    @GetMapping
+    public ResponseEntity<List<Poliza>> obtenerTodasLasPolizas() {
+        try {
+            List<Poliza> todasLasPolizas = polizaRepository.findAll();
+            System.out.println("📊 Admin consultando todas las pólizas: " + todasLasPolizas.size() + " encontradas");
+            return ResponseEntity.ok(todasLasPolizas);
+        } catch (Exception e) {
+            System.err.println("Error al obtener todas las pólizas: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
      * Obtener todas las pólizas del usuario autenticado
      */
     @GetMapping("/usuario")
@@ -54,7 +71,7 @@ public class PolizaController {
     }
 
     /**
-     * Contratar un nuevo seguro
+     * Contratar un nuevo seguro o extender uno existente
      */
     @PostMapping("/contratar")
     public ResponseEntity<Poliza> contratarSeguro(
@@ -76,28 +93,63 @@ public class PolizaController {
             Producto producto = productoRepository.findById(productoId)
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-            // Crear la póliza
-            Poliza poliza = new Poliza();
-            poliza.setUsuario(usuario);
-            poliza.setProducto(producto);
-            poliza.setFechaInicio(LocalDate.now());
-            poliza.setFechaFin(LocalDate.now().plusDays(duracion));
+            // Buscar si ya existe una póliza ACTIVA para este usuario y producto
+            List<Poliza> polizasExistentes = polizaRepository.findByUsuarioId(usuario.getId());
+            Poliza polizaExistente = polizasExistentes.stream()
+                    .filter(p -> p.getProducto().getId().equals(productoId))
+                    .filter(p -> "ACTIVA".equals(p.getEstado()))
+                    .findFirst()
+                    .orElse(null);
 
-            // Calcular precio: precioBase * (duracion / 30) para mensualizar
-            BigDecimal precioTotal = producto.getPrecioBase()
-                    .multiply(BigDecimal.valueOf(duracion))
-                    .divide(BigDecimal.valueOf(30), 2, BigDecimal.ROUND_HALF_UP);
-            poliza.setPrecioFinal(precioTotal);
-            poliza.setEstado("ACTIVA");
+            Poliza polizaFinal;
 
-            // Guardar la póliza
-            Poliza polizaGuardada = polizaRepository.save(poliza);
+            if (polizaExistente != null) {
+                // EXTENDER PÓLIZA EXISTENTE
+                System.out.println("📝 Extendiendo póliza existente ID=" + polizaExistente.getId());
 
-            System.out.println("✅ Póliza contratada: ID=" + polizaGuardada.getId() +
-                    " Usuario=" + usuario.getEmail() +
-                    " Producto=" + producto.getNombre());
+                // Sumar los días a la fecha de fin actual
+                LocalDate nuevaFechaFin = polizaExistente.getFechaFin().plusDays(duracion);
+                polizaExistente.setFechaFin(nuevaFechaFin);
 
-            return ResponseEntity.ok(polizaGuardada);
+                // Calcular el precio adicional
+                BigDecimal precioAdicional = producto.getPrecioBase()
+                        .multiply(BigDecimal.valueOf(duracion))
+                        .divide(BigDecimal.valueOf(30), 2, BigDecimal.ROUND_HALF_UP);
+
+                // Sumar al precio final existente
+                BigDecimal nuevoPrecioFinal = polizaExistente.getPrecioFinal().add(precioAdicional);
+                polizaExistente.setPrecioFinal(nuevoPrecioFinal);
+
+                polizaFinal = polizaRepository.save(polizaExistente);
+
+                System.out.println("✅ Póliza extendida: ID=" + polizaFinal.getId() +
+                        " Nueva fecha fin=" + nuevaFechaFin +
+                        " Días añadidos=" + duracion);
+            } else {
+                // CREAR NUEVA PÓLIZA
+                System.out.println("📝 Creando nueva póliza");
+
+                Poliza poliza = new Poliza();
+                poliza.setUsuario(usuario);
+                poliza.setProducto(producto);
+                poliza.setFechaInicio(LocalDate.now());
+                poliza.setFechaFin(LocalDate.now().plusDays(duracion));
+
+                // Calcular precio: precioBase * (duracion / 30) para mensualizar
+                BigDecimal precioTotal = producto.getPrecioBase()
+                        .multiply(BigDecimal.valueOf(duracion))
+                        .divide(BigDecimal.valueOf(30), 2, BigDecimal.ROUND_HALF_UP);
+                poliza.setPrecioFinal(precioTotal);
+                poliza.setEstado("ACTIVA");
+
+                polizaFinal = polizaRepository.save(poliza);
+
+                System.out.println("✅ Póliza creada: ID=" + polizaFinal.getId() +
+                        " Usuario=" + usuario.getEmail() +
+                        " Producto=" + producto.getNombre());
+            }
+
+            return ResponseEntity.ok(polizaFinal);
         } catch (Exception e) {
             System.err.println("Error al contratar seguro: " + e.getMessage());
             e.printStackTrace();
