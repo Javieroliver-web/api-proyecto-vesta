@@ -1,6 +1,8 @@
 package com.vesta.api.controller;
 
 import com.vesta.api.dto.*;
+import com.vesta.api.entity.Usuario;
+import com.vesta.api.repository.UsuarioRepository;
 import com.vesta.api.service.AuthService;
 import com.vesta.api.service.PasswordResetService;
 import jakarta.validation.Valid;
@@ -10,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controlador de autenticación
@@ -27,6 +32,9 @@ public class AuthController {
 
     @Autowired
     private PasswordResetService passwordResetService;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     /**
      * Endpoint de login
@@ -87,14 +95,46 @@ public class AuthController {
         try {
             logger.info("Solicitud de recuperación de contraseña para: {}", dto.getEmail());
 
-            passwordResetService.generateResetToken(dto.getEmail());
+            // Generar y enviar token por el método especificado
+            passwordResetService.generateResetToken(dto.getEmail(), dto.getMethod());
+
+            String message = "sms".equalsIgnoreCase(dto.getMethod())
+                    ? "Se ha enviado un código de verificación a tu número de móvil"
+                    : "Se ha enviado un código de verificación a tu correo electrónico";
 
             return ResponseEntity.ok(
-                    ApiResponse.success(
-                            "Se ha enviado un código de verificación a tu correo electrónico",
-                            "EMAIL_SENT"));
+                    ApiResponse.success(message, "CODE_SENT"));
         } catch (RuntimeException e) {
             logger.error("Error en forgot-password para {}: {}", dto.getEmail(), e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    /**
+     * Endpoint para verificar qué métodos de recuperación están disponibles para un
+     * usuario
+     */
+    @PostMapping("/check-recovery-methods")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> checkRecoveryMethods(
+            @RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+            logger.info("Verificando métodos de recuperación para: {}", email);
+
+            Usuario usuario = usuarioRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("No existe un usuario con ese email"));
+
+            Map<String, Object> methods = new HashMap<>();
+            methods.put("email", true); // Email siempre disponible
+            methods.put("sms", usuario.getMovil() != null && !usuario.getMovil().isEmpty());
+            methods.put("userName", usuario.getNombreCompleto());
+            methods.put("userEmail", usuario.getEmail());
+
+            return ResponseEntity.ok(ApiResponse.success("Métodos disponibles", methods));
+        } catch (RuntimeException e) {
+            logger.error("Error verificando métodos: {}", e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.error(e.getMessage()));

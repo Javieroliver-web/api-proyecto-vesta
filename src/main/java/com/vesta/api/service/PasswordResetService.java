@@ -34,6 +34,9 @@ public class PasswordResetService {
     private EmailService emailService;
 
     @Autowired
+    private SmsService smsService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     /**
@@ -45,13 +48,31 @@ public class PasswordResetService {
     }
 
     /**
-     * Genera y envía un token de recuperación de contraseña
+     * Genera y envía un token de recuperación de contraseña por email
      */
     @Transactional
     public void generateResetToken(String email) {
+        generateResetToken(email, "email");
+    }
+
+    /**
+     * Genera y envía un token de recuperación de contraseña
+     *
+     * @param email  Email del usuario
+     * @param method Método de envío: "email" o "sms"
+     */
+    @Transactional
+    public void generateResetToken(String email, String method) {
         // Buscar usuario por email
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("No existe un usuario con ese email"));
+
+        // Validar que el usuario tenga móvil si elige SMS
+        if ("sms".equalsIgnoreCase(method)) {
+            if (usuario.getMovil() == null || usuario.getMovil().isEmpty()) {
+                throw new RuntimeException("El usuario no tiene un número de móvil registrado");
+            }
+        }
 
         // Eliminar tokens anteriores del usuario
         tokenRepository.deleteByUsuarioId(usuario.getId());
@@ -67,10 +88,14 @@ public class PasswordResetService {
 
         tokenRepository.save(resetToken);
 
-        // Enviar email con el código
-        emailService.sendPasswordResetEmail(usuario.getEmail(), token, usuario.getNombreCompleto());
-
-        logger.info("Token de recuperación generado para usuario: {}", email);
+        // Enviar por el método elegido
+        if ("sms".equalsIgnoreCase(method)) {
+            smsService.sendPasswordResetSms(usuario.getMovil(), token, usuario.getNombreCompleto());
+            logger.info("Token de recuperación generado y enviado por SMS para usuario: {}", email);
+        } else {
+            emailService.sendPasswordResetEmail(usuario.getEmail(), token, usuario.getNombreCompleto());
+            logger.info("Token de recuperación generado y enviado por email para usuario: {}", email);
+        }
     }
 
     /**

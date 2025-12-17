@@ -38,6 +38,13 @@ services:
       SPRING_DATASOURCE_PASSWORD: vesta_password
       JWT_SECRET: "ClaveSecretaSuperSeguraParaVestaProyecto2025"
       JWT_EXPIRATION: 86400000
+      # Email configuration - Configurado para javip200555@gmail.com
+      MAIL_USERNAME: javip200555@gmail.com
+      MAIL_PASSWORD: jkyacxnhtsokpkur
+      # SMS configuration - Twilio
+      TWILIO_ACCOUNT_SID: AC773e7018a6264d128f3b19481fd7178d
+      TWILIO_AUTH_TOKEN: 5e338c3a12b972e06b46c7d3f179b1cb
+      TWILIO_MESSAGING_SERVICE_SID: MG2d938b15ef1a4b1c272e5e250f78c96b
     networks:
       - vesta_net
 
