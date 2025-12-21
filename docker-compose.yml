@@ -6,9 +6,9 @@ services:
     container_name: vesta-db  # Sin guiones bajos
     restart: unless-stopped
     environment:
-      POSTGRES_USER: vesta_user
-      POSTGRES_PASSWORD: vesta_password
-      POSTGRES_DB: vesta_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
     volumes:
@@ -33,11 +33,18 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://vesta-db:5432/vesta_db  # Actualizado
-      SPRING_DATASOURCE_USERNAME: vesta_user
-      SPRING_DATASOURCE_PASSWORD: vesta_password
-      JWT_SECRET: "ClaveSecretaSuperSeguraParaVestaProyecto2025"
-      JWT_EXPIRATION: 86400000
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      # Email configuration
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      # SMS configuration - Twilio
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+      TWILIO_MESSAGING_SERVICE_SID: ${TWILIO_MESSAGING_SERVICE_SID}
     networks:
       - vesta_net
 

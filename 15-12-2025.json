@@ -120,6 +120,93 @@
       "parentId": "fld_auth"
     },
     {
+      "_id": "req_auth_forgot_password",
+      "_type": "request",
+      "name": "Olvidé mi Contraseña",
+      "description": "Solicitar código de recuperación de contraseña",
+      "url": "{{ _.base_url }}/api/auth/forgot-password",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"email\": \"demo@vesta.com\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -70,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_auth"
+    },
+    {
+      "_id": "req_auth_validate_token",
+      "_type": "request",
+      "name": "Validar Código de Recuperación",
+      "description": "Validar que el código de recuperación sea válido",
+      "url": "{{ _.base_url }}/api/auth/validate-reset-token",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/plain",
+        "text": "123456"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -60,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_auth"
+    },
+    {
+      "_id": "req_auth_reset_password",
+      "_type": "request",
+      "name": "Resetear Contraseña",
+      "description": "Cambiar contraseña con código de recuperación",
+      "url": "{{ _.base_url }}/api/auth/reset-password",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"token\": \"123456\",\n\t\"newPassword\": \"nuevaPass123\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -50,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_auth"
+    },
+    {
       "_id": "fld_productos",
       "_type": "request_group",
       "name": "2. Productos",
@@ -248,6 +335,32 @@
       "environmentPropertyOrder": null,
       "metaSortKey": -800,
       "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_polizas_all",
+      "_type": "request",
+      "name": "Listar Todas las Pólizas (Admin)",
+      "description": "Obtener todas las pólizas del sistema (ventas)",
+      "url": "{{ _.base_url }}/api/polizas",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -110,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "fld_polizas"
     },
     {
       "_id": "req_polizas_user",

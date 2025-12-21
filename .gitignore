@@ -59,3 +59,6 @@ spring-boot-*.log
 *.bak
 *.swp
 *~.nib
+
+# Scripts with credentials
+update-email-config.ps1

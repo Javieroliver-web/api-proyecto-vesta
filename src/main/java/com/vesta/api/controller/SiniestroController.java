@@ -6,7 +6,9 @@ import com.vesta.api.repository.PolizaRepository;
 import com.vesta.api.repository.SiniestroRepository;
 import com.vesta.api.service.AIService;
 import com.vesta.api.service.FraudService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,16 +25,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/siniestros")
+@RequiredArgsConstructor
 public class SiniestroController {
+    private static final Logger logger = LoggerFactory.getLogger(SiniestroController.class);
 
-    @Autowired
-    private SiniestroRepository siniestroRepository;
-    @Autowired
-    private PolizaRepository polizaRepository;
-    @Autowired
-    private AIService aiService;
-    @Autowired
-    private FraudService fraudService;
+    private final SiniestroRepository siniestroRepository;
+    private final PolizaRepository polizaRepository;
+    private final AIService aiService;
+    private final FraudService fraudService;
 
     @GetMapping
     public ResponseEntity<List<Siniestro>> listarSiniestros() {
@@ -59,9 +59,9 @@ public class SiniestroController {
             // Crear carpeta si no existe
             try {
                 Files.createDirectories(uploadDir);
-                System.out.println("📁 Directorio uploads creado/verificado: " + uploadDir);
+                logger.info("📁 Directorio uploads creado/verificado: {}", uploadDir);
             } catch (IOException e) {
-                System.err.println("❌ Error al crear directorio uploads: " + e.getMessage());
+                logger.error("❌ Error al crear directorio uploads", e);
                 throw new RuntimeException("No se pudo crear el directorio de uploads");
             }
 
@@ -70,10 +70,9 @@ public class SiniestroController {
             // Guardar el archivo
             try {
                 Files.copy(file.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("💾 Archivo guardado exitosamente: " + rutaArchivo);
+                logger.info("💾 Archivo guardado exitosamente: {}", rutaArchivo);
             } catch (IOException e) {
-                System.err.println("❌ Error al guardar archivo: " + e.getMessage());
-                e.printStackTrace();
+                logger.error("❌ Error al guardar archivo: {}", rutaArchivo, e);
                 throw new RuntimeException("Error al guardar el archivo: " + e.getMessage());
             }
 
@@ -98,7 +97,7 @@ public class SiniestroController {
 
             siniestroRepository.save(siniestro);
 
-            System.out.println("✅ Siniestro guardado exitosamente con ID: " + siniestro.getId());
+            logger.info("✅ Siniestro guardado exitosamente con ID: {}", siniestro.getId());
 
             // Devolver respuesta completa con todos los datos que espera el frontend
             Map<String, Object> response = new HashMap<>();
@@ -111,8 +110,7 @@ public class SiniestroController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            System.err.println("❌ Error general en reportarSiniestro: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("❌ Error general en reportarSiniestro", e);
 
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Error al procesar el siniestro: " + e.getMessage());

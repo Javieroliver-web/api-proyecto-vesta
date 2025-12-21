@@ -1,10 +1,15 @@
 package com.vesta.api.config;
 
 import com.vesta.api.util.JWTUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +22,7 @@ import java.util.Collections;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Autowired
     private JWTUtil jwtUtil;
@@ -29,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            
+
             try {
                 String username = jwtUtil.extractUsername(token);
                 String rol = jwtUtil.extractClaim(token, claims -> claims.get("rol", String.class));
@@ -42,8 +48,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
                 }
+            } catch (ExpiredJwtException e) {
+                logger.warn("Token expirado para usuario: {}", e.getClaims().getSubject());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setHeader("X-Auth-Error", "Token expired");
+            } catch (MalformedJwtException e) {
+                logger.warn("Token malformado recibido desde IP: {}", request.getRemoteAddr());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setHeader("X-Auth-Error", "Malformed token");
+            } catch (SignatureException e) {
+                logger.warn("Firma de token inválida desde IP: {}", request.getRemoteAddr());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setHeader("X-Auth-Error", "Invalid signature");
             } catch (Exception e) {
-                System.err.println("Error validando token: " + e.getMessage());
+                logger.error("Error inesperado validando token", e);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setHeader("X-Auth-Error", "Authentication error");
             }
         }
         filterChain.doFilter(request, response);

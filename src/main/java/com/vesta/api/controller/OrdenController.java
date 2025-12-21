@@ -2,9 +2,11 @@ package com.vesta.api.controller;
 
 import com.vesta.api.dto.CheckoutDTO;
 import com.vesta.api.entity.Orden;
-import com.vesta.api.repository.OrdenRepository; // <--- IMPORTANTE
+import com.vesta.api.repository.OrdenRepository;
 import com.vesta.api.service.OrdenService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,13 +17,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/ordenes")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class OrdenController {
+    private static final Logger logger = LoggerFactory.getLogger(OrdenController.class);
 
-    @Autowired
-    private OrdenService ordenService;
-
-    @Autowired
-    private OrdenRepository ordenRepository; // <--- AÑADIR ESTO
+    private final OrdenService ordenService;
+    private final OrdenRepository ordenRepository;
 
     @PostMapping("/checkout")
     public ResponseEntity<?> checkout(@RequestBody CheckoutDTO checkoutDTO) {
@@ -34,7 +35,7 @@ public class OrdenController {
             response.put("total", orden.getTotal());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error procesando checkout", e);
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
