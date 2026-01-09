@@ -130,4 +130,26 @@ public class AuthService {
         usuarioRepository.save(usuario);
         logger.info("Cuenta confirmada para usuario: {}", usuario.getEmail());
     }
+
+    /**
+     * Reenviar correo de confirmación
+     */
+    @Transactional
+    public void resendConfirmation(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (Boolean.TRUE.equals(usuario.getEmailConfirmado())) {
+            throw new RuntimeException("Esta cuenta ya está confirmada. Puedes iniciar sesión.");
+        }
+
+        // Generar nuevo token
+        String newToken = java.util.UUID.randomUUID().toString();
+        usuario.setConfirmationToken(newToken);
+        usuarioRepository.save(usuario);
+
+        // Reenviar email
+        emailService.sendAccountConfirmationEmail(usuario.getEmail(), newToken, usuario.getNombreCompleto());
+        logger.info("Correo de confirmación reenviado a: {}", email);
+    }
 }

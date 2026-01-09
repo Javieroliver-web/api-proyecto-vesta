@@ -215,4 +215,29 @@ public class AuthController {
         return ResponseEntity.ok(
                 ApiResponse.success("Auth API funcionando correctamente", "OK"));
     }
+
+    /**
+     * Endpoint para reenviar el correo de confirmación
+     */
+    @PostMapping("/resend-confirmation")
+    public ResponseEntity<ApiResponse<String>> resendConfirmation(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+            logger.info("Solicitud de reenvío de confirmación para: {}", email);
+
+            if (email == null || email.isEmpty()) {
+                return ResponseEntity.badRequest().body(ApiResponse.error("El email es obligatorio"));
+            }
+
+            authService.resendConfirmation(email);
+
+            return ResponseEntity.ok(ApiResponse.success("Correo de confirmación reenviado", "EMAIL_SENT"));
+
+        } catch (RuntimeException e) {
+            logger.error("Error reenviando confirmación: {}", e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
+    }
 }

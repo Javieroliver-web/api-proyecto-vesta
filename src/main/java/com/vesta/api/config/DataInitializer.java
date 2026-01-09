@@ -33,7 +33,16 @@ public class DataInitializer implements CommandLineRunner {
                 logger.info("🌱 INICIANDO CARGA DE DATOS DEMO...");
 
                 // 1. Crear Usuario Demo (si no existe)
+                // 1. Crear Usuario Demo (si no existe, o actualizar si existe para confirmar)
                 Usuario usuario = usuarioRepository.findByEmail("demo@vesta.com")
+                                .map(existingUser -> {
+                                        // Si existe, aseguramos que esté confirmado
+                                        if (!Boolean.TRUE.equals(existingUser.getEmailConfirmado())) {
+                                                existingUser.setEmailConfirmado(true);
+                                                return usuarioRepository.save(existingUser);
+                                        }
+                                        return existingUser;
+                                })
                                 .orElseGet(() -> {
                                         Usuario u = new Usuario();
                                         u.setNombreCompleto("Usuario Demo");
@@ -41,6 +50,7 @@ public class DataInitializer implements CommandLineRunner {
                                         u.setPassword(passwordEncoder.encode("123456"));
                                         u.setRol("USUARIO");
                                         u.setMovil("+34600000000");
+                                        u.setEmailConfirmado(true); // CONFIRMADO POR DEFECTO
                                         return usuarioRepository.save(u);
                                 });
 
