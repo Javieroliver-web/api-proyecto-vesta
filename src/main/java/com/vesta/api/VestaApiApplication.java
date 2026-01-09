@@ -7,8 +7,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 public class VestaApiApplication {
+
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(VestaApiApplication.class);
+
     public static void main(String[] args) {
         SpringApplication.run(VestaApiApplication.class, args);
-        System.out.println("🚀 API Vesta iniciada en el puerto 8080");
+        logger.info("🚀 API Vesta iniciada en el puerto 8080");
     }
 }

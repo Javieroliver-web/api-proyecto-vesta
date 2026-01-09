@@ -9,6 +9,8 @@ import com.vesta.api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -19,6 +21,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/polizas")
 public class PolizaController {
+
+    private static final Logger logger = LoggerFactory.getLogger(PolizaController.class);
 
     @Autowired
     private PolizaRepository polizaRepository;
@@ -37,11 +41,10 @@ public class PolizaController {
     public ResponseEntity<List<Poliza>> obtenerTodasLasPolizas() {
         try {
             List<Poliza> todasLasPolizas = polizaRepository.findAll();
-            System.out.println("📊 Admin consultando todas las pólizas: " + todasLasPolizas.size() + " encontradas");
+            logger.info("📊 Admin consultando todas las pólizas: {} encontradas", todasLasPolizas.size());
             return ResponseEntity.ok(todasLasPolizas);
         } catch (Exception e) {
-            System.err.println("Error al obtener todas las pólizas: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error al obtener todas las pólizas", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -64,8 +67,7 @@ public class PolizaController {
 
             return ResponseEntity.ok(polizas);
         } catch (Exception e) {
-            System.err.println("Error al obtener pólizas del usuario: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error al obtener pólizas del usuario", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -105,7 +107,7 @@ public class PolizaController {
 
             if (polizaExistente != null) {
                 // EXTENDER PÓLIZA EXISTENTE
-                System.out.println("📝 Extendiendo póliza existente ID=" + polizaExistente.getId());
+                logger.info("📝 Extendiendo póliza existente ID={}", polizaExistente.getId());
 
                 // Sumar los días a la fecha de fin actual
                 LocalDate nuevaFechaFin = polizaExistente.getFechaFin().plusDays(duracion);
@@ -122,12 +124,11 @@ public class PolizaController {
 
                 polizaFinal = polizaRepository.save(polizaExistente);
 
-                System.out.println("✅ Póliza extendida: ID=" + polizaFinal.getId() +
-                        " Nueva fecha fin=" + nuevaFechaFin +
-                        " Días añadidos=" + duracion);
+                logger.info("✅ Póliza extendida: ID={} Nueva fecha fin={} Días añadidos={}",
+                        polizaFinal.getId(), nuevaFechaFin, duracion);
             } else {
                 // CREAR NUEVA PÓLIZA
-                System.out.println("📝 Creando nueva póliza");
+                logger.info("📝 Creando nueva póliza");
 
                 Poliza poliza = new Poliza();
                 poliza.setUsuario(usuario);
@@ -144,15 +145,13 @@ public class PolizaController {
 
                 polizaFinal = polizaRepository.save(poliza);
 
-                System.out.println("✅ Póliza creada: ID=" + polizaFinal.getId() +
-                        " Usuario=" + usuario.getEmail() +
-                        " Producto=" + producto.getNombre());
+                logger.info("✅ Póliza creada: ID={} Usuario={} Producto={}",
+                        polizaFinal.getId(), usuario.getEmail(), producto.getNombre());
             }
 
             return ResponseEntity.ok(polizaFinal);
         } catch (Exception e) {
-            System.err.println("Error al contratar seguro: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error al contratar seguro", e);
             return ResponseEntity.internalServerError().build();
         }
     }

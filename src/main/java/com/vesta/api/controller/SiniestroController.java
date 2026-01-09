@@ -8,6 +8,8 @@ import com.vesta.api.service.AIService;
 import com.vesta.api.service.FraudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +26,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/siniestros")
 public class SiniestroController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SiniestroController.class);
 
     @Autowired
     private SiniestroRepository siniestroRepository;
@@ -59,9 +63,9 @@ public class SiniestroController {
             // Crear carpeta si no existe
             try {
                 Files.createDirectories(uploadDir);
-                System.out.println("📁 Directorio uploads creado/verificado: " + uploadDir);
+                logger.debug("📁 Directorio uploads creado/verificado: {}", uploadDir);
             } catch (IOException e) {
-                System.err.println("❌ Error al crear directorio uploads: " + e.getMessage());
+                logger.error("❌ Error al crear directorio uploads", e);
                 throw new RuntimeException("No se pudo crear el directorio de uploads");
             }
 
@@ -70,16 +74,20 @@ public class SiniestroController {
             // Guardar el archivo
             try {
                 Files.copy(file.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("💾 Archivo guardado exitosamente: " + rutaArchivo);
+                logger.info("💾 Archivo guardado exitosamente: {}", rutaArchivo);
             } catch (IOException e) {
-                System.err.println("❌ Error al guardar archivo: " + e.getMessage());
-                e.printStackTrace();
+                logger.error("❌ Error al guardar archivo", e);
                 throw new RuntimeException("Error al guardar el archivo: " + e.getMessage());
             }
 
             // 3. Análisis
             String analisisIA = aiService.analizarImagen(nombreArchivo);
-            Integer fraudeScore = fraudService.calcularRiesgo(poliza.getUsuario().getId(), descripcion);
+
+            // Detectar si la IA lo aprobó (esto depende de lo que retorne AIService)
+            boolean validadoPorIA = analisisIA.contains("APROBADO") || analisisIA.contains("DETECTA: Daños");
+
+            // Pasar la validación de la IA al servicio de fraude para que ajuste el score
+            Integer fraudeScore = fraudService.calcularRiesgo(poliza.getUsuario().getId(), descripcion, validadoPorIA);
 
             // 4. Guardar Entidad en BD
             Siniestro siniestro = new Siniestro();
@@ -98,7 +106,7 @@ public class SiniestroController {
 
             siniestroRepository.save(siniestro);
 
-            System.out.println("✅ Siniestro guardado exitosamente con ID: " + siniestro.getId());
+            logger.info("✅ Siniestro guardado exitosamente con ID: {}", siniestro.getId());
 
             // Devolver respuesta completa con todos los datos que espera el frontend
             Map<String, Object> response = new HashMap<>();
@@ -111,8 +119,7 @@ public class SiniestroController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            System.err.println("❌ Error general en reportarSiniestro: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("❌ Error general en reportarSiniestro", e);
 
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Error al procesar el siniestro: " + e.getMessage());

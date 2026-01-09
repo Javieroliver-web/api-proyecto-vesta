@@ -1,9 +1,7 @@
-# Etapa 1: Construcción
-FROM maven:3.9.6-eclipse-temurin-21 AS build
 # ===================================
 # Stage 1: Build
 # ===================================
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
 
 WORKDIR /app
 
@@ -12,8 +10,8 @@ COPY pom.xml .
 COPY src ./src
 
 # Construir la aplicación
-RUN apk add --no-cache maven && \
-    mvn clean package -DskipTests && \
+# Construir la aplicación
+RUN mvn clean package -DskipTests && \
     mv target/*.jar app.jar
 
 # ===================================

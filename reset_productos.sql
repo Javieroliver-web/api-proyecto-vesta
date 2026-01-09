@@ -14,4 +14,3 @@ DELETE FROM productos;
 -- 3. Seguro de Eventos - /images/eventos.png
 -- 4. Seguro de Bicicleta - /images/seguro_bicicleta.png
 -- 5. Seguro de Mascotas - /images/seguro_mascotas.png
--- 6. Seguro de Equipaje - /images/seguro_equipaje.png

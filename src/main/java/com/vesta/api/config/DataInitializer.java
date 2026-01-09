@@ -17,6 +17,8 @@ import java.time.LocalDate;
 @Component
 public class DataInitializer implements CommandLineRunner {
 
+        private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DataInitializer.class);
+
         @Autowired
         private UsuarioRepository usuarioRepository;
         @Autowired
@@ -28,7 +30,7 @@ public class DataInitializer implements CommandLineRunner {
 
         @Override
         public void run(String... args) throws Exception {
-                System.out.println("🌱 INICIANDO CARGA DE DATOS DEMO...");
+                logger.info("🌱 INICIANDO CARGA DE DATOS DEMO...");
 
                 // 1. Crear Usuario Demo (si no existe)
                 Usuario usuario = usuarioRepository.findByEmail("demo@vesta.com")
@@ -51,7 +53,7 @@ public class DataInitializer implements CommandLineRunner {
                                         "Cobertura integral para tus viajes incluyendo asistencia médica, cancelación de vuelos, pérdida de equipaje y más. Actívalo solo cuando lo necesites.");
                         viaje.setPrecioBase(new BigDecimal("15.99"));
                         viaje.setCategoria("Viaje");
-                        viaje.setImagenUrl("/images/seguro_viaje.png");
+                        viaje.setImagenUrl("/images/productos/viaje.png");
                         productoRepository.save(viaje);
 
                         // Seguro de Dispositivos
@@ -61,7 +63,7 @@ public class DataInitializer implements CommandLineRunner {
                                         "Protege tu smartphone y gadgets contra daños accidentales, robos y averías. Cobertura inmediata desde el momento de activación.");
                         dispositivos.setPrecioBase(new BigDecimal("9.99"));
                         dispositivos.setCategoria("Tecnología");
-                        dispositivos.setImagenUrl("/images/seguro_dispositivos.png");
+                        dispositivos.setImagenUrl("/images/productos/tecnologia.png");
                         productoRepository.save(dispositivos);
 
                         // Seguro de Eventos
@@ -71,7 +73,7 @@ public class DataInitializer implements CommandLineRunner {
                                         "Asegura tu entrada a conciertos y eventos. Protección contra cancelaciones, pérdidas y accidentes durante el evento.");
                         eventos.setPrecioBase(new BigDecimal("5.99"));
                         eventos.setCategoria("Entretenimiento");
-                        eventos.setImagenUrl("/images/eventos.png");
+                        eventos.setImagenUrl("/images/productos/Entretenimiento.jpg");
                         productoRepository.save(eventos);
 
                         // Seguro de Bicicleta
@@ -81,7 +83,7 @@ public class DataInitializer implements CommandLineRunner {
                                         "Protección para tu medio de transporte ecológico. Cobertura contra robos, daños y responsabilidad civil.");
                         bicicleta.setPrecioBase(new BigDecimal("12.99"));
                         bicicleta.setCategoria("Movilidad");
-                        bicicleta.setImagenUrl("/images/seguro_bicicleta.png");
+                        bicicleta.setImagenUrl("/images/productos/movilidad.png");
                         productoRepository.save(bicicleta);
 
                         // Seguro de Mascotas
@@ -91,30 +93,13 @@ public class DataInitializer implements CommandLineRunner {
                                         "Cuidado veterinario para tu mejor amigo. Cobertura de gastos médicos, cirugías y tratamientos de emergencia.");
                         mascotas.setPrecioBase(new BigDecimal("19.99"));
                         mascotas.setCategoria("Mascotas");
-                        mascotas.setImagenUrl("/images/seguro_mascotas.png");
+                        mascotas.setImagenUrl("/images/productos/mascotas.png");
                         productoRepository.save(mascotas);
 
-                        // Seguro de Equipaje
-                        Producto equipaje = new Producto();
-                        equipaje.setNombre("Seguro de Equipaje");
-                        equipaje.setDescripcion(
-                                        "Protege tus pertenencias en tránsito. Cobertura contra pérdidas, daños y retrasos en la entrega de equipaje.");
-                        equipaje.setPrecioBase(new BigDecimal("7.99"));
-                        equipaje.setCategoria("Viaje");
-                        equipaje.setImagenUrl("/images/seguro_equipaje.png");
-                        productoRepository.save(equipaje);
+                        // Seguro de Equipaje ELIMINADO
+                        // (Código eliminado a petición del usuario)
 
-                        // Seguro Móvil Premium
-                        Producto movilPremium = new Producto();
-                        movilPremium.setNombre("Seguro Móvil Premium");
-                        movilPremium.setDescripcion(
-                                        "Cobertura total contra golpes y robos. Protección premium para tu smartphone con reemplazo inmediato.");
-                        movilPremium.setPrecioBase(new BigDecimal("12.50"));
-                        movilPremium.setCategoria("Tecnología");
-                        movilPremium.setImagenUrl("/images/seguro_movil.png");
-                        productoRepository.save(movilPremium);
-
-                        System.out.println("✅ 7 productos creados correctamente.");
+                        logger.info("✅ 5 productos creados correctamente.");
                 }
 
                 // 3. Crear Póliza #1 (VINCULADA AL USUARIO DEMO)
@@ -133,6 +118,6 @@ public class DataInitializer implements CommandLineRunner {
                         System.out.println("✅ Póliza DEMO creada correctamente.");
                 }
 
-                System.out.println("🌱 CARGA DE DATOS COMPLETADA.");
+                logger.info("🌱 CARGA DE DATOS COMPLETADA.");
         }
 }

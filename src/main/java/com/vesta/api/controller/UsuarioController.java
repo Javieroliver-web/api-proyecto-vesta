@@ -47,13 +47,13 @@ public class UsuarioController {
                         // Verificar que enviaron la contraseña actual
                         if (currentPassword == null || currentPassword.isEmpty()) {
                             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body(Map.of("message", "Debes ingresar tu contraseña actual."));
+                                    .body(Map.of("message", "Debes ingresar tu contraseña actual."));
                         }
 
                         // Verificar que la contraseña actual sea correcta
                         if (!passwordEncoder.matches(currentPassword, usuario.getPassword())) {
                             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body(Map.of("message", "La contraseña actual es incorrecta."));
+                                    .body(Map.of("message", "La contraseña actual es incorrecta."));
                         }
 
                         // Si todo es correcto, encriptar y asignar la nueva
@@ -70,6 +70,12 @@ public class UsuarioController {
                     if (updates.containsKey("rol")) { // Solo admin debería poder, pero por ahora lo dejamos
                         usuario.setRol((String) updates.get("rol"));
                     }
+                    if (updates.containsKey("ciudad")) {
+                        usuario.setCiudad((String) updates.get("ciudad"));
+                    }
+                    if (updates.containsKey("tema")) {
+                        usuario.setTema((String) updates.get("tema"));
+                    }
                     if (updates.containsKey("email")) {
                         usuario.setEmail((String) updates.get("email"));
                     }
@@ -79,7 +85,7 @@ public class UsuarioController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         if (!usuarioRepository.existsById(id)) {

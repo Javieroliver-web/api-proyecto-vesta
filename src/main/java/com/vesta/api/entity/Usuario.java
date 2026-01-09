@@ -33,6 +33,29 @@ public class Usuario {
     @Column(name = "usu_movil", length = 15)
     private String movil;
 
+    @Column(name = "ciudad")
+    private String ciudad = "Sevilla, ES";
+
+    @Column(name = "tema")
+    private String tema = "light";
+
+    // Getters y Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTema() {
+        return tema;
+    }
+
+    public void setTema(String tema) {
+        this.tema = tema;
+    }
+
     @Column(name = "usu_email", length = 100, nullable = false, unique = true)
     private String email;
 
