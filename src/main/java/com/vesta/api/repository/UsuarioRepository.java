@@ -9,7 +9,9 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     // Método mágico: Spring crea el SQL automáticamente al leer el nombre
     Optional<Usuario> findByEmail(String email);
-    
+
+    Optional<Usuario> findByConfirmationToken(String confirmationToken);
+
     // Para verificar si existe al registrar
     boolean existsByEmail(String email);
 }

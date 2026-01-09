@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.net.URI; // Importante
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,6 +84,25 @@ public class AuthController {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    /**
+     * Endpoint de confirmación de cuenta (Email Link)
+     */
+    @GetMapping("/confirm-account")
+    public ResponseEntity<Void> confirmAccount(@RequestParam String token) {
+        try {
+            authService.confirmarCuenta(token);
+            // Redirigir al login con éxito (hardcoded a puerto frontend por defecto)
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("http://localhost:8081/login?confirmed=true"))
+                    .build();
+        } catch (RuntimeException e) {
+            // Redirigir al login con error
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("http://localhost:8081/login?error=token_invalid"))
+                    .build();
         }
     }
 

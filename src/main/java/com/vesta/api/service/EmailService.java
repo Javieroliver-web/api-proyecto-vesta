@@ -60,4 +60,40 @@ public class EmailService {
             throw new RuntimeException("Error al enviar el email. Por favor, contacta al administrador.");
         }
     }
+
+    public void sendAccountConfirmationEmail(String toEmail, String token, String nombre) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setSubject("Activa tu cuenta - Vesta");
+
+            // En un entorno real, esto debería ser configurable (backendUrl)
+            String link = "http://localhost:8080/api/auth/confirm-account?token=" + token;
+
+            String emailBody = String.format(
+                    "Hola %s,\n\n" +
+                            "Gracias por registrarte en Vesta.\n\n" +
+                            "Para activar tu cuenta, por favor pulsa en el siguiente enlace:\n%s\n\n" +
+                            "Si no te has registrado, ignora este mensaje.\n\n" +
+                            "Saludos,\n" +
+                            "El equipo de Vesta",
+                    nombre,
+                    link);
+
+            message.setText(emailBody);
+
+            mailSender.send(message);
+            logger.info("Email de confirmación enviado a: {}", toEmail);
+
+        } catch (Exception e) {
+            logger.error("Error al enviar email de confirmación a {}: {}", toEmail, e.getMessage());
+            // Log del token para desarrollo
+            logger.warn("⚠️ EMAIL NO CONFIGURADO - Link de activación para {}: {}", toEmail,
+                    "http://localhost:8080/api/auth/confirm-account?token=" + token);
+            // No lanzamos excepción para no romper el registro, pero el usuario no podrá
+            // entrar si está bloqueado.
+            // Quizás deberíamos lanzar excepción si es CRÍTICO.
+        }
+    }
 }

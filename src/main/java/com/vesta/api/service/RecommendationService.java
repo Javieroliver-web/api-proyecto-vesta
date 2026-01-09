@@ -18,6 +18,33 @@ public class RecommendationService {
     @Value("${openweather.api.key:dummy}")
     private String apiKey;
 
+    public boolean validarCiudad(String ciudad) {
+        if ("dummy".equals(apiKey))
+            return true; // Si es dummy, permitimos (mock)
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "http://api.openweathermap.org/data/2.5/weather?q=" + ciudad + "&appid=" + apiKey;
+            restTemplate.getForObject(url, Map.class);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public java.util.List<Map<String, Object>> buscarCiudades(String query) {
+        if ("dummy".equals(apiKey))
+            return java.util.Collections.emptyList();
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "http://api.openweathermap.org/geo/1.0/direct?q=" + query + "&limit=5&appid=" + apiKey;
+            return restTemplate.getForObject(url, java.util.List.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return java.util.Collections.emptyList();
+        }
+    }
+
     public String obtenerRecomendacion(String emailUsuario) {
         String ciudad = "Sevilla, ES";
 
@@ -33,8 +60,9 @@ public class RecommendationService {
                 throw new RuntimeException("No API Key");
 
             RestTemplate restTemplate = new RestTemplate();
+            // Añadir lang=es
             String url = "http://api.openweathermap.org/data/2.5/weather?q=" + ciudad + "&appid=" + apiKey
-                    + "&units=metric";
+                    + "&units=metric&lang=es";
             Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
             if (response != null && response.containsKey("weather")) {
@@ -42,16 +70,25 @@ public class RecommendationService {
                         .get("weather");
                 if (!weatherList.isEmpty()) {
                     String main = (String) weatherList.get(0).get("main"); // Rain, Clear, Clouds
+                    String description = (String) weatherList.get(0).get("description"); // "nubes dispersas", "lluvia
+                                                                                         // ligera"
+
+                    // Limpiar nombre de ciudad (quitar ", ES" u otros códigos)
+                    String ciudadNombre = ciudad.contains(",") ? ciudad.split(",")[0] : ciudad;
 
                     if (main.equalsIgnoreCase("Rain") || main.equalsIgnoreCase("Drizzle")
                             || main.equalsIgnoreCase("Thunderstorm")) {
-                        return "🌧️ Llueve en " + ciudad
-                                + ". ¡Alerta! Te recomendamos el 'Seguro de Cancelación de Eventos' (-10% dto).";
+                        return "🌧️ Llueve en " + ciudadNombre
+                                + ". Te recomendamos el 'Seguro de Cancelación de Eventos' (-10% dto).";
                     } else if (main.equalsIgnoreCase("Clear") || main.equalsIgnoreCase("Sun")) {
-                        return "☀️ ¡Sol en " + ciudad
+                        return "☀️ ¡Sol en " + ciudadNombre
                                 + "! Perfecto para una escapada. ¿Tienes tu 'Seguro de Viaje Express'?";
                     } else {
-                        return "☁️ El tiempo en " + ciudad + " es " + main
+                        // Usar descripción en español (capitalizada)
+                        String desc = description != null
+                                ? description.substring(0, 1).toUpperCase() + description.substring(1)
+                                : "Variable";
+                        return "☁️ El tiempo en " + ciudadNombre + " es " + desc
                                 + ". Buen momento para revisar tu 'Seguro de Hogar'.";
                     }
                 }

@@ -2,6 +2,7 @@ package com.vesta.api.controller;
 
 import com.vesta.api.entity.Usuario;
 import com.vesta.api.repository.UsuarioRepository;
+import com.vesta.api.service.RecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus; // Importante
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,9 @@ public class UsuarioController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RecommendationService recommendationService;
 
     @GetMapping
     public ResponseEntity<List<Usuario>> listarUsuarios() {
@@ -71,7 +75,13 @@ public class UsuarioController {
                         usuario.setRol((String) updates.get("rol"));
                     }
                     if (updates.containsKey("ciudad")) {
-                        usuario.setCiudad((String) updates.get("ciudad"));
+                        String nuevaCiudad = (String) updates.get("ciudad");
+                        if (!recommendationService.validarCiudad(nuevaCiudad)) {
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                    .body(Map.of("message", "No se pudo obtener información climática para "
+                                            + nuevaCiudad + ". Intenta con otra búsqueda."));
+                        }
+                        usuario.setCiudad(nuevaCiudad);
                     }
                     if (updates.containsKey("tema")) {
                         usuario.setTema((String) updates.get("tema"));

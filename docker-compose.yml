@@ -41,10 +41,14 @@ services:
       # Email configuration
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
+      # OpenWeatherMap
+      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
       # SMS configuration - Twilio
       TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
       TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
       TWILIO_MESSAGING_SERVICE_SID: ${TWILIO_MESSAGING_SERVICE_SID}
+    volumes:
+      - ./logs/api:/logs
     networks:
       - vesta_net
 

@@ -31,6 +31,9 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EmailService emailService;
+
     /**
      * Autenticar usuario
      * 
@@ -53,6 +56,11 @@ public class AuthService {
         if (!passwordMatch) {
             logger.warn("Contraseña incorrecta para usuario: {}", request.getCorreoElectronico());
             throw new RuntimeException("Credenciales inválidas");
+        }
+
+        if (!Boolean.TRUE.equals(usuario.getEmailConfirmado())) {
+            logger.warn("Intento de login con cuenta no confirmada: {}", request.getCorreoElectronico());
+            throw new RuntimeException("Cuenta no verificada. Por favor, revisa tu email para activarla.");
         }
 
         String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
@@ -88,19 +96,38 @@ public class AuthService {
         usuario.setRol(request.getTipoUsuario() != null ? request.getTipoUsuario() : "USUARIO");
         // Encriptar contraseña
         usuario.setPassword(passwordEncoder.encode(request.getContrasena()));
-        usuario.setEmailConfirmado(true);
+        usuario.setEmailConfirmado(false); // Requiere confirmación
+        String tokenConfirmacion = java.util.UUID.randomUUID().toString();
+        usuario.setConfirmationToken(tokenConfirmacion);
 
-        // Guardamos para obtener el ID generado
+        // Guardamos
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
-        logger.info("Usuario registrado exitosamente: {} con ID: {}", usuarioGuardado.getEmail(),
+        logger.info("Usuario registrado (pendiente confirmar): {} con ID: {}", usuarioGuardado.getEmail(),
                 usuarioGuardado.getId());
 
-        String token = jwtUtil.generateToken(usuarioGuardado.getEmail(), usuarioGuardado.getRol());
+        // Enviar email
+        emailService.sendAccountConfirmationEmail(usuarioGuardado.getEmail(), tokenConfirmacion,
+                usuarioGuardado.getNombreCompleto());
 
+        // Devolvemos token nulo para indicar que no está logueado
         return new AuthResponseDTO(
-                token,
+                null,
                 usuarioGuardado.getRol(),
                 usuarioGuardado.getNombreCompleto(),
                 usuarioGuardado.getId());
+    }
+
+    /**
+     * Confirma la cuenta mediante token
+     */
+    @Transactional
+    public void confirmarCuenta(String token) {
+        Usuario usuario = usuarioRepository.findByConfirmationToken(token)
+                .orElseThrow(() -> new RuntimeException("Token de confirmación inválido"));
+
+        usuario.setEmailConfirmado(true);
+        usuario.setConfirmationToken(null); // Consumir token
+        usuarioRepository.save(usuario);
+        logger.info("Cuenta confirmada para usuario: {}", usuario.getEmail());
     }
 }

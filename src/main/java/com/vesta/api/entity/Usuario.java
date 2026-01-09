@@ -33,10 +33,10 @@ public class Usuario {
     @Column(name = "usu_movil", length = 15)
     private String movil;
 
-    @Column(name = "ciudad")
+    @Column(name = "usu_ciudad")
     private String ciudad = "Sevilla, ES";
 
-    @Column(name = "tema")
+    @Column(name = "usu_tema")
     private String tema = "light";
 
     // Getters y Setters
@@ -68,6 +68,9 @@ public class Usuario {
 
     @Column(name = "usu_email_confirmado")
     private Boolean emailConfirmado = false;
+
+    @Column(name = "usu_confirmacion_token")
+    private String confirmationToken;
 
     @Column(name = "usu_fecha_creacion", updatable = false)
     private LocalDateTime fechaCreacion = LocalDateTime.now();
