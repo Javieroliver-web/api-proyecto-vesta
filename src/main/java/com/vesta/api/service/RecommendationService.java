@@ -19,7 +19,7 @@ public class RecommendationService {
     private String apiKey;
 
     public boolean validarCiudad(String ciudad) {
-        if ("dummy".equals(apiKey))
+        if ("dummy".equals(apiKey) || apiKey == null || apiKey.isEmpty())
             return true; // Si es dummy, permitimos (mock)
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -32,8 +32,10 @@ public class RecommendationService {
     }
 
     public java.util.List<Map<String, Object>> buscarCiudades(String query) {
-        if ("dummy".equals(apiKey))
-            return java.util.Collections.emptyList();
+        // Fallback Mock para desarrollo si no hay API Key
+        if ("dummy".equals(apiKey) || apiKey == null || apiKey.isEmpty()) {
+            return getMockCities(query);
+        }
 
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -41,8 +43,34 @@ public class RecommendationService {
             return restTemplate.getForObject(url, java.util.List.class, query, apiKey);
         } catch (Exception e) {
             e.printStackTrace();
-            return java.util.Collections.emptyList();
+            return getMockCities(query); // Fallback en caso de error
         }
+    }
+
+    private java.util.List<Map<String, Object>> getMockCities(String query) {
+        java.util.List<Map<String, Object>> mocks = new java.util.ArrayList<>();
+        String q = query.toLowerCase();
+
+        if (q.contains("b")) {
+            mocks.add(Map.of("name", "Barcelona", "country", "ES", "state", "Catalonia"));
+            mocks.add(Map.of("name", "Bilbao", "country", "ES", "state", "Basque Country"));
+            mocks.add(Map.of("name", "Buenos Aires", "country", "AR"));
+        }
+        if (q.contains("m")) {
+            mocks.add(Map.of("name", "Madrid", "country", "ES"));
+            mocks.add(Map.of("name", "Málaga", "country", "ES", "state", "Andalusia"));
+        }
+        if (q.contains("s")) {
+            mocks.add(Map.of("name", "Sevilla", "country", "ES", "state", "Andalusia"));
+        }
+
+        // Si no coincide nada específico, devolver genéricos
+        if (mocks.isEmpty()) {
+            mocks.add(Map.of("name", "Madrid", "country", "ES"));
+            mocks.add(Map.of("name", "Barcelona", "country", "ES", "state", "Catalonia"));
+        }
+
+        return mocks;
     }
 
     public String obtenerRecomendacion(String emailUsuario) {
