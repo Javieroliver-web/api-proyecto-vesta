@@ -96,12 +96,12 @@ public class AuthController {
             authService.confirmarCuenta(token);
             // Redirigir al login con éxito (hardcoded a puerto frontend por defecto)
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:8081/login?confirmed=true"))
+                    .location(URI.create("http://localhost:8081/login-page?confirmed=true"))
                     .build();
         } catch (RuntimeException e) {
             // Redirigir al login con error
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:8081/login?error=token_invalid"))
+                    .location(URI.create("http://localhost:8081/login-page?error=token_invalid"))
                     .build();
         }
     }

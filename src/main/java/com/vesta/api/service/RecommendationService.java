@@ -23,8 +23,8 @@ public class RecommendationService {
             return true; // Si es dummy, permitimos (mock)
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String url = "http://api.openweathermap.org/data/2.5/weather?q=" + ciudad + "&appid=" + apiKey;
-            restTemplate.getForObject(url, Map.class);
+            String url = "http://api.openweathermap.org/data/2.5/weather?q={city}&appid={key}";
+            restTemplate.getForObject(url, Map.class, ciudad, apiKey);
             return true;
         } catch (Exception e) {
             return false;
@@ -37,8 +37,8 @@ public class RecommendationService {
 
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String url = "http://api.openweathermap.org/geo/1.0/direct?q=" + query + "&limit=5&appid=" + apiKey;
-            return restTemplate.getForObject(url, java.util.List.class);
+            String url = "http://api.openweathermap.org/geo/1.0/direct?q={query}&limit=10&appid={key}";
+            return restTemplate.getForObject(url, java.util.List.class, query, apiKey);
         } catch (Exception e) {
             e.printStackTrace();
             return java.util.Collections.emptyList();
@@ -61,9 +61,8 @@ public class RecommendationService {
 
             RestTemplate restTemplate = new RestTemplate();
             // Añadir lang=es
-            String url = "http://api.openweathermap.org/data/2.5/weather?q=" + ciudad + "&appid=" + apiKey
-                    + "&units=metric&lang=es";
-            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+            String url = "http://api.openweathermap.org/data/2.5/weather?q={city}&appid={key}&units=metric&lang=es";
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class, ciudad, apiKey);
 
             if (response != null && response.containsKey("weather")) {
                 java.util.List<Map<String, Object>> weatherList = (java.util.List<Map<String, Object>>) response
