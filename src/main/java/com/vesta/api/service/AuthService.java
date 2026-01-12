@@ -50,12 +50,44 @@ public class AuthService {
                     return new RuntimeException("Usuario no encontrado con email: " + request.getCorreoElectronico());
                 });
 
+        if (usuario.getBloqueoHasta() != null && usuario.getBloqueoHasta().isAfter(java.time.LocalDateTime.now())) {
+            logger.warn("Intento de login en cuenta bloqueada: {}", request.getCorreoElectronico());
+            throw new RuntimeException(
+                    "Cuenta bloqueada temporalmente por seguridad. Inténtalo de nuevo en unos minutos.");
+        }
+
         // Verificamos la contraseña usando BCrypt
         boolean passwordMatch = passwordEncoder.matches(request.getContrasena(), usuario.getPassword());
 
         if (!passwordMatch) {
             logger.warn("Contraseña incorrecta para usuario: {}", request.getCorreoElectronico());
+
+            // Incrementar intentos fallidos
+            int intentos = usuario.getIntentosFallidos() != null ? usuario.getIntentosFallidos() + 1 : 1;
+            usuario.setIntentosFallidos(intentos);
+
+            if (intentos >= 5) {
+                // Bloquear cuenta por 15 minutos
+                usuario.setBloqueoHasta(java.time.LocalDateTime.now().plusMinutes(15));
+                usuario.setIntentosFallidos(0); // Resetear contador tras bloqueo para nuevo ciclo
+                usuarioRepository.save(usuario);
+
+                // Enviar email de alerta
+                emailService.sendAccountLockedEmail(usuario.getEmail(), usuario.getNombreCompleto());
+
+                throw new RuntimeException(
+                        "Has superado el número de intentos. Tu cuenta ha sido bloqueada por 15 minutos.");
+            }
+
+            usuarioRepository.save(usuario);
             throw new RuntimeException("Credenciales inválidas");
+        }
+
+        // Login exitoso: Resetear contadores
+        if (usuario.getIntentosFallidos() != null && usuario.getIntentosFallidos() > 0) {
+            usuario.setIntentosFallidos(0);
+            usuario.setBloqueoHasta(null);
+            usuarioRepository.save(usuario);
         }
 
         if (!Boolean.TRUE.equals(usuario.getEmailConfirmado())) {

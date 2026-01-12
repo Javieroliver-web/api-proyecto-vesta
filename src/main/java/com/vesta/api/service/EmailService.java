@@ -96,4 +96,34 @@ public class EmailService {
             // Quizás deberíamos lanzar excepción si es CRÍTICO.
         }
     }
+
+    public void sendAccountLockedEmail(String toEmail, String nombre) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setSubject("Alerta de Seguridad: Cuenta Bloqueada - Vesta");
+
+            String emailBody = String.format(
+                    "Hola %s,\n\n" +
+                            "Hemos detectado múltiples intentos fallidos de inicio de sesión en tu cuenta.\n" +
+                            "Por tu seguridad, hemos bloqueado temporalmente el acceso durante 15 minutos.\n\n" +
+                            "Si has sido tú y has olvidado tu contraseña, puedes restablecerla aquí:\n" +
+                            "%s/select-recovery-method\n\n" +
+                            "Si no has sido tú, te recomendamos cambiar tu contraseña inmediatamente después de recuperar el acceso.\n\n"
+                            +
+                            "Saludos,\n" +
+                            "El equipo de Seguridad de Vesta",
+                    nombre,
+                    frontendUrl); // Usando frontendUrl inyectada
+
+            message.setText(emailBody);
+
+            mailSender.send(message);
+            logger.info("Alerta de bloqueo enviada a: {}", toEmail);
+
+        } catch (Exception e) {
+            logger.error("Error al enviar alerta de bloqueo a {}: {}", toEmail, e.getMessage());
+        }
+    }
 }

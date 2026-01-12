@@ -72,6 +72,12 @@ public class Usuario {
     @Column(name = "usu_confirmacion_token")
     private String confirmationToken;
 
+    @Column(name = "usu_intentos_fallidos")
+    private Integer intentosFallidos = 0;
+
+    @Column(name = "usu_bloqueo_hasta")
+    private LocalDateTime bloqueoHasta;
+
     @Column(name = "usu_fecha_creacion", updatable = false)
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
