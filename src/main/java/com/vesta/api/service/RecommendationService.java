@@ -48,32 +48,34 @@ public class RecommendationService {
     }
 
     private java.util.List<Map<String, Object>> getMockCities(String query) {
-        java.util.List<Map<String, Object>> mocks = new java.util.ArrayList<>();
-        String q = query.toLowerCase();
+        // Implementación REAL usando Open-Meteo (Gratis, sin API Key)
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            // count=10 para asegurar scroll
+            String url = "https://geocoding-api.open-meteo.com/v1/search?name={query}&count=10&language=es&format=json";
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class, query);
 
-        if (q.contains("b")) {
-            mocks.add(Map.of("name", "Barcelona", "country", "ES", "state", "Catalonia"));
-            mocks.add(Map.of("name", "Bilbao", "country", "ES", "state", "Basque Country"));
-            mocks.add(Map.of("name", "Buenos Aires", "country", "AR"));
-        }
-        if (q.contains("m")) {
-            mocks.add(Map.of("name", "Madrid", "country", "ES"));
-            mocks.add(Map.of("name", "Málaga", "country", "ES", "state", "Andalusia"));
-        }
-        if (q.contains("s")) {
-            mocks.add(Map.of("name", "Sevilla", "country", "ES", "state", "Andalusia"));
+            if (response != null && response.containsKey("results")) {
+                java.util.List<Map<String, Object>> results = (java.util.List<Map<String, Object>>) response
+                        .get("results");
+
+                // Mapear al formato que espera el frontend
+                return results.stream().map(r -> {
+                    java.util.Map<String, Object> city = new java.util.HashMap<>();
+                    city.put("name", r.get("name"));
+                    city.put("country", r.get("country_code")); // Usar código (ES, US) para mantener consistencia
+                    city.put("state", r.get("admin1"));
+                    return city;
+                }).collect(java.util.stream.Collectors.toList());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        // Si no coincide nada específico, devolver genéricos
-        if (mocks.isEmpty()) {
-            mocks.add(Map.of("name", "Madrid", "country", "ES"));
-            mocks.add(Map.of("name", "Barcelona", "country", "ES", "state", "Catalonia"));
-        }
-
-        return mocks;
+        return java.util.Collections.emptyList();
     }
 
-    public String obtenerRecomendacion(String emailUsuario) {
+    public Map<String, String> obtenerRecomendacion(String emailUsuario) {
         String ciudad = "Sevilla, ES";
 
         // 1. Obtener ciudad del usuario
@@ -97,40 +99,109 @@ public class RecommendationService {
                         .get("weather");
                 if (!weatherList.isEmpty()) {
                     String main = (String) weatherList.get(0).get("main"); // Rain, Clear, Clouds
-                    String description = (String) weatherList.get(0).get("description"); // "nubes dispersas", "lluvia
-                                                                                         // ligera"
+                    String description = (String) weatherList.get(0).get("description");
 
-                    // Limpiar nombre de ciudad (quitar ", ES" u otros códigos)
+                    // Limpiar nombre de ciudad
                     String ciudadNombre = ciudad.contains(",") ? ciudad.split(",")[0] : ciudad;
 
                     if (main.equalsIgnoreCase("Rain") || main.equalsIgnoreCase("Drizzle")
                             || main.equalsIgnoreCase("Thunderstorm")) {
-                        return "🌧️ Llueve en " + ciudadNombre
-                                + ". Te recomendamos el 'Seguro de Cancelación de Eventos' (-10% dto).";
+                        return Map.of(
+                                "mensaje",
+                                "Llueve en " + ciudadNombre
+                                        + ". Te recomendamos el 'Seguro de Cancelación de Eventos' (-10% dto).",
+                                "icono", "RAIN");
                     } else if (main.equalsIgnoreCase("Clear") || main.equalsIgnoreCase("Sun")) {
-                        return "☀️ ¡Sol en " + ciudadNombre
-                                + "! Perfecto para una escapada. ¿Tienes tu 'Seguro de Viaje Express'?";
+                        return Map.of(
+                                "mensaje",
+                                "¡Sol en " + ciudadNombre
+                                        + "! Perfecto para una escapada. ¿Tienes tu 'Seguro de Viaje Express'?",
+                                "icono", "SUN");
                     } else {
-                        // Usar descripción en español (capitalizada)
                         String desc = description != null
                                 ? description.substring(0, 1).toUpperCase() + description.substring(1)
                                 : "Variable";
-                        return "☁️ El tiempo en " + ciudadNombre + " es " + desc
-                                + ". Buen momento para revisar tu 'Seguro de Hogar'.";
+                        return Map.of(
+                                "mensaje",
+                                "El tiempo en " + ciudadNombre + " es " + desc
+                                        + ". Buen momento para revisar tu 'Seguro de Hogar'.",
+                                "icono", "CLOUD");
                     }
                 }
             }
         } catch (Exception e) {
-            // Fallback si falla la API o no hay key
-            // System.err.println("Error OpenWeather: " + e.getMessage());
+            // Fallback si falla la API
         }
 
-        // Fallback Simulado
+        // Fallback a Open-Meteo Weather
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+
+            // Paso 1: Geocodificar ciudad para obtener lat/lon
+            String geoUrl = "https://geocoding-api.open-meteo.com/v1/search?name={query}&count=1&language=es&format=json";
+            Map<String, Object> geoResponse = restTemplate.getForObject(geoUrl, Map.class,
+                    ciudad.contains(",") ? ciudad.split(",")[0] : ciudad);
+
+            if (geoResponse != null && geoResponse.containsKey("results")) {
+                java.util.List<Map<String, Object>> results = (java.util.List<Map<String, Object>>) geoResponse
+                        .get("results");
+                if (!results.isEmpty()) {
+                    Map<String, Object> location = results.get(0);
+                    Double lat = (Double) location.get("latitude");
+                    Double lon = (Double) location.get("longitude");
+
+                    // Paso 2: Obtener clima actual
+                    String weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon
+                            + "&current_weather=true";
+                    Map<String, Object> weatherResponse = restTemplate.getForObject(weatherUrl, Map.class);
+
+                    if (weatherResponse != null && weatherResponse.containsKey("current_weather")) {
+                        Map<String, Object> current = (Map<String, Object>) weatherResponse.get("current_weather");
+                        Integer code = (Integer) current.get("weathercode");
+
+                        // Mapeo WMO
+                        boolean isRainy = (code >= 51 && code <= 67) || (code >= 80 && code <= 82) || (code >= 95);
+                        boolean isSunny = (code == 0 || code == 1);
+
+                        String ciudadNombre = ciudad.contains(",") ? ciudad.split(",")[0] : ciudad;
+
+                        if (isRainy) {
+                            return Map.of(
+                                    "mensaje",
+                                    "Llueve en " + ciudadNombre
+                                            + ". Te recomendamos el 'Seguro de Cancelación de Eventos' (-10% dto).",
+                                    "icono", "RAIN");
+                        } else if (isSunny) {
+                            return Map.of(
+                                    "mensaje",
+                                    "¡Sol en " + ciudadNombre
+                                            + "! Perfecto para una escapada. ¿Tienes tu 'Seguro de Viaje Express'?",
+                                    "icono", "SUN");
+                        } else {
+                            return Map.of(
+                                    "mensaje",
+                                    "El tiempo en " + ciudadNombre
+                                            + " es variable. Buen momento para revisar tu 'Seguro de Hogar'.",
+                                    "icono", "CLOUD");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Fallback final
+        }
+
+        // Fallback Simulado (Solo si falla TODO)
         boolean llueve = new Random().nextBoolean();
         if (llueve) {
-            return "🌧️ (Simulado) Lluvia en " + ciudad + ". Te recomendamos el 'Seguro de Cancelación de Eventos'.";
+            return Map.of(
+                    "mensaje",
+                    "(Simulado) Lluvia en " + ciudad + ". Te recomendamos el 'Seguro de Cancelación de Eventos'.",
+                    "icono", "RAIN");
         } else {
-            return "☀️ (Simulado) Sol en " + ciudad + ". ¿Tienes tu 'Seguro de Viaje Express'?";
+            return Map.of(
+                    "mensaje", "(Simulado) Sol en " + ciudad + ". ¿Tienes tu 'Seguro de Viaje Express'?",
+                    "icono", "SUN");
         }
     }
 }

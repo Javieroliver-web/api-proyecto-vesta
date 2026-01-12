@@ -104,6 +104,13 @@ public class Usuario {
     @Column(name = "usu_razon_eliminacion", length = 200)
     private String razonEliminacion;
 
+    // === 2FA ===
+    @Column(name = "usu_2fa_enabled")
+    private Boolean twoFactorEnabled = false;
+
+    @Column(name = "usu_2fa_secret")
+    private String twoFactorSecret;
+
     @PrePersist
     protected void onCreate() {
         if (fechaCreacion == null) {

@@ -29,7 +29,7 @@ public class InnovationController {
     // 2. RECOMENDADOR CONTEXTUAL (GET /api/innovation/recommendation)
     @GetMapping("/recommendation")
     public ResponseEntity<Map<String, String>> getRecommendation(@RequestParam String email) {
-        String recomendacion = recommendationService.obtenerRecomendacion(email);
-        return ResponseEntity.ok(Map.of("mensaje", recomendacion));
+        Map<String, String> recomendacion = recommendationService.obtenerRecomendacion(email);
+        return ResponseEntity.ok(recomendacion);
     }
 }

@@ -95,6 +95,18 @@ public class AuthService {
             throw new RuntimeException("Cuenta no verificada. Por favor, revisa tu email para activarla.");
         }
 
+        // 2FA Check
+        if (Boolean.TRUE.equals(usuario.getTwoFactorEnabled())) {
+            // Generar token con rol limitado
+            String tempToken = jwtUtil.generateToken(usuario.getEmail(), "PRE_VERIFICATION");
+            return new AuthResponseDTO(
+                    tempToken,
+                    "PRE_VERIFICATION",
+                    usuario.getNombreCompleto(),
+                    usuario.getId(),
+                    true);
+        }
+
         String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
         logger.info("Login exitoso para usuario: {} con rol: {}", usuario.getEmail(), usuario.getRol());
 
@@ -102,7 +114,36 @@ public class AuthService {
                 token,
                 usuario.getRol(),
                 usuario.getNombreCompleto(),
-                usuario.getId());
+                usuario.getId(),
+                false);
+    }
+
+    @Autowired
+    private TwoFactorService twoFactorService;
+
+    @Transactional
+    public AuthResponseDTO verifyTwoFactorLogin(Long userId, int code) {
+        Usuario usuario = usuarioRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!Boolean.TRUE.equals(usuario.getTwoFactorEnabled())) {
+            throw new RuntimeException("2FA no está habilitado para este usuario");
+        }
+
+        if (!twoFactorService.validateCode(usuario.getTwoFactorSecret(), code)) {
+            // Incrementar intentos fallidos específicos de 2FA si se desea, o usar el
+            // global
+            throw new RuntimeException("Código 2FA inválido");
+        }
+
+        // Éxito, generar token completo
+        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
+        return new AuthResponseDTO(
+                token,
+                usuario.getRol(),
+                usuario.getNombreCompleto(),
+                usuario.getId(),
+                false);
     }
 
     /**
@@ -132,6 +173,10 @@ public class AuthService {
         String tokenConfirmacion = java.util.UUID.randomUUID().toString();
         usuario.setConfirmationToken(tokenConfirmacion);
 
+        // 2FA Fields Init
+        usuario.setTwoFactorEnabled(false);
+        usuario.setTwoFactorSecret(null);
+
         // Guardamos
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
         logger.info("Usuario registrado (pendiente confirmar): {} con ID: {}", usuarioGuardado.getEmail(),
@@ -146,7 +191,8 @@ public class AuthService {
                 null,
                 usuarioGuardado.getRol(),
                 usuarioGuardado.getNombreCompleto(),
-                usuarioGuardado.getId());
+                usuarioGuardado.getId(),
+                false);
     }
 
     /**
