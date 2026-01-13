@@ -21,12 +21,29 @@ public class RecommendationService {
     public boolean validarCiudad(String ciudad) {
         if ("dummy".equals(apiKey) || apiKey == null || apiKey.isEmpty())
             return true; // Si es dummy, permitimos (mock)
+
+        // 1. Intentar OpenWeatherMap
         try {
             RestTemplate restTemplate = new RestTemplate();
             String url = "http://api.openweathermap.org/data/2.5/weather?q={city}&appid={key}";
             restTemplate.getForObject(url, Map.class, ciudad, apiKey);
             return true;
         } catch (Exception e) {
+            // 2. Fallback: Intentar Open-Meteo (Geocoding)
+            try {
+                RestTemplate restTemplate = new RestTemplate();
+                String geoUrl = "https://geocoding-api.open-meteo.com/v1/search?name={query}&count=1&language=es&format=json";
+                Map<String, Object> geoResponse = restTemplate.getForObject(geoUrl, Map.class,
+                        ciudad.contains(",") ? ciudad.split(",")[0] : ciudad);
+
+                if (geoResponse != null && geoResponse.containsKey("results")) {
+                    java.util.List<Map<String, Object>> results = (java.util.List<Map<String, Object>>) geoResponse
+                            .get("results");
+                    return !results.isEmpty();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             return false;
         }
     }

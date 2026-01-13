@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import java.util.List;
+
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -61,9 +63,9 @@ public class DataInitializer implements CommandLineRunner {
                         viaje.setNombre("Seguro de Viaje");
                         viaje.setDescripcion(
                                         "Cobertura integral para tus viajes incluyendo asistencia médica, cancelación de vuelos, pérdida de equipaje y más. Actívalo solo cuando lo necesites.");
-                        viaje.setPrecioBase(new BigDecimal("15.99"));
+                        viaje.setPrecioBase(new BigDecimal("1.50"));
                         viaje.setCategoria("Viaje");
-                        viaje.setImagenUrl("/images/productos/viaje.png");
+                        viaje.setImagenUrl("/images/productos/viaje-unique.png");
                         productoRepository.save(viaje);
 
                         // Seguro de Dispositivos
@@ -71,9 +73,9 @@ public class DataInitializer implements CommandLineRunner {
                         dispositivos.setNombre("Seguro de Dispositivos");
                         dispositivos.setDescripcion(
                                         "Protege tu smartphone y gadgets contra daños accidentales, robos y averías. Cobertura inmediata desde el momento de activación.");
-                        dispositivos.setPrecioBase(new BigDecimal("9.99"));
+                        dispositivos.setPrecioBase(new BigDecimal("0.25"));
                         dispositivos.setCategoria("Tecnología");
-                        dispositivos.setImagenUrl("/images/productos/tecnologia.png");
+                        dispositivos.setImagenUrl("/images/productos/movil-unique.png");
                         productoRepository.save(dispositivos);
 
                         // Seguro de Eventos
@@ -81,7 +83,7 @@ public class DataInitializer implements CommandLineRunner {
                         eventos.setNombre("Seguro de Eventos");
                         eventos.setDescripcion(
                                         "Asegura tu entrada a conciertos y eventos. Protección contra cancelaciones, pérdidas y accidentes durante el evento.");
-                        eventos.setPrecioBase(new BigDecimal("5.99"));
+                        eventos.setPrecioBase(new BigDecimal("0.20"));
                         eventos.setCategoria("Entretenimiento");
                         eventos.setImagenUrl("/images/productos/Entretenimiento.jpg");
                         productoRepository.save(eventos);
@@ -91,7 +93,7 @@ public class DataInitializer implements CommandLineRunner {
                         bicicleta.setNombre("Seguro de Bicicleta");
                         bicicleta.setDescripcion(
                                         "Protección para tu medio de transporte ecológico. Cobertura contra robos, daños y responsabilidad civil.");
-                        bicicleta.setPrecioBase(new BigDecimal("12.99"));
+                        bicicleta.setPrecioBase(new BigDecimal("0.20"));
                         bicicleta.setCategoria("Movilidad");
                         bicicleta.setImagenUrl("/images/productos/movilidad.png");
                         productoRepository.save(bicicleta);
@@ -101,7 +103,7 @@ public class DataInitializer implements CommandLineRunner {
                         mascotas.setNombre("Seguro de Mascotas");
                         mascotas.setDescripcion(
                                         "Cuidado veterinario para tu mejor amigo. Cobertura de gastos médicos, cirugías y tratamientos de emergencia.");
-                        mascotas.setPrecioBase(new BigDecimal("19.99"));
+                        mascotas.setPrecioBase(new BigDecimal("1.00"));
                         mascotas.setCategoria("Mascotas");
                         mascotas.setImagenUrl("/images/productos/mascotas.png");
                         productoRepository.save(mascotas);
@@ -110,6 +112,42 @@ public class DataInitializer implements CommandLineRunner {
                         // (Código eliminado a petición del usuario)
 
                         logger.info("✅ 5 productos creados correctamente.");
+                }
+
+                // ACTUALIZAR PRECIOS EXISTENTES (Parche para corregir precios mensuales ->
+                // diarios)
+                List<Producto> productos = productoRepository.findAll();
+                for (Producto p : productos) {
+                        boolean updated = false;
+                        if (p.getNombre().equals("Seguro de Viaje")) {
+                                p.setPrecioBase(new BigDecimal("1.50"));
+                                p.setImagenUrl("/images/productos/viaje-unique.png");
+                                updated = true;
+                        } else if (p.getNombre().equals("Seguro de Dispositivos")) {
+                                p.setPrecioBase(new BigDecimal("0.25"));
+                                p.setImagenUrl("/images/productos/movil-unique.png");
+                                updated = true;
+                        } else if (p.getNombre().equals("Seguro de Eventos")) {
+                                p.setPrecioBase(new BigDecimal("0.20"));
+                                updated = true;
+                        } else if (p.getNombre().equals("Seguro de Bicicleta")) {
+                                p.setPrecioBase(new BigDecimal("0.20"));
+                                updated = true;
+                        } else if (p.getNombre().equals("Seguro de Mascotas")) {
+                                p.setPrecioBase(new BigDecimal("1.00"));
+                                updated = true;
+                        } else if (p.getNombre().equals("Seguro de Equipaje")) {
+                                p.setPrecioBase(new BigDecimal("0.50")); // Ajustado a diario
+                                updated = true;
+                        } else if (p.getNombre().equals("Seguro Móvil Premium")) {
+                                p.setPrecioBase(new BigDecimal("0.45")); // Ajustado a diario (~13.5€/mes)
+                                updated = true;
+                        }
+
+                        if (updated) {
+                                productoRepository.save(p);
+                                logger.info("💰 Precio actualizado para: {} -> {}", p.getNombre(), p.getPrecioBase());
+                        }
                 }
 
                 // 3. Crear Póliza #1 (VINCULADA AL USUARIO DEMO)
