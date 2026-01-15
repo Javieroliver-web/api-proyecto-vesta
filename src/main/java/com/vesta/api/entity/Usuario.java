@@ -39,6 +39,9 @@ public class Usuario {
     @Column(name = "usu_tema")
     private String tema = "light";
 
+    @Column(name = "usu_activo")
+    private Boolean activo = true;
+
     // Getters y Setters
     public Long getId() {
         return id;

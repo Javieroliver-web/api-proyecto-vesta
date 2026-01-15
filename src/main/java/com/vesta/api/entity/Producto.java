@@ -8,7 +8,9 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "productos")
-@Data @NoArgsConstructor @AllArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +31,7 @@ public class Producto {
 
     @Column(name = "prod_imagen")
     private String imagenUrl;
+
+    @Column(name = "prod_activo")
+    private Boolean activo = true;
 }

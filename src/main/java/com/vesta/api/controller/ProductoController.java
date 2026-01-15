@@ -73,4 +73,56 @@ public class ProductoController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    /**
+     * Crear un nuevo producto (Admin)
+     */
+    @PostMapping
+    public ResponseEntity<Producto> crearProducto(@RequestBody Producto producto) {
+        try {
+            Producto nuevo = productoRepository.save(producto);
+            return ResponseEntity.ok(nuevo);
+        } catch (Exception e) {
+            System.err.println("Error al crear producto: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Actualizar un producto existente (Admin)
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @RequestBody Producto productoDetails) {
+        try {
+            Producto producto = productoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+            producto.setNombre(productoDetails.getNombre());
+            producto.setDescripcion(productoDetails.getDescripcion());
+            producto.setPrecioBase(productoDetails.getPrecioBase());
+            producto.setCategoria(productoDetails.getCategoria());
+            producto.setImagenUrl(productoDetails.getImagenUrl());
+            producto.setActivo(productoDetails.getActivo());
+
+            Producto actualizado = productoRepository.save(producto);
+            return ResponseEntity.ok(actualizado);
+        } catch (Exception e) {
+            System.err.println("Error al actualizar producto: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Eliminar un producto (Admin)
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
+        try {
+            productoRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            System.err.println("Error al eliminar producto: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

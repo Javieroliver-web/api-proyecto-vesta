@@ -89,6 +89,9 @@ public class UsuarioController {
                     if (updates.containsKey("email")) {
                         usuario.setEmail((String) updates.get("email"));
                     }
+                    if (updates.containsKey("activo")) {
+                        usuario.setActivo((Boolean) updates.get("activo"));
+                    }
 
                     Usuario actualizado = usuarioRepository.save(usuario);
                     return ResponseEntity.ok(actualizado);

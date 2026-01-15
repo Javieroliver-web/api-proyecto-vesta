@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SiniestroRepository extends JpaRepository<Siniestro, Long> {
+    @org.springframework.data.jpa.repository.Query("SELECT new map(p.categoria as categoria, COUNT(s) as cantidad) FROM Siniestro s JOIN s.poliza pol JOIN pol.producto p GROUP BY p.categoria")
+    java.util.List<java.util.Map<String, Object>> obtenerSiniestrosPorCategoria();
 }

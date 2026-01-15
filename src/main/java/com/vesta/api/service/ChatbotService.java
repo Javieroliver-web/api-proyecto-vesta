@@ -10,7 +10,25 @@ public class ChatbotService {
 
         // 1. Saludos
         if (p.contains("hola") || p.contains("buenos") || p.contains("hey")) {
-            return "🤖 VestaBot: ¡Hola! Soy tu asistente virtual. Puedo ayudarte con dudas sobre coberturas, precios, siniestros o tipos de seguros. ¿En qué te ayudo hoy?";
+            return "🤖 VestaBot: ¡Hola! Soy tu asistente virtual. Estoy aquí para ayudarte con dudas sobre nuestros seguros, coberturas o soporte. ¿Qué necesitas?";
+        }
+
+        // 1.5. Agradecimientos y Despedidas
+        if (p.contains("gracias") || p.contains("agradecid")) {
+            return "🤖 VestaBot: ¡De nada! Es un placer ayudarte. Si necesitas algo más, aquí estoy. 🛡️";
+        }
+        if (p.contains("adios") || p.contains("adiós") || p.contains("hasta luego") || p.contains("bye")) {
+            return "🤖 VestaBot: ¡Hasta luego! Cuídate mucho. Recuerda que con Vesta, tu tranquilidad viaja contigo.";
+        }
+
+        // 1.8. Contacto (NUEVO)
+        if (p.contains("contacto") || p.contains("teléfono") || p.contains("telefono") || p.contains("email")
+                || p.contains("correo") || p.contains("donde estan")) {
+            return "🤖 VestaBot: Puedes contactarnos por:\n" +
+                    "📧 Email: javip200555@gmail.com\n" +
+                    "📞 Teléfono: +34 622 645 922\n" +
+                    "📍 Oficinas: C/ Francisco Arias, 22A, Lora del Río (Sevilla).\n" +
+                    "¡Estaremos encantados de atenderte!";
         }
 
         // 2. Coberturas específicas
@@ -65,6 +83,12 @@ public class ChatbotService {
         }
 
         // 12. Default
-        return "🤖 VestaBot: No estoy seguro de entenderte. Prueba preguntándome por 'precios', 'cobertura de robo', 'seguro de mascotas' o 'cómo reportar un siniestro'.";
+        // 12. Default
+        return "🤖 VestaBot: Mmm... no estoy seguro de haber entendido eso. 🤔\n" +
+                "Prueba a preguntarme por:\n" +
+                "- 'Precios' o 'Tarifas'\n" +
+                "- 'Cobertura de robo' o 'Mascotas'\n" +
+                "- 'Contacto' o 'Teléfono'\n" +
+                "- 'Cómo reportar un siniestro'";
     }
 }
