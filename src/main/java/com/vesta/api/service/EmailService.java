@@ -23,8 +23,11 @@ public class EmailService {
     @Value("${app.frontend.url:http://localhost:8081}")
     private String frontendUrl;
 
-    public EmailService(JavaMailSender mailSender) {
+    private final org.thymeleaf.spring6.SpringTemplateEngine templateEngine;
+
+    public EmailService(JavaMailSender mailSender, org.thymeleaf.spring6.SpringTemplateEngine templateEngine) {
         this.mailSender = mailSender;
+        this.templateEngine = templateEngine;
     }
 
     /**
@@ -63,37 +66,31 @@ public class EmailService {
 
     public void sendAccountConfirmationEmail(String toEmail, String token, String nombre) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(toEmail);
-            message.setSubject("Activa tu cuenta - Vesta");
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(
+                    message, true, "UTF-8");
 
-            // En un entorno real, esto debería ser configurable (backendUrl)
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject("¡Bienvenido a Vesta! Confirma tu cuenta");
+
             String link = "http://localhost:8080/api/auth/confirm-account?token=" + token;
 
-            String emailBody = String.format(
-                    "Hola %s,\n\n" +
-                            "Gracias por registrarte en Vesta.\n\n" +
-                            "Para activar tu cuenta, por favor pulsa en el siguiente enlace:\n%s\n\n" +
-                            "Si no te has registrado, ignora este mensaje.\n\n" +
-                            "Saludos,\n" +
-                            "El equipo de Vesta",
-                    nombre,
-                    link);
+            org.thymeleaf.context.Context context = new org.thymeleaf.context.Context();
+            context.setVariable("nombre", nombre);
+            context.setVariable("url", link);
 
-            message.setText(emailBody);
+            String htmlContent = templateEngine.process("email/confirmation", context);
+            helper.setText(htmlContent, true);
 
             mailSender.send(message);
-            logger.info("Email de confirmación enviado a: {}", toEmail);
+            logger.info("Email HTML de confirmación enviado a: {}", toEmail);
 
         } catch (Exception e) {
             logger.error("Error al enviar email de confirmación a {}: {}", toEmail, e.getMessage());
             // Log del token para desarrollo
             logger.warn("⚠️ EMAIL NO CONFIGURADO - Link de activación para {}: {}", toEmail,
                     "http://localhost:8080/api/auth/confirm-account?token=" + token);
-            // No lanzamos excepción para no romper el registro, pero el usuario no podrá
-            // entrar si está bloqueado.
-            // Quizás deberíamos lanzar excepción si es CRÍTICO.
         }
     }
 

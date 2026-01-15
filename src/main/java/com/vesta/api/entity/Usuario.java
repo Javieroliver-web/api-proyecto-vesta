@@ -39,6 +39,18 @@ public class Usuario {
     @Column(name = "usu_tema")
     private String tema = "light";
 
+    @Column(name = "usu_fecha_nacimiento")
+    private java.time.LocalDate fechaNacimiento;
+
+    @Column(name = "usu_direccion")
+    private String direccion;
+
+    @Column(name = "usu_codigo_postal", length = 10)
+    private String codigoPostal;
+
+    @Column(name = "usu_pais")
+    private String pais = "España"; // Valor por defecto
+
     @Column(name = "usu_activo")
     private Boolean activo = true;
 

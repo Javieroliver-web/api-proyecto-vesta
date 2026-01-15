@@ -240,4 +240,29 @@ public class AuthController {
                     .body(ApiResponse.error(e.getMessage()));
         }
     }
+
+    /**
+     * Endpoint para Login Social (Google/Apple)
+     * Crea usuarios automáticamente si no existen
+     */
+    @PostMapping("/social-login")
+    public ResponseEntity<ApiResponse<AuthResponseDTO>> socialLogin(@RequestBody Map<String, String> payload) {
+        try {
+            String email = payload.get("email");
+            String nombre = payload.get("nombre");
+            String proveedor = payload.get("proveedor");
+
+            logger.info("Social Login request: {} ({})", email, proveedor);
+
+            AuthResponseDTO response = authService.socialLogin(email, nombre, proveedor);
+
+            return ResponseEntity.ok(ApiResponse.success("Login social exitoso", response));
+
+        } catch (RuntimeException e) {
+            logger.error("Error en social login: {}", e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
+    }
 }

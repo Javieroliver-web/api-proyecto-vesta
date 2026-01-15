@@ -42,13 +42,26 @@ public class AuthService {
      */
     @Transactional(readOnly = true)
     public AuthResponseDTO login(LoginDTO request) {
-        logger.debug("Intentando login para email: {}", request.getCorreoElectronico());
+        String identifier = request.getCorreoElectronico();
+        logger.debug("Intentando login para: {}", identifier);
 
-        Usuario usuario = usuarioRepository.findByEmail(request.getCorreoElectronico())
-                .orElseThrow(() -> {
-                    logger.warn("Usuario no encontrado: {}", request.getCorreoElectronico());
-                    return new RuntimeException("Usuario no encontrado con email: " + request.getCorreoElectronico());
-                });
+        Usuario usuario;
+
+        // Determinar si es Email o Teléfono
+        if (identifier.contains("@")) {
+            usuario = usuarioRepository.findByEmail(identifier)
+                    .orElseThrow(() -> {
+                        logger.warn("Usuario no encontrado por email: {}", identifier);
+                        return new RuntimeException("Usuario no encontrado");
+                    });
+        } else {
+            // Asumimos que es un teléfono
+            usuario = usuarioRepository.findByMovil(identifier)
+                    .orElseThrow(() -> {
+                        logger.warn("Usuario no encontrado por móvil: {}", identifier);
+                        return new RuntimeException("Usuario no encontrado");
+                    });
+        }
 
         if (usuario.getBloqueoHasta() != null && usuario.getBloqueoHasta().isAfter(java.time.LocalDateTime.now())) {
             logger.warn("Intento de login en cuenta bloqueada: {}", request.getCorreoElectronico());
@@ -165,6 +178,28 @@ public class AuthService {
         usuario.setNombreCompleto(request.getNombreCompleto());
         usuario.setEmail(request.getCorreoElectronico());
         usuario.setMovil(request.getMovil());
+
+        // Mapeo de nuevos campos
+        if (request.getFechaNacimiento() == null) {
+            throw new RuntimeException("La fecha de nacimiento es obligatoria");
+        }
+        // Validación de edad (18+)
+        java.time.LocalDate now = java.time.LocalDate.now();
+        java.time.Period period = java.time.Period.between(request.getFechaNacimiento(), now);
+        if (period.getYears() < 18) {
+            logger.warn("Intento de registro de menor de edad: {}", request.getCorreoElectronico());
+            throw new RuntimeException("Debes tener al menos 18 años para registrarte");
+        }
+
+        usuario.setFechaNacimiento(request.getFechaNacimiento());
+        usuario.setDireccion(request.getDireccion());
+        usuario.setCodigoPostal(request.getCodigoPostal());
+        if (request.getCiudad() != null && !request.getCiudad().isEmpty()) {
+            usuario.setCiudad(request.getCiudad());
+        }
+        if (request.getPais() != null && !request.getPais().isEmpty()) {
+            usuario.setPais(request.getPais());
+        }
         // Asignar rol por defecto si viene nulo
         usuario.setRol(request.getTipoUsuario() != null ? request.getTipoUsuario() : "USUARIO");
         // Encriptar contraseña
@@ -229,5 +264,51 @@ public class AuthService {
         // Reenviar email
         emailService.sendAccountConfirmationEmail(usuario.getEmail(), newToken, usuario.getNombreCompleto());
         logger.info("Correo de confirmación reenviado a: {}", email);
+    }
+
+    /**
+     * Login Social (Google/Apple)
+     * Recupera o crea el usuario automáticamente
+     */
+    @Transactional
+    public AuthResponseDTO socialLogin(String email, String nombre, String proveedor) {
+        logger.info("Procesando login social para: {}", email);
+
+        // Buscar si existe
+        Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+
+        if (usuario == null) {
+            // Usuario Nuevo: Registrar automáticamente
+            logger.info("Usuario nuevo detectado en social login. Registrando...");
+            usuario = new Usuario();
+            usuario.setEmail(email);
+            usuario.setNombreCompleto(nombre);
+            usuario.setRol("USUARIO");
+            usuario.setEmailConfirmado(true); // Social Login ya verifica el email
+
+            // Password aleatoria (no se usará para login normal, pero necesaria por
+            // constraints)
+            usuario.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
+
+            usuario = usuarioRepository.save(usuario);
+        } else {
+            // Usuario Existente
+            if (!Boolean.TRUE.equals(usuario.getEmailConfirmado())) {
+                // Si entra por Google, consideramos el email verificado
+                usuario.setEmailConfirmado(true);
+                usuario.setConfirmationToken(null);
+                usuarioRepository.save(usuario);
+            }
+        }
+
+        // Generar JWT
+        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
+
+        return new AuthResponseDTO(
+                token,
+                usuario.getRol(),
+                usuario.getNombreCompleto(),
+                usuario.getId(),
+                false);
     }
 }

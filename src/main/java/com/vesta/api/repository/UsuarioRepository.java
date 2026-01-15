@@ -12,6 +12,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Optional<Usuario> findByConfirmationToken(String confirmationToken);
 
+    // Búsqueda por móvil para Login con teléfono
+    Optional<Usuario> findByMovil(String movil);
+
     // Para verificar si existe al registrar
     boolean existsByEmail(String email);
 }
