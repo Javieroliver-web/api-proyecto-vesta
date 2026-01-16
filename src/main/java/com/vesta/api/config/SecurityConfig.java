@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/productos/**").permitAll()
                         .requestMatchers("/api/seguros/**").permitAll()
                         .requestMatchers("/api/cookies/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll() // Permitir acceso a imágenes de siniestros
