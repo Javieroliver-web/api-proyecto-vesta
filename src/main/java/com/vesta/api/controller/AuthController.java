@@ -37,6 +37,9 @@ public class AuthController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @org.springframework.beans.factory.annotation.Value("${app.frontend.url:http://localhost:8081}")
+    private String frontendUrl;
+
     /**
      * Endpoint de login
      * 
@@ -94,14 +97,14 @@ public class AuthController {
     public ResponseEntity<Void> confirmAccount(@RequestParam String token) {
         try {
             authService.confirmarCuenta(token);
-            // Redirigir al login con éxito (hardcoded a puerto frontend por defecto)
+            // Redirigir al login con éxito
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:8081/login-page?confirmed=true"))
+                    .location(URI.create(frontendUrl + "/login-page?confirmed=true"))
                     .build();
         } catch (RuntimeException e) {
             // Redirigir al login con error
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:8081/login-page?error=token_invalid"))
+                    .location(URI.create(frontendUrl + "/login-page?error=token_invalid"))
                     .build();
         }
     }

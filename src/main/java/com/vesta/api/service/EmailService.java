@@ -23,6 +23,9 @@ public class EmailService {
     @Value("${app.frontend.url:http://localhost:8081}")
     private String frontendUrl;
 
+    @Value("${app.api.url:http://localhost:8080}")
+    private String apiUrl;
+
     private final org.thymeleaf.spring6.SpringTemplateEngine templateEngine;
 
     public EmailService(JavaMailSender mailSender, org.thymeleaf.spring6.SpringTemplateEngine templateEngine) {
@@ -74,7 +77,7 @@ public class EmailService {
             helper.setTo(toEmail);
             helper.setSubject("¡Bienvenido a Vesta! Confirma tu cuenta");
 
-            String link = "http://localhost:8080/api/auth/confirm-account?token=" + token;
+            String link = apiUrl + "/api/auth/confirm-account?token=" + token;
 
             org.thymeleaf.context.Context context = new org.thymeleaf.context.Context();
             context.setVariable("nombre", nombre);
@@ -90,7 +93,7 @@ public class EmailService {
             logger.error("Error al enviar email de confirmación a {}: {}", toEmail, e.getMessage());
             // Log del token para desarrollo
             logger.warn("⚠️ EMAIL NO CONFIGURADO - Link de activación para {}: {}", toEmail,
-                    "http://localhost:8080/api/auth/confirm-account?token=" + token);
+                    apiUrl + "/api/auth/confirm-account?token=" + token);
         }
     }
 

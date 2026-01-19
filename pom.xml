@@ -14,6 +14,7 @@
     <groupId>com.vesta</groupId>
     <artifactId>vesta-api</artifactId>
     <version>1.0.0</version>
+    <packaging>war</packaging>
     <name>vesta-api</name>
     <description>API Backend para Aseguradora Vesta</description>
 
@@ -22,6 +23,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -127,6 +134,7 @@
     </dependencies>
 
     <build>
+        <finalName>vesta-api</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
