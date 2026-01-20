@@ -101,10 +101,17 @@ public class UsuarioController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        usuarioRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        return usuarioRepository.findById(id).map(usuario -> {
+            // Protección: No eliminar al último administrador
+            if ("ADMIN".equals(usuario.getRol())) {
+                long adminCount = usuarioRepository.countByRol("ADMIN");
+                if (adminCount <= 1) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(Map.of("message", "No se puede eliminar al último administrador."));
+                }
+            }
+            usuarioRepository.delete(usuario);
+            return ResponseEntity.ok().build();
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

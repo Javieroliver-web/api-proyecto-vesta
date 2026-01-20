@@ -17,4 +17,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     // Para verificar si existe al registrar
     boolean existsByEmail(String email);
+
+    // Contar usuarios por rol (para protección de último admin)
+    long countByRol(String rol);
 }

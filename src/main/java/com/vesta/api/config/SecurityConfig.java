@@ -42,6 +42,9 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login") // Use our custom login page
+                        .defaultSuccessUrl("/cliente/dashboard", true))
                 .sessionManagement(sess -> sess
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Filtro JWT antes de UsernamePasswordAuthenticationFilter
