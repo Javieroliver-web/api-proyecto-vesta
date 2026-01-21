@@ -50,6 +50,9 @@ services:
       # Google OAuth
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      # URLs for Email Links
+      FRONTEND_URL: ${FRONTEND_URL}
+      API_URL: ${API_URL}
     volumes:
       - ./logs/api:/logs
     networks:

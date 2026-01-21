@@ -1,0 +1,260 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-01-21T12:30:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "fld_gamificacion_stats",
+      "_type": "request_group",
+      "name": "8. Estadísticas y Gamificación",
+      "description": "Endpoints de gamificación y estadísticas",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -300,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_gamif_progreso",
+      "_type": "request",
+      "name": "Progreso Gamificación",
+      "url": "{{ _.base_url }}/api/gamificacion/progreso/1",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [{"name": "Authorization", "value": "Bearer {{ _.token }}"}],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "parentId": "fld_gamificacion_stats"
+    },
+    {
+      "_id": "req_gamif_verificar",
+      "_type": "request",
+      "name": "Verificar Logros",
+      "url": "{{ _.base_url }}/api/gamificacion/verificar/1",
+      "method": "POST",
+      "body": {},
+      "parameters": [],
+      "headers": [{"name": "Authorization", "value": "Bearer {{ _.token }}"}],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "parentId": "fld_gamificacion_stats"
+    },
+    {
+      "_id": "req_stats_admin",
+      "_type": "request",
+      "name": "Estadísticas Globales (Admin)",
+      "url": "{{ _.base_url }}/api/admin/estadisticas",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [{"name": "Authorization", "value": "Bearer {{ _.token }}"}],
+      "authentication": {},
+      "metaSortKey": -80,
+      "isPrivate": false,
+      "parentId": "fld_gamificacion_stats"
+    },
+    {
+      "_id": "fld_2fa",
+      "_type": "request_group",
+      "name": "9. Seguridad 2FA",
+      "description": "Gestión de 2FA",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -200,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_2fa_setup",
+      "_type": "request",
+      "name": "Iniciar Configuración 2FA",
+      "url": "{{ _.base_url }}/api/auth/2fa/setup",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [{"name": "Authorization", "value": "Bearer {{ _.token }}"}],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "parentId": "fld_2fa"
+    },
+    {
+      "_id": "req_2fa_verify",
+      "_type": "request",
+      "name": "Verificar Setup 2FA",
+      "url": "{{ _.base_url }}/api/auth/2fa/verify-setup",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"code\": \"123456\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {"name": "Content-Type", "value": "application/json"},
+        {"name": "Authorization", "value": "Bearer {{ _.token }}"}
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "parentId": "fld_2fa"
+    },
+    {
+      "_id": "req_2fa_validate_login",
+      "_type": "request",
+      "name": "Validar Login 2FA",
+      "url": "{{ _.base_url }}/api/auth/2fa/validate-login",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"code\": \"123456\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {"name": "Content-Type", "value": "application/json"},
+        {"name": "Authorization", "value": "Bearer {{ _.token }}"}
+      ],
+      "authentication": {},
+      "metaSortKey": -80,
+      "isPrivate": false,
+      "parentId": "fld_2fa"
+    },
+    {
+      "_id": "req_2fa_disable",
+      "_type": "request",
+      "name": "Desactivar 2FA",
+      "url": "{{ _.base_url }}/api/auth/2fa/disable",
+      "method": "POST",
+      "body": {},
+      "parameters": [],
+      "headers": [{"name": "Authorization", "value": "Bearer {{ _.token }}"}],
+      "authentication": {},
+      "metaSortKey": -70,
+      "isPrivate": false,
+      "parentId": "fld_2fa"
+    },
+    {
+      "_id": "req_2fa_status",
+      "_type": "request",
+      "name": "Estado 2FA",
+      "url": "{{ _.base_url }}/api/auth/2fa/status",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [{"name": "Authorization", "value": "Bearer {{ _.token }}"}],
+      "authentication": {},
+      "metaSortKey": -6,
+      "isPrivate": false,
+      "parentId": "fld_2fa"
+    },
+    {
+      "_id": "fld_rgpd",
+      "_type": "request_group",
+      "name": "10. Derechos RGPD",
+      "description": "Derechos ARCO",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -100,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_rgpd_acceso",
+      "_type": "request",
+      "name": "Solicitar Acceso",
+      "url": "{{ _.base_url }}/api/derechos/solicitar-acceso",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"usuarioId\": 1\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {"name": "Content-Type", "value": "application/json"},
+        {"name": "Authorization", "value": "Bearer {{ _.token }}"}
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "parentId": "fld_rgpd"
+    },
+    {
+      "_id": "req_rgpd_rectificacion",
+      "_type": "request",
+      "name": "Solicitar Rectificación",
+      "url": "{{ _.base_url }}/api/derechos/solicitar-rectificacion",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"usuarioId\": 1,\n\t\"descripcion\": \"Corregir apellido\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {"name": "Content-Type", "value": "application/json"},
+        {"name": "Authorization", "value": "Bearer {{ _.token }}"}
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "parentId": "fld_rgpd"
+    },
+    {
+      "_id": "req_rgpd_supresion",
+      "_type": "request",
+      "name": "Solicitar Supresión",
+      "url": "{{ _.base_url }}/api/derechos/solicitar-supresion",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"usuarioId\": 1,\n\t\"descripcion\": \"Eliminar cuenta\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {"name": "Content-Type", "value": "application/json"},
+        {"name": "Authorization", "value": "Bearer {{ _.token }}"}
+      ],
+      "authentication": {},
+      "metaSortKey": -80,
+      "isPrivate": false,
+      "parentId": "fld_rgpd"
+    },
+    {
+      "_id": "req_rgpd_todas",
+      "_type": "request",
+      "name": "Listar Todas (Admin)",
+      "url": "{{ _.base_url }}/api/derechos/todas",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [{"name": "Authorization", "value": "Bearer {{ _.token }}"}],
+      "authentication": {},
+      "metaSortKey": -50,
+      "isPrivate": false,
+      "parentId": "fld_rgpd"
+    },
+    {
+      "_id": "fld_clima",
+      "_type": "request_group",
+      "name": "11. Clima",
+      "description": "Servicios de clima",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -50,
+      "parentId": "wrk_vesta_complete"
+    },
+    {
+      "_id": "req_clima_buscar",
+      "_type": "request",
+      "name": "Buscar Ciudad",
+      "url": "{{ _.base_url }}/api/clima/buscar",
+      "method": "GET",
+      "body": {},
+      "parameters": [{"name": "q", "value": "Seville"}],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "parentId": "fld_clima"
+    }
+  ]
+}
