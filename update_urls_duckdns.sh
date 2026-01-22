@@ -1,7 +1,6 @@
 #!/bin/bash
-# Script para actualizar las URLs en tomcat.service
-# API_URL usa IP directa porque no tiene DNS
-# FRONTEND_URL usa dominio DuckDNS
+# Script para actualizar URLs usando DuckDNS
+# API y Web están en el mismo servidor con el dominio vesta-web.duckdns.org
 
 sudo python3 << 'PYEOF'
 import re
@@ -10,14 +9,14 @@ file_path = '/etc/systemd/system/tomcat.service'
 with open(file_path, 'r') as f:
     content = f.read()
 
-# Actualizar API_URL a IP directa
+# Actualizar API_URL para usar DuckDNS (sin /api al final, el código lo agrega)
 content = re.sub(
     r'Environment="API_URL=.*"',
-    'Environment="API_URL=http://34.175.116.7:8080/vesta-api/api"',
+    'Environment="API_URL=http://vesta-web.duckdns.org:8080/vesta-api"',
     content
 )
 
-# Actualizar FRONTEND_URL a dominio DuckDNS
+# FRONTEND_URL ya está correcto, pero lo verificamos
 content = re.sub(
     r'Environment="FRONTEND_URL=.*"',
     'Environment="FRONTEND_URL=http://vesta-web.duckdns.org/vesta-web"',
@@ -27,7 +26,7 @@ content = re.sub(
 with open(file_path, 'w') as f:
     f.write(content)
 
-print('URLs actualizadas correctamente')
+print('URLs actualizadas para usar DuckDNS')
 PYEOF
 
 sudo systemctl daemon-reload

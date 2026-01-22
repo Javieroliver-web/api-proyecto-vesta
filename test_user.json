@@ -1,0 +1,12 @@
+{
+  "nombreCompleto": "Usuario Test",
+  "email": "test@example.com",
+  "movil": "+34600000000",
+  "password": "test123456",
+  "confirmPassword": "test123456",
+  "fechaNacimiento": "1990-01-01",
+  "ciudad": "Sevilla, ES",
+  "pais": "España",
+  "aceptaTerminos": true,
+  "aceptaPrivacidad": true
+}
