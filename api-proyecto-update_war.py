@@ -19,7 +19,7 @@ try:
         with open(prod_prop_path, 'r') as f:
             content = f.read()
         
-        content = re.sub(r'api\.url=.*', 'api.url=http://vesta-web.duckdns.org:8080/vesta-api/api', content)
+        content = re.sub(r'api\.url=.*', 'api.url=https://vesta-web.duckdns.org/vesta-api/api', content)
         
         with open(prod_prop_path, 'w') as f:
             f.write(content)
@@ -31,7 +31,7 @@ try:
         with open(prop_path, 'r') as f:
             content = f.read()
         
-        content = re.sub(r'api\.url=.*', 'api.url=http://vesta-web.duckdns.org:8080/vesta-api/api', content)
+        content = re.sub(r'api\.url=.*', 'api.url=https://vesta-web.duckdns.org/vesta-api/api', content)
         
         with open(prop_path, 'w') as f:
             f.write(content)
