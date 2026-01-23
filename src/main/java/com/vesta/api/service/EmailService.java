@@ -77,7 +77,7 @@ public class EmailService {
             helper.setTo(toEmail);
             helper.setSubject("¡Bienvenido a Vesta! Confirma tu cuenta");
 
-            String link = apiUrl + "/api/auth/confirm-account?token=" + token;
+            String link = frontendUrl + "/api/auth/confirm-account?token=" + token;
 
             org.thymeleaf.context.Context context = new org.thymeleaf.context.Context();
             context.setVariable("nombre", nombre);
@@ -93,7 +93,7 @@ public class EmailService {
             logger.error("Error al enviar email de confirmación a {}: {}", toEmail, e.getMessage());
             // Log del token para desarrollo
             logger.warn("⚠️ EMAIL NO CONFIGURADO - Link de activación para {}: {}", toEmail,
-                    apiUrl + "/api/auth/confirm-account?token=" + token);
+                    frontendUrl + "/api/auth/confirm-account?token=" + token);
         }
     }
 
