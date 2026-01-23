@@ -49,7 +49,7 @@ public class AuthService {
 
         // Determinar si es Email o Teléfono
         if (identifier.contains("@")) {
-            usuario = usuarioRepository.findByEmail(identifier)
+            usuario = usuarioRepository.findByEmailIgnoreCase(identifier)
                     .orElseThrow(() -> {
                         logger.warn("Usuario no encontrado por email: {}", identifier);
                         return new RuntimeException("Usuario no encontrado");
@@ -249,7 +249,7 @@ public class AuthService {
      */
     @Transactional
     public void resendConfirmation(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         if (Boolean.TRUE.equals(usuario.getEmailConfirmado())) {
@@ -275,7 +275,7 @@ public class AuthService {
         logger.info("Procesando login social para: {}", email);
 
         // Buscar si existe
-        Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email).orElse(null);
 
         if (usuario == null) {
             // Usuario Nuevo: Registrar automáticamente

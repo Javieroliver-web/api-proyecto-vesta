@@ -65,7 +65,7 @@ public class DataInitializer implements CommandLineRunner {
                                         "Cobertura integral para tus viajes incluyendo asistencia médica, cancelación de vuelos, pérdida de equipaje y más. Actívalo solo cuando lo necesites.");
                         viaje.setPrecioBase(new BigDecimal("1.50"));
                         viaje.setCategoria("Viaje");
-                        viaje.setImagenUrl("/images/productos/viaje-unique.png");
+                        viaje.setImagenUrl("/vesta-web/images/productos/viaje-unique.png");
                         productoRepository.save(viaje);
 
                         // Seguro de Dispositivos
@@ -75,7 +75,7 @@ public class DataInitializer implements CommandLineRunner {
                                         "Protege tu smartphone y gadgets contra daños accidentales, robos y averías. Cobertura inmediata desde el momento de activación.");
                         dispositivos.setPrecioBase(new BigDecimal("0.25"));
                         dispositivos.setCategoria("Tecnología");
-                        dispositivos.setImagenUrl("/images/productos/movil-unique.png");
+                        dispositivos.setImagenUrl("/vesta-web/images/productos/movil-unique.png");
                         productoRepository.save(dispositivos);
 
                         // Seguro de Eventos
@@ -85,7 +85,7 @@ public class DataInitializer implements CommandLineRunner {
                                         "Asegura tu entrada a conciertos y eventos. Protección contra cancelaciones, pérdidas y accidentes durante el evento.");
                         eventos.setPrecioBase(new BigDecimal("0.20"));
                         eventos.setCategoria("Entretenimiento");
-                        eventos.setImagenUrl("/images/productos/Entretenimiento.jpg");
+                        eventos.setImagenUrl("/vesta-web/images/productos/Entretenimiento.jpg");
                         productoRepository.save(eventos);
 
                         // Seguro de Bicicleta
@@ -95,7 +95,7 @@ public class DataInitializer implements CommandLineRunner {
                                         "Protección para tu medio de transporte ecológico. Cobertura contra robos, daños y responsabilidad civil.");
                         bicicleta.setPrecioBase(new BigDecimal("0.20"));
                         bicicleta.setCategoria("Movilidad");
-                        bicicleta.setImagenUrl("/images/productos/movilidad.png");
+                        bicicleta.setImagenUrl("/vesta-web/images/productos/movilidad.png");
                         productoRepository.save(bicicleta);
 
                         // Seguro de Mascotas
@@ -105,7 +105,7 @@ public class DataInitializer implements CommandLineRunner {
                                         "Cuidado veterinario para tu mejor amigo. Cobertura de gastos médicos, cirugías y tratamientos de emergencia.");
                         mascotas.setPrecioBase(new BigDecimal("1.00"));
                         mascotas.setCategoria("Mascotas");
-                        mascotas.setImagenUrl("/images/productos/mascotas.png");
+                        mascotas.setImagenUrl("/vesta-web/images/productos/mascotas.png");
                         productoRepository.save(mascotas);
 
                         // Seguro de Equipaje ELIMINADO
@@ -121,11 +121,11 @@ public class DataInitializer implements CommandLineRunner {
                         boolean updated = false;
                         if (p.getNombre().equals("Seguro de Viaje")) {
                                 p.setPrecioBase(new BigDecimal("1.50"));
-                                p.setImagenUrl("/images/productos/viaje-unique.png");
+                                p.setImagenUrl("/vesta-web/images/productos/viaje-unique.png");
                                 updated = true;
                         } else if (p.getNombre().equals("Seguro de Dispositivos")) {
                                 p.setPrecioBase(new BigDecimal("0.25"));
-                                p.setImagenUrl("/images/productos/movil-unique.png");
+                                p.setImagenUrl("/vesta-web/images/productos/movil-unique.png");
                                 updated = true;
                         } else if (p.getNombre().equals("Seguro de Eventos")) {
                                 p.setPrecioBase(new BigDecimal("0.20"));
