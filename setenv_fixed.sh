@@ -1,16 +1,36 @@
 #!/bin/bash
 
 # ==========================================
-# Variables de Producción (Actualizadas)
+# Variables de Producción (Dual Domain Support)
 # ==========================================
 
-# URLs corregidas con IP actual
-export API_URL="http://34.175.116.7:8080/vesta-api/api"
-export FRONTEND_URL="http://vesta-web.duckdns.org/vesta-web"
+# URLs principales - Detectar automáticamente el dominio
+# vesta-web.duckdns.org (HTTP) - Trabajo
+# vesta-web2.duckdns.org (HTTPS) - Casa
 
-# URLs para enlaces de activación
-export APP_BASE_URL="http://vesta-web.duckdns.org"
-export APP_FRONTEND_URL="http://vesta-web.duckdns.org/vesta-web"
+# URLs por defecto (HTTPS para vesta-web2)
+export API_URL="https://vesta-web2.duckdns.org/vesta-api/api"
+export FRONTEND_URL="https://vesta-web2.duckdns.org/vesta-web"
+
+# URLs HTTP para vesta-web (fallback)
+export API_URL_HTTP="http://vesta-web.duckdns.org/vesta-api/api"
+export FRONTEND_URL_HTTP="http://vesta-web.duckdns.org/vesta-web"
+
+# URLs alternativas para acceso directo por IP
+export API_URL_IP1="http://34.175.116.7:8080/vesta-api/api"
+export API_URL_IP2="http://34.175.81.8:8080/vesta-api/api"
+export FRONTEND_URL_IP1="http://34.175.116.7:8080/vesta-web"
+export FRONTEND_URL_IP2="http://34.175.81.8:8080/vesta-web"
+
+# URLs HTTPS para acceso directo por IP
+export API_URL_IP1_HTTPS="https://34.175.116.7/vesta-api/api"
+export API_URL_IP2_HTTPS="https://34.175.81.8/vesta-api/api"
+export FRONTEND_URL_IP1_HTTPS="https://34.175.116.7/vesta-web"
+export FRONTEND_URL_IP2_HTTPS="https://34.175.81.8/vesta-web"
+
+# URLs para enlaces de activación (usar dominio HTTPS por defecto)
+export APP_BASE_URL="https://vesta-web2.duckdns.org"
+export APP_FRONTEND_URL="https://vesta-web2.duckdns.org/vesta-web"
 
 # Base de datos
 export SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/vesta_db"

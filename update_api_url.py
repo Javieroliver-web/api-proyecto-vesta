@@ -8,9 +8,9 @@ try:
     with open(file_path, 'r') as f:
         content = f.read()
     
-    # Reemplazar API_URL manteniendo FRONTEND_URL
+    # Reemplazar API_URL manteniendo FRONTEND_URL - Soporta ambas IPs
     old_pattern = r'Environment="API_URL=.*"'
-    new_value = 'Environment="API_URL=http://34.175.116.7:8080/vesta-api/api"'
+    new_value = 'Environment="API_URL=http://vesta-web.duckdns.org/vesta-api/api"'
     
     new_content = re.sub(old_pattern, new_value, content)
     

@@ -20,9 +20,11 @@ Environment="SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/vesta_db"
 Environment="SPRING_DATASOURCE_USERNAME=vesta_user"
 Environment="SPRING_DATASOURCE_PASSWORD=vesta_password"
 
-# API URL
-Environment="API_URL=http://34.175.116.7:8080/vesta-api/api"
-Environment="SPRING_APPLICATION_JSON={\"api\":{\"url\":\"http://34.175.116.7:8080/vesta-api/api\"}}"
+# API URL - Soporta ambas IPs
+Environment="API_URL=http://vesta-web.duckdns.org/vesta-api/api"
+Environment="API_URL_IP1=http://34.175.116.7:8080/vesta-api/api"
+Environment="API_URL_IP2=http://34.175.81.8:8080/vesta-api/api"
+Environment="SPRING_APPLICATION_JSON={\"api\":{\"url\":\"http://vesta-web.duckdns.org/vesta-api/api\"}}"
 
 # URL Publica
 Environment="FRONTEND_URL=http://vesta-web.duckdns.org/vesta-web"
