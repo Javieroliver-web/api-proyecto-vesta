@@ -1,0 +1,22 @@
+{
+  "workspace": {
+    "id": "",
+    "name": "Vesta API Project"
+  },
+  "collections": {
+    "main": {
+      "id": "",
+      "name": "Vesta API Collection"
+    }
+  },
+  "environments": {
+    "local": {
+      "id": "",
+      "name": "Local Development"
+    },
+    "production": {
+      "id": "",
+      "name": "Production"
+    }
+  }
+}

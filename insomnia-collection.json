@@ -1,0 +1,279 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-01-26T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "req_auth_login",
+      "parentId": "fld_auth",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/login",
+      "name": "Login",
+      "description": "Autenticación de usuario",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"correoElectronico\": \"admin@vesta.com\",\n  \"password\": \"admin123\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1706227200000,
+      "_type": "request"
+    },
+    {
+      "_id": "fld_auth",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "Authentication",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706227200000,
+      "_type": "request_group"
+    }
+,
+    {
+      "_id": "req_auth_register",
+      "parentId": "fld_auth",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/register",
+      "name": "Register",
+      "description": "Registro de nuevo usuario",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nombreCompleto\": \"Test User\",\n  \"correoElectronico\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"movil\": \"+34600000000\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1706227100000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_auth_test",
+      "parentId": "fld_auth",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/test",
+      "name": "Test Auth Endpoint",
+      "description": "Verificar que la API funciona",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1706227000000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_products_all",
+      "parentId": "fld_products",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/productos",
+      "name": "Get All Products",
+      "description": "Obtener todos los productos",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226900000,
+      "_type": "request"
+    }
+,
+    {
+      "_id": "fld_products",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "Products",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706226900000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_products_by_id",
+      "parentId": "fld_products",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/productos/1",
+      "name": "Get Product by ID",
+      "description": "Obtener producto por ID",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226800000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_products_search",
+      "parentId": "fld_products",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/productos/buscar",
+      "name": "Search Products",
+      "description": "Buscar productos por término",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "q",
+          "value": "seguro"
+        }
+      ],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226700000,
+      "_type": "request"
+    }
+,
+    {
+      "_id": "wrk_vesta",
+      "parentId": null,
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "Vesta API",
+      "description": "API completa para el proyecto Vesta",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_base",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "Base Environment",
+      "data": {
+        "base_url": "https://vesta-web.duckdns.org",
+        "auth_token": ""
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url", "auth_token"]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1706227200000,
+      "_type": "environment"
+    },
+    {
+      "_id": "env_local",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "Local Development",
+      "data": {
+        "base_url": "http://localhost:8080",
+        "auth_token": ""
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url", "auth_token"]
+      },
+      "color": "#7d69cb",
+      "isPrivate": false,
+      "metaSortKey": 1706227300000,
+      "_type": "environment"
+    },
+    {
+      "_id": "env_prod",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "Production",
+      "data": {
+        "base_url": "https://vesta-web.duckdns.org",
+        "auth_token": ""
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url", "auth_token"]
+      },
+      "color": "#d9534f",
+      "isPrivate": false,
+      "metaSortKey": 1706227400000,
+      "_type": "environment"
+    },
+    {
+      "_id": "env_http",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "HTTP (vesta-web.duckdns.org)",
+      "data": {
+        "base_url": "http://vesta-web.duckdns.org",
+        "auth_token": ""
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url", "auth_token"]
+      },
+      "color": "#17a2b8",
+      "isPrivate": false,
+      "metaSortKey": 1706227450000,
+      "_type": "environment"
+    },
+    {
+      "_id": "env_https",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "HTTPS (vesta-web2.duckdns.org)",
+      "data": {
+        "base_url": "https://vesta-web2.duckdns.org",
+        "auth_token": ""
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url", "auth_token"]
+      },
+      "color": "#28a745",
+      "isPrivate": false,
+      "metaSortKey": 1706227475000,
+      "_type": "environment"
+    },
+    {
+      "_id": "env_direct",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "Direct IP (34.175.81.8)",
+      "data": {
+        "base_url": "http://34.175.81.8:8080",
+        "auth_token": ""
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url", "auth_token"]
+      },
+      "color": "#6c757d",
+      "isPrivate": false,
+      "metaSortKey": 1706227500000,
+      "_type": "environment"
+    }
+  ]
+}
