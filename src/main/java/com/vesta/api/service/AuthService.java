@@ -278,30 +278,48 @@ public class AuthService {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email).orElse(null);
 
         if (usuario == null) {
-            // Usuario Nuevo: Registrar automáticamente
-            logger.info("Usuario nuevo detectado en social login. Registrando...");
+            // Usuario Nuevo: Registrar automáticamente PERO requerir confirmación
+            logger.info("Usuario nuevo detectado en social login. Registrando pendiente de confirmación...");
             usuario = new Usuario();
             usuario.setEmail(email);
             usuario.setNombreCompleto(nombre);
             usuario.setRol("USUARIO");
-            usuario.setEmailConfirmado(true); // Social Login ya verifica el email
+            usuario.setEmailConfirmado(false); // Requiere confirmación manual por email
+            usuario.setProvider(proveedor); // Store OAuth provider ("google", "apple", etc.)
 
-            // Password aleatoria (no se usará para login normal, pero necesaria por
-            // constraints)
+            // Generar token de confirmación
+            String tokenConfirmacion = java.util.UUID.randomUUID().toString();
+            usuario.setConfirmationToken(tokenConfirmacion);
+
+            // Password aleatoria
             usuario.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
 
             usuario = usuarioRepository.save(usuario);
+
+            // Enviar email de confirmación
+            emailService.sendAccountConfirmationEmail(usuario.getEmail(), tokenConfirmacion,
+                    usuario.getNombreCompleto());
+
+            logger.info("Usuario creado y correo enviado. ID: {}", usuario.getId());
+
+            // Retornar sin token para indicar que falta verificar
+            return new AuthResponseDTO(
+                    null,
+                    usuario.getRol(),
+                    usuario.getNombreCompleto(),
+                    usuario.getId(),
+                    false);
+
         } else {
             // Usuario Existente
             if (!Boolean.TRUE.equals(usuario.getEmailConfirmado())) {
-                // Si entra por Google, consideramos el email verificado
-                usuario.setEmailConfirmado(true);
-                usuario.setConfirmationToken(null);
-                usuarioRepository.save(usuario);
+                logger.warn("Usuario existente pero cuenta NO confirmada: {}", email);
+                // Opcional: Reenviar correo si ha pasado tiempo? Por ahora lanzamos error
+                throw new RuntimeException("Cuenta no verificada. Por favor, revisa tu email para activarla.");
             }
         }
 
-        // Generar JWT
+        // Generar JWT si está confirmado
         String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
 
         return new AuthResponseDTO(

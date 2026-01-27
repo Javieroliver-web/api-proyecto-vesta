@@ -14,7 +14,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/tpv")
-@CrossOrigin(origins = "*")
+
 public class TPVController {
 
     @Autowired
@@ -30,11 +30,10 @@ public class TPVController {
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of(
-                "success", false,
-                "status", "ERROR",
-                "message", "Error interno del TPV: " + e.getMessage(),
-                "errorCode", "INTERNAL_ERROR"
-            ));
+                    "success", false,
+                    "status", "ERROR",
+                    "message", "Error interno del TPV: " + e.getMessage(),
+                    "errorCode", "INTERNAL_ERROR"));
         }
     }
 
@@ -52,10 +51,9 @@ public class TPVController {
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> health() {
         return ResponseEntity.ok(Map.of(
-            "status", "online",
-            "service", "TPV Virtual Simulator",
-            "version", "1.0.0",
-            "message", "TPV Virtual funcionando correctamente"
-        ));
+                "status", "online",
+                "service", "TPV Virtual Simulator",
+                "version", "1.0.0",
+                "message", "TPV Virtual funcionando correctamente"));
     }
 }

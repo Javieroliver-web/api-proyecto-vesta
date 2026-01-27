@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth/2fa")
-@CrossOrigin(origins = "*")
+
 public class TwoFactorController {
 
     @Autowired

@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/ordenes")
-@CrossOrigin(origins = "*")
+
 public class OrdenController {
 
     @Autowired
@@ -61,7 +61,7 @@ public class OrdenController {
     public ResponseEntity<List<Orden>> listarOrdenes() {
         return ResponseEntity.ok(ordenRepository.findAll());
     }
-    
+
     // --- ENDPOINT PARA ÓRDENES PENDIENTES DE USUARIO ---
     @GetMapping("/usuario/{usuarioId}/pendientes")
     public ResponseEntity<List<Orden>> obtenerOrdenesPendientesUsuario(@PathVariable Long usuarioId) {
@@ -72,30 +72,30 @@ public class OrdenController {
             return ResponseEntity.status(500).body(List.of());
         }
     }
-    
+
     // Endpoint para actualizar estado de orden (solo admin)
     @PutMapping("/{id}/estado")
     public ResponseEntity<?> actualizarEstadoOrden(@PathVariable Long id, @RequestBody Map<String, String> request) {
         try {
             Orden orden = ordenRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
-                
+                    .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
+
             String nuevoEstado = request.get("estado");
             if (nuevoEstado == null || nuevoEstado.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Estado requerido"));
             }
-            
+
             // Validar estados permitidos
             List<String> estadosPermitidos = List.of("PENDIENTE", "PROCESANDO", "COMPLETADA", "FALLIDA", "CANCELADA");
             if (!estadosPermitidos.contains(nuevoEstado.toUpperCase())) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Estado no válido"));
             }
-            
+
             orden.setEstado(nuevoEstado.toUpperCase());
             ordenRepository.save(orden);
-            
+
             return ResponseEntity.ok(Map.of("mensaje", "Estado actualizado correctamente"));
-            
+
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error al actualizar estado: " + e.getMessage()));
         }

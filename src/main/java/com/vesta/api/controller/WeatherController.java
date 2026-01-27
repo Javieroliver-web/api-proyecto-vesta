@@ -8,7 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/clima")
-@CrossOrigin(origins = "*")
+
 public class WeatherController {
 
     @Autowired

@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cookies")
-@CrossOrigin(origins = "*")
+
 public class CookiesController {
 
     @Autowired
@@ -22,23 +22,23 @@ public class CookiesController {
     public ResponseEntity<?> guardarConsentimiento(
             @RequestBody ConsentimientoRequest request,
             HttpServletRequest httpRequest) {
-        
+
         ConsentimientoCookies consentimiento = new ConsentimientoCookies();
         consentimiento.setUsuarioId(request.getUsuarioId());
         consentimiento.setCookiesEsenciales(true); // Siempre activas
         consentimiento.setCookiesAnaliticas(request.getCookiesAnaliticas());
         consentimiento.setCookiesMarketing(request.getCookiesMarketing());
-        
+
         // Guardar IP y User-Agent para auditoría RGPD
         consentimiento.setIpAddress(getClientIP(httpRequest));
         consentimiento.setUserAgent(httpRequest.getHeader("User-Agent"));
-        
+
         consentimientoRepository.save(consentimiento);
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Consentimiento guardado correctamente");
         response.put("consentimientoId", consentimiento.getId());
-        
+
         return ResponseEntity.ok(response);
     }
 
@@ -63,11 +63,28 @@ public class CookiesController {
         private Boolean cookiesAnaliticas;
         private Boolean cookiesMarketing;
 
-        public Long getUsuarioId() { return usuarioId; }
-        public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
-        public Boolean getCookiesAnaliticas() { return cookiesAnaliticas; }
-        public void setCookiesAnaliticas(Boolean cookiesAnaliticas) { this.cookiesAnaliticas = cookiesAnaliticas; }
-        public Boolean getCookiesMarketing() { return cookiesMarketing; }
-        public void setCookiesMarketing(Boolean cookiesMarketing) { this.cookiesMarketing = cookiesMarketing; }
+        public Long getUsuarioId() {
+            return usuarioId;
+        }
+
+        public void setUsuarioId(Long usuarioId) {
+            this.usuarioId = usuarioId;
+        }
+
+        public Boolean getCookiesAnaliticas() {
+            return cookiesAnaliticas;
+        }
+
+        public void setCookiesAnaliticas(Boolean cookiesAnaliticas) {
+            this.cookiesAnaliticas = cookiesAnaliticas;
+        }
+
+        public Boolean getCookiesMarketing() {
+            return cookiesMarketing;
+        }
+
+        public void setCookiesMarketing(Boolean cookiesMarketing) {
+            this.cookiesMarketing = cookiesMarketing;
+        }
     }
 }

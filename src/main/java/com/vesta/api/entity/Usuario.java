@@ -126,6 +126,10 @@ public class Usuario {
     @Column(name = "usu_2fa_secret")
     private String twoFactorSecret;
 
+    // === OAUTH PROVIDER ===
+    @Column(name = "usu_provider", length = 20)
+    private String provider; // "google", "apple", or null for standard registration
+
     @PrePersist
     protected void onCreate() {
         if (fechaCreacion == null) {

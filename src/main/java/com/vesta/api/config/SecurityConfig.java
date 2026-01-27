@@ -68,15 +68,13 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Configuración basada en entorno
-        if ("*".equals(allowedOrigins)) {
-            // Desarrollo: permitir todos los orígenes
-            configuration.setAllowedOriginPatterns(List.of("*"));
-            configuration.setAllowCredentials(true);
-        } else {
-            // Producción: orígenes específicos
-            configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
-            configuration.setAllowCredentials(true);
-        }
+        // Use allowedOriginPatterns for both development and production to handle
+        // credentials correctly
+        // This avoids the "allowedOrigins cannot contain *" error and supports both
+        // wildcard and specific domains
+        List<String> origins = Arrays.asList(allowedOrigins.split(","));
+        configuration.setAllowedOriginPatterns(origins);
+        configuration.setAllowCredentials(true);
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
