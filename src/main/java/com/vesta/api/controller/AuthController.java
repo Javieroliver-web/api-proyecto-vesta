@@ -37,6 +37,9 @@ public class AuthController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private com.vesta.api.service.AuditoriaService auditoriaService;
+
     @org.springframework.beans.factory.annotation.Value("${app.frontend.url:http://localhost:8081}")
     private String frontendUrl;
 
@@ -53,10 +56,18 @@ public class AuthController {
 
             AuthResponseDTO response = authService.login(loginDTO);
 
+            // Log Auditoría
+            auditoriaService.registrarAccion(loginDTO.getCorreoElectronico(), "LOGIN_SUCCESS",
+                    "Inicio de sesión exitoso", null);
+
             logger.info("Login exitoso para: {}", loginDTO.getCorreoElectronico());
             return ResponseEntity.ok(ApiResponse.success("Login exitoso", response));
 
         } catch (RuntimeException e) {
+            // Log Auditoría Fallo
+            auditoriaService.registrarAccion(loginDTO.getCorreoElectronico(), "LOGIN_FAILED",
+                    "Fallo de autenticación: " + e.getMessage(), null);
+
             logger.error("Error en login para {}: {}", loginDTO.getCorreoElectronico(), e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
@@ -258,6 +269,9 @@ public class AuthController {
             logger.info("Social Login request: {} ({})", email, proveedor);
 
             AuthResponseDTO response = authService.socialLogin(email, nombre, proveedor);
+
+            // Log Auditoría
+            auditoriaService.registrarAccion(email, "LOGIN_SOCIAL", "Login con provider: " + proveedor, null);
 
             return ResponseEntity.ok(ApiResponse.success("Login social exitoso", response));
 

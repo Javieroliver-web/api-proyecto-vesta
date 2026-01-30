@@ -28,6 +28,9 @@ public class UsuarioController {
     @Autowired
     private RecommendationService recommendationService;
 
+    @Autowired
+    private com.vesta.api.service.AuditoriaService auditoriaService;
+
     @GetMapping
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         return ResponseEntity.ok(usuarioRepository.findAll());
@@ -128,6 +131,18 @@ public class UsuarioController {
                     }
 
                     Usuario actualizado = usuarioRepository.save(usuario);
+
+                    // Log Auditoría
+                    String accionLog = updates.containsKey("rol") ? "UPDATE_ROLE"
+                            : (updates.containsKey("activo") ? "UPDATE_STATUS" : "UPDATE_PROFILE");
+                    String detalleLog = "Usuario actualizado: " + usuario.getEmail();
+                    if (updates.containsKey("rol"))
+                        detalleLog += " (Nuevo rol: " + usuario.getRol() + ")";
+                    if (updates.containsKey("activo"))
+                        detalleLog += " (Activo: " + usuario.getActivo() + ")";
+
+                    auditoriaService.registrarAccion(auth.getName(), accionLog, detalleLog, null);
+
                     return ResponseEntity.ok(actualizado);
                 })
                 .orElse(ResponseEntity.notFound().build());
@@ -154,6 +169,11 @@ public class UsuarioController {
                 }
             }
             usuarioRepository.delete(usuario);
+
+            // Log Auditoría
+            auditoriaService.registrarAccion(auth.getName(), "DELETE_USER", "Usuario eliminado: " + usuario.getEmail(),
+                    null);
+
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
     }
