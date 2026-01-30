@@ -103,6 +103,13 @@ public class AuthService {
             usuarioRepository.save(usuario);
         }
 
+        // VALIDACIÓN CRÍTICA: Verificar si el usuario está bloqueado por administrador
+        if (!Boolean.TRUE.equals(usuario.getActivo())) {
+            logger.warn("Intento de login de usuario bloqueado: {}", request.getCorreoElectronico());
+            throw new RuntimeException(
+                    "Cuenta bloqueada por el administrador. Contacta con soporte para más información.");
+        }
+
         if (!Boolean.TRUE.equals(usuario.getEmailConfirmado())) {
             logger.warn("Intento de login con cuenta no confirmada: {}", request.getCorreoElectronico());
             throw new RuntimeException("Cuenta no verificada. Por favor, revisa tu email para activarla.");
@@ -141,6 +148,13 @@ public class AuthService {
 
         if (!Boolean.TRUE.equals(usuario.getTwoFactorEnabled())) {
             throw new RuntimeException("2FA no está habilitado para este usuario");
+        }
+
+        // VALIDACIÓN CRÍTICA: Verificar si el usuario está bloqueado
+        if (!Boolean.TRUE.equals(usuario.getActivo())) {
+            logger.warn("Intento de 2FA de usuario bloqueado: ID {}", userId);
+            throw new RuntimeException(
+                    "Cuenta bloqueada por el administrador. Contacta con soporte para más información.");
         }
 
         if (!twoFactorService.validateCode(usuario.getTwoFactorSecret(), code)) {
@@ -312,6 +326,14 @@ public class AuthService {
 
         } else {
             // Usuario Existente
+
+            // VALIDACIÓN CRÍTICA: Verificar si el usuario está bloqueado
+            if (!Boolean.TRUE.equals(usuario.getActivo())) {
+                logger.warn("Intento de social login de usuario bloqueado: {}", email);
+                throw new RuntimeException(
+                        "Cuenta bloqueada por el administrador. Contacta con soporte para más información.");
+            }
+
             if (!Boolean.TRUE.equals(usuario.getEmailConfirmado())) {
                 logger.warn("Usuario existente pero cuenta NO confirmada: {}", email);
                 // Opcional: Reenviar correo si ha pasado tiempo? Por ahora lanzamos error
