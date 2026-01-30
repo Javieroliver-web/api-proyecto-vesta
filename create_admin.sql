@@ -20,7 +20,7 @@ INSERT INTO usuarios (
     'warshadows22@gmail.com',
     '+34622645922',
     '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', -- Contraseña: password
-    'ADMINISTRADOR',
+    'OWNER',
     true,
     true, -- Email confirmado para evitar problemas de login
     true, -- Acepta términos

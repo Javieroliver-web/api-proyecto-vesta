@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map; // Importante
 
+import org.springframework.security.core.Authentication; // Importante
+import org.springframework.security.core.context.SecurityContextHolder; // Importante
+
 @RestController
 @RequestMapping("/api/usuarios")
-
 public class UsuarioController {
 
     @Autowired
@@ -38,48 +40,79 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // CAMBIO: Ahora recibimos un Map<String, Object> para mayor flexibilidad
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         return usuarioRepository.findById(id)
                 .map(usuario -> {
-                    // 1. Validar Cambio de Contraseña (Si se solicita)
+                    // VALIDACIÓN DE SEGURIDAD (OWNER)
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    boolean isOwner = auth.getAuthorities().stream()
+                            .anyMatch(a -> a.getAuthority().equals("ROLE_OWNER"));
+
+                    // Protección: Solo OWNER puede modificar a otro OWNER (y a sí mismo)
+                    if ("OWNER".equals(usuario.getRol()) && !isOwner) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(Map.of("message", "No tienes permisos para modificar al propietario."));
+                    }
+
+                    // 1. Validar Cambio de Contraseña
                     if (updates.containsKey("newPassword")) {
                         String currentPassword = (String) updates.get("currentPassword");
                         String newPassword = (String) updates.get("newPassword");
 
-                        // Verificar que enviaron la contraseña actual
                         if (currentPassword == null || currentPassword.isEmpty()) {
                             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                     .body(Map.of("message", "Debes ingresar tu contraseña actual."));
                         }
 
-                        // Verificar que la contraseña actual sea correcta
                         if (!passwordEncoder.matches(currentPassword, usuario.getPassword())) {
                             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                     .body(Map.of("message", "La contraseña actual es incorrecta."));
                         }
 
-                        // Si todo es correcto, encriptar y asignar la nueva
                         usuario.setPassword(passwordEncoder.encode(newPassword));
                     }
 
-                    // 2. Actualizar otros campos (Opcional)
+                    // 2. Actualizar otros campos
                     if (updates.containsKey("nombreCompleto")) {
                         usuario.setNombreCompleto((String) updates.get("nombreCompleto"));
                     }
                     if (updates.containsKey("movil")) {
                         usuario.setMovil((String) updates.get("movil"));
                     }
-                    if (updates.containsKey("rol")) { // Solo admin debería poder, pero por ahora lo dejamos
-                        usuario.setRol((String) updates.get("rol"));
+
+                    // SEGURIDAD: Cambio de ROL
+                    if (updates.containsKey("rol")) {
+                        // Solo OWNER puede cambiar roles
+                        if (!isOwner) {
+                            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                    .body(Map.of("message", "Solo el propietario puede cambiar roles."));
+                        }
+
+                        String nuevoRol = (String) updates.get("rol");
+                        // Prevenir que se quite el rol OWNER a sí mismo por error (opcional, pero buena
+                        // práctica)
+                        if ("OWNER".equals(usuario.getRol()) && !"OWNER".equals(nuevoRol)) {
+                            long ownerCount = usuarioRepository.countByRol("OWNER");
+                            if (ownerCount <= 1) {
+                                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(Map.of("message", "No puedes eliminar el último Owner del sistema."));
+                            }
+                        }
+
+                        usuario.setRol(nuevoRol);
                     }
+
                     if (updates.containsKey("ciudad")) {
                         String nuevaCiudad = (String) updates.get("ciudad");
-                        if (!recommendationService.validarCiudad(nuevaCiudad)) {
-                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                    .body(Map.of("message", "No se pudo obtener información climática para "
-                                            + nuevaCiudad + ". Intenta con otra búsqueda."));
+                        try {
+                            if (!recommendationService.validarCiudad(nuevaCiudad)) {
+                                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(Map.of("message", "No se pudo obtener información climática para "
+                                                + nuevaCiudad + ". Intenta con otra búsqueda."));
+                            }
+                        } catch (Exception e) {
+                            // Ignorar error de validación clima si falla servicio externo, permitir update
                         }
                         usuario.setCiudad(nuevaCiudad);
                     }
@@ -90,6 +123,7 @@ public class UsuarioController {
                         usuario.setEmail((String) updates.get("email"));
                     }
                     if (updates.containsKey("activo")) {
+                        // Admin puede bloquear User, pero validamos arriba protección de Owner
                         usuario.setActivo((Boolean) updates.get("activo"));
                     }
 
@@ -102,12 +136,21 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         return usuarioRepository.findById(id).map(usuario -> {
-            // Protección: No eliminar al último administrador
-            if ("ADMIN".equals(usuario.getRol())) {
-                long adminCount = usuarioRepository.countByRol("ADMIN");
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            boolean isOwner = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_OWNER"));
+
+            // Protección: Solo OWNER puede eliminar a otro OWNER
+            if ("OWNER".equals(usuario.getRol()) && !isOwner) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "No tienes permisos para eliminar al propietario."));
+            }
+
+            // Protección: No eliminar al último administrador o owner
+            if ("ADMIN".equals(usuario.getRol()) || "OWNER".equals(usuario.getRol())) {
+                long adminCount = usuarioRepository.countByRol("ADMIN") + usuarioRepository.countByRol("OWNER");
                 if (adminCount <= 1) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(Map.of("message", "No se puede eliminar al último administrador."));
+                            .body(Map.of("message", "No se puede eliminar al último administrador/owner."));
                 }
             }
             usuarioRepository.delete(usuario);
