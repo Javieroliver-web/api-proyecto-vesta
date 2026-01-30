@@ -168,6 +168,15 @@ public class UsuarioController {
                             .body(Map.of("message", "No se puede eliminar al último administrador/owner."));
                 }
             }
+
+            // Protección: ADMIN no puede eliminar a otro ADMIN
+            boolean esRequesterAdmin = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            if (esRequesterAdmin && "ADMIN".equals(usuario.getRol())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "Los administradores no pueden eliminar a otros administradores."));
+            }
+
             usuarioRepository.delete(usuario);
 
             // Log Auditoría
