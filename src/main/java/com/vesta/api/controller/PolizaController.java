@@ -1,11 +1,10 @@
 package com.vesta.api.controller;
 
-import com.vesta.api.entity.Poliza;
-import com.vesta.api.entity.Producto;
-import com.vesta.api.entity.Usuario;
+import com.vesta.api.entity.*;
 import com.vesta.api.repository.PolizaRepository;
 import com.vesta.api.repository.ProductoRepository;
 import com.vesta.api.repository.UsuarioRepository;
+import com.vesta.api.repository.OrdenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,8 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/polizas")
@@ -32,6 +33,9 @@ public class PolizaController {
 
     @Autowired
     private ProductoRepository productoRepository;
+
+    @Autowired
+    private OrdenRepository ordenRepository;
 
     /**
      * Obtener TODAS las pólizas (solo para ADMIN)
@@ -139,11 +143,34 @@ public class PolizaController {
                 BigDecimal precioTotal = producto.getPrecioBase()
                         .multiply(BigDecimal.valueOf(duracion));
                 poliza.setPrecioFinal(precioTotal);
-                poliza.setEstado("ACTIVA");
+                // ESTADO INICIAL: PENDIENTE_PAGO (para que el TPV lo detecte)
+                poliza.setEstado("PENDIENTE_PAGO");
 
                 polizaFinal = polizaRepository.save(poliza);
 
-                logger.info("✅ Póliza creada: ID={} Usuario={} Producto={}",
+                // --- CREAR ORDEN PARA EL TPV ---
+                Orden orden = new Orden();
+                orden.setUsuarioId(usuario.getId());
+                orden.setEstado("PENDIENTE");
+                orden.setTotal(precioTotal);
+                orden.setReferencia("ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+
+                List<OrdenItem> items = new ArrayList<>();
+                OrdenItem item = new OrdenItem();
+                item.setOrden(orden);
+                item.setSeguroId(producto.getId().toString());
+                item.setNombreSeguro(producto.getNombre());
+                item.setCantidad(1); // 1 póliza
+                item.setPrecioUnitario(producto.getPrecioBase());
+                item.setSubtotal(precioTotal);
+
+                items.add(item);
+                orden.setItems(items);
+
+                ordenRepository.save(orden);
+                // -------------------------------
+
+                logger.info("✅ Póliza creada (PENDIENTE_PAGO): ID={} Usuario={} Producto={}",
                         polizaFinal.getId(), usuario.getEmail(), producto.getNombre());
             }
 

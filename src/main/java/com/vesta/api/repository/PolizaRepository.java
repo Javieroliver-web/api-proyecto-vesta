@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface PolizaRepository extends JpaRepository<Poliza, Long> {
     List<Poliza> findByUsuarioId(Long usuarioId); // Para "Mis Seguros"
+
+    List<Poliza> findByUsuarioIdAndProductoIdAndEstado(Long usuarioId, Long productoId, String estado);
 }

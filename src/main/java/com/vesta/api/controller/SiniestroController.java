@@ -57,15 +57,19 @@ public class SiniestroController {
             // 2. GUARDAR ARCHIVO FÍSICAMENTE
             String nombreArchivo = System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
-            // Definir ruta relativa "uploads/" en el directorio de trabajo actual
-            Path uploadDir = Paths.get("uploads").toAbsolutePath();
+            // Definir ruta en directorio temporal del sistema para evitar problemas de
+            // permisos
+            String tempDir = System.getProperty("java.io.tmpdir");
+            Path uploadDir = Paths.get(tempDir, "vesta_uploads").toAbsolutePath();
 
             // Crear carpeta si no existe
             try {
-                Files.createDirectories(uploadDir);
-                logger.debug("📁 Directorio uploads creado/verificado: {}", uploadDir);
+                if (!Files.exists(uploadDir)) {
+                    Files.createDirectories(uploadDir);
+                    logger.debug("📁 Directorio uploads creado: {}", uploadDir);
+                }
             } catch (IOException e) {
-                logger.error("❌ Error al crear directorio uploads", e);
+                logger.error("❌ Error al crear directorio uploads en: " + uploadDir, e);
                 throw new RuntimeException("No se pudo crear el directorio de uploads");
             }
 
