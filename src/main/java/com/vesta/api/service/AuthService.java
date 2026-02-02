@@ -327,6 +327,13 @@ public class AuthService {
         } else {
             // Usuario Existente
 
+            // Actualizar provider si es nuevo (vincular implícitamente)
+            if (usuario.getProvider() == null && proveedor != null) {
+                logger.info("Vinculando cuenta existente {} con proveedor {}", email, proveedor);
+                usuario.setProvider(proveedor);
+                usuarioRepository.save(usuario);
+            }
+
             // VALIDACIÓN CRÍTICA: Verificar si el usuario está bloqueado
             if (!Boolean.TRUE.equals(usuario.getActivo())) {
                 logger.warn("Intento de social login de usuario bloqueado: {}", email);
