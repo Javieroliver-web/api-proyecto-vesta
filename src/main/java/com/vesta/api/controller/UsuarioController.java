@@ -8,12 +8,19 @@ import org.springframework.http.HttpStatus; // Importante
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map; // Importante
 
 import org.springframework.security.core.Authentication; // Importante
 import org.springframework.security.core.context.SecurityContextHolder; // Importante
+
+import com.vesta.api.entity.Poliza;
+import com.vesta.api.repository.PolizaRepository;
+import com.vesta.api.repository.SiniestroRepository;
+import com.vesta.api.repository.PasswordResetTokenRepository;
+import com.vesta.api.service.AuditoriaService;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -29,7 +36,16 @@ public class UsuarioController {
     private RecommendationService recommendationService;
 
     @Autowired
-    private com.vesta.api.service.AuditoriaService auditoriaService;
+    private PolizaRepository polizaRepository;
+
+    @Autowired
+    private SiniestroRepository siniestroRepository;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Autowired
+    private AuditoriaService auditoriaService;
 
     @GetMapping
     public ResponseEntity<List<Usuario>> listarUsuarios() {
@@ -149,6 +165,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         return usuarioRepository.findById(id).map(usuario -> {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -177,13 +194,35 @@ public class UsuarioController {
                         .body(Map.of("message", "Los administradores no pueden eliminar a otros administradores."));
             }
 
-            usuarioRepository.delete(usuario);
+            // === CASCADING DELETE: Eliminar entidades relacionadas ===
+            try {
+                // 1. Eliminar tokens de reseteo de contraseña
+                passwordResetTokenRepository.deleteByUsuario(usuario);
 
-            // Log Auditoría
-            auditoriaService.registrarAccion(auth.getName(), "DELETE_USER", "Usuario eliminado: " + usuario.getEmail(),
-                    null);
+                // 2. Obtener todas las pólizas del usuario
+                List<Poliza> polizas = polizaRepository.findByUsuario(usuario);
 
-            return ResponseEntity.ok().build();
+                // 3. Para cada póliza, eliminar sus siniestros
+                for (Poliza poliza : polizas) {
+                    siniestroRepository.deleteByPoliza(poliza);
+                }
+
+                // 4. Eliminar las pólizas del usuario
+                polizaRepository.deleteAll(polizas);
+
+                // 5. Finalmente, eliminar el usuario
+                usuarioRepository.delete(usuario);
+
+                // Log Auditoría
+                auditoriaService.registrarAccion(auth.getName(), "DELETE_USER",
+                        "Usuario eliminado: " + usuario.getEmail(),
+                        null);
+
+                return ResponseEntity.ok(Map.of("message", "Usuario eliminado correctamente"));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("message", "Error al eliminar usuario: " + e.getMessage()));
+            }
         }).orElse(ResponseEntity.notFound().build());
     }
 }

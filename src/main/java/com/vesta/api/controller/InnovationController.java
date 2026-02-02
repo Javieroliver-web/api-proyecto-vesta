@@ -28,7 +28,22 @@ public class InnovationController {
 
     // 2. RECOMENDADOR CONTEXTUAL (GET /api/innovation/recommendation)
     @GetMapping("/recommendation")
-    public ResponseEntity<Map<String, String>> getRecommendation(@RequestParam String email) {
+    public ResponseEntity<Map<String, String>> getRecommendation(
+            @RequestParam(required = false) String email,
+            org.springframework.security.core.Authentication authentication) {
+
+        // Si no viene email en el query param, intentar obtenerlo del token JWT
+        if (email == null || email.isEmpty()) {
+            if (authentication != null
+                    && authentication.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt) {
+                org.springframework.security.oauth2.jwt.Jwt jwt = (org.springframework.security.oauth2.jwt.Jwt) authentication
+                        .getPrincipal();
+                email = jwt.getClaimAsString("sub"); // Email del JWT
+            } else if (authentication != null) {
+                email = authentication.getName();
+            }
+        }
+
         Map<String, String> recomendacion = recommendationService.obtenerRecomendacion(email);
         return ResponseEntity.ok(recomendacion);
     }

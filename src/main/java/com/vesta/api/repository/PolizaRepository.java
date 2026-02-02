@@ -9,5 +9,7 @@ import java.util.List;
 public interface PolizaRepository extends JpaRepository<Poliza, Long> {
     List<Poliza> findByUsuarioId(Long usuarioId); // Para "Mis Seguros"
 
+    List<Poliza> findByUsuario(com.vesta.api.entity.Usuario usuario); // Para cascading delete
+
     List<Poliza> findByUsuarioIdAndProductoIdAndEstado(Long usuarioId, Long productoId, String estado);
 }

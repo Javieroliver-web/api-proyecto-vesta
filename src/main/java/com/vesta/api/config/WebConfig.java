@@ -9,8 +9,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Mapea la URL "/uploads/**" a la carpeta física "uploads/" en el servidor
+        // Mapea la URL "/uploads/**" a la carpeta temporal del sistema donde el
+        // controller guarda los archivos
+        String uploadPath = "file:" + System.getProperty("java.io.tmpdir") + "/vesta_uploads/";
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
+                .addResourceLocations(uploadPath);
     }
 }

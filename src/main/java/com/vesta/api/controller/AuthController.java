@@ -44,29 +44,46 @@ public class AuthController {
     private String frontendUrl;
 
     /**
+     * Helper para obtener la IP real del cliente
+     */
+    private String getClientIp(jakarta.servlet.http.HttpServletRequest request) {
+        String remoteAddr = "";
+        if (request != null) {
+            remoteAddr = request.getHeader("X-FORWARDED-FOR");
+            if (remoteAddr == null || "".equals(remoteAddr)) {
+                remoteAddr = request.getRemoteAddr();
+            }
+        }
+        return remoteAddr;
+    }
+
+    /**
      * Endpoint de login
      * 
      * @param loginDTO Credenciales del usuario
      * @return Token JWT y datos del usuario
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponseDTO>> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<ApiResponse<AuthResponseDTO>> login(@Valid @RequestBody LoginDTO loginDTO,
+            jakarta.servlet.http.HttpServletRequest request) {
         try {
             logger.info("Login request recibido para email: {}", loginDTO.getCorreoElectronico());
 
             AuthResponseDTO response = authService.login(loginDTO);
 
             // Log Auditoría
+            String clientIp = getClientIp(request);
             auditoriaService.registrarAccion(loginDTO.getCorreoElectronico(), "LOGIN_SUCCESS",
-                    "Inicio de sesión exitoso", null);
+                    "Inicio de sesión exitoso", clientIp);
 
             logger.info("Login exitoso para: {}", loginDTO.getCorreoElectronico());
             return ResponseEntity.ok(ApiResponse.success("Login exitoso", response));
 
         } catch (RuntimeException e) {
             // Log Auditoría Fallo
+            String clientIp = getClientIp(request);
             auditoriaService.registrarAccion(loginDTO.getCorreoElectronico(), "LOGIN_FAILED",
-                    "Fallo de autenticación: " + e.getMessage(), null);
+                    "Fallo de autenticación: " + e.getMessage(), clientIp);
 
             logger.error("Error en login para {}: {}", loginDTO.getCorreoElectronico(), e.getMessage());
             return ResponseEntity
@@ -260,7 +277,8 @@ public class AuthController {
      * Crea usuarios automáticamente si no existen
      */
     @PostMapping("/social-login")
-    public ResponseEntity<ApiResponse<AuthResponseDTO>> socialLogin(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<ApiResponse<AuthResponseDTO>> socialLogin(@RequestBody Map<String, String> payload,
+            jakarta.servlet.http.HttpServletRequest request) {
         try {
             String email = payload.get("email");
             String nombre = payload.get("nombre");
@@ -271,7 +289,8 @@ public class AuthController {
             AuthResponseDTO response = authService.socialLogin(email, nombre, proveedor);
 
             // Log Auditoría
-            auditoriaService.registrarAccion(email, "LOGIN_SOCIAL", "Login con provider: " + proveedor, null);
+            String clientIp = getClientIp(request);
+            auditoriaService.registrarAccion(email, "LOGIN_SOCIAL", "Login con provider: " + proveedor, clientIp);
 
             return ResponseEntity.ok(ApiResponse.success("Login social exitoso", response));
 

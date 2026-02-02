@@ -5,7 +5,7 @@ import com.vesta.api.entity.Usuario;
 import com.vesta.api.repository.SolicitudDatosRepository;
 import com.vesta.api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

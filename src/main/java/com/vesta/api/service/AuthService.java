@@ -341,6 +341,18 @@ public class AuthService {
             }
         }
 
+        // 2FA Check
+        if (Boolean.TRUE.equals(usuario.getTwoFactorEnabled())) {
+            // Generar token con rol limitado
+            String tempToken = jwtUtil.generateToken(usuario.getEmail(), "PRE_VERIFICATION");
+            return new AuthResponseDTO(
+                    tempToken,
+                    "PRE_VERIFICATION",
+                    usuario.getNombreCompleto(),
+                    usuario.getId(),
+                    true);
+        }
+
         // Generar JWT si está confirmado
         String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
 

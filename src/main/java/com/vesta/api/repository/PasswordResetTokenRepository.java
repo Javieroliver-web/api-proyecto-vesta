@@ -19,9 +19,14 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
     Optional<PasswordResetToken> findByToken(String token);
 
     /**
-     * Elimina todos los tokens de un usuario
+     * Elimina todos los tokens de un usuario por ID
      */
     void deleteByUsuarioId(Long usuarioId);
+
+    /**
+     * Elimina todos los tokens de un usuario por entidad
+     */
+    void deleteByUsuario(com.vesta.api.entity.Usuario usuario);
 
     /**
      * Elimina tokens expirados

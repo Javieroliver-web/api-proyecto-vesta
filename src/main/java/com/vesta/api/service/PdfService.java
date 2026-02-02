@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
