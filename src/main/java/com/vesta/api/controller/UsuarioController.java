@@ -180,6 +180,55 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/{id}/link-oauth")
+    public ResponseEntity<?> linkOAuth(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        String provider = payload.get("provider");
+        String googleEmail = payload.get("googleEmail");
+
+        return usuarioRepository.findById(id)
+                .map(usuario -> {
+                    // Simplemente vincular el proveedor sin cambiar nada más
+                    usuario.setProvider(provider);
+                    usuarioRepository.save(usuario);
+
+                    // Log Auditoría
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    auditoriaService.registrarAccion(auth.getName(), "LINK_OAUTH",
+                            "Usuario vinculó cuenta OAuth " + provider + " (" + googleEmail + ") a su cuenta: "
+                                    + usuario.getEmail(),
+                            null);
+
+                    return ResponseEntity
+                            .ok(Map.of("message", "Cuenta de Google vinculada correctamente a tu usuario actual."));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{id}/unlink-oauth")
+    public ResponseEntity<?> unlinkOAuth(@PathVariable Long id) {
+        return usuarioRepository.findById(id)
+                .map(usuario -> {
+                    // Verificar que el usuario tenga una contraseña configurada
+                    if (usuario.getPassword() == null || usuario.getPassword().isEmpty()) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(Map.of("message",
+                                        "No puedes desvincular Google sin configurar una contraseña primero."));
+                    }
+
+                    // Desvincular OAuth
+                    usuario.setProvider(null);
+                    Usuario actualizado = usuarioRepository.save(usuario);
+
+                    // Log Auditoría
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    auditoriaService.registrarAccion(auth.getName(), "UNLINK_OAUTH",
+                            "Usuario desvinculó cuenta OAuth: " + usuario.getEmail(), null);
+
+                    return ResponseEntity.ok(Map.of("message", "Cuenta de Google desvinculada correctamente."));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
