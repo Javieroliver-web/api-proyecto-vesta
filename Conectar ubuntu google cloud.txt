@@ -1,1 +1,1 @@
-ssh -i "vesta_key" -o StrictHostKeyChecking=no vestaadmin@34.175.75.145 "sudo tail -n 200 /opt/tomcat/logs/catalina.out"
+ssh -i "vesta_key" -o StrictHostKeyChecking=no vestaadmin@34.175.116.7 "sudo tail -f /opt/tomcat/logs/catalina.out"

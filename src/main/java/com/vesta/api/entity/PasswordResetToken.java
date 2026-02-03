@@ -39,8 +39,8 @@ public class PasswordResetToken {
     @PrePersist
     protected void onCreate() {
         fechaCreacion = LocalDateTime.now();
-        // Token expira en 10 minutos
-        fechaExpiracion = fechaCreacion.plusMinutes(10);
+        // Token expira en 5 minutos
+        fechaExpiracion = fechaCreacion.plusMinutes(5);
     }
 
     /**

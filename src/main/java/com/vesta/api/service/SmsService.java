@@ -60,12 +60,8 @@ public class SmsService {
 
         try {
             String messageBody = String.format(
-                    "Hola %s,\n\n" +
-                            "Tu código de recuperación de contraseña es: %s\n\n" +
-                            "Este código expira en 5 minutos.\n\n" +
-                            "Si no solicitaste este código, ignora este mensaje.\n\n" +
-                            "- Equipo Vesta",
-                    userName, code);
+                    "Vesta: Tu código es %s. Válido 5 min.",
+                    code);
 
             Message message = Message.creator(
                     new PhoneNumber(toPhoneNumber),

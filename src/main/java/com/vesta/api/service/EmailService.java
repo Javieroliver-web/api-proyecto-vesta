@@ -47,7 +47,7 @@ public class EmailService {
                     "Hola %s,\n\n" +
                             "Has solicitado recuperar tu contraseña en Vesta.\n\n" +
                             "Tu código de verificación es: %s\n\n" +
-                            "Este código expirará en 1 hora.\n\n" +
+                            "Este código expirará en 5 minutos.\n\n" +
                             "Si no solicitaste este cambio, ignora este mensaje.\n\n" +
                             "Saludos,\n" +
                             "El equipo de Vesta",
