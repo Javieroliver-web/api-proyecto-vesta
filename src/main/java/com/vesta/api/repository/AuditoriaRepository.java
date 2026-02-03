@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface AuditoriaRepository extends JpaRepository<Auditoria, Long> {
     List<Auditoria> findAllByOrderByFechaDesc();
+
+    List<Auditoria> findByUsuarioEmailOrderByFechaDesc(String usuarioEmail);
 }

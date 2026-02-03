@@ -94,10 +94,20 @@ public class UsuarioController {
 
                     // 2. Actualizar otros campos
                     if (updates.containsKey("nombreCompleto")) {
-                        usuario.setNombreCompleto((String) updates.get("nombreCompleto"));
+                        String nombre = (String) updates.get("nombreCompleto");
+                        if (nombre != null && nombre.length() > 50) {
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                    .body(Map.of("message", "El nombre completo no puede superar los 50 caracteres."));
+                        }
+                        usuario.setNombreCompleto(nombre);
                     }
                     if (updates.containsKey("movil")) {
-                        usuario.setMovil((String) updates.get("movil"));
+                        String movil = (String) updates.get("movil");
+                        if (movil != null && movil.length() > 15) {
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                    .body(Map.of("message", "El teléfono móvil no puede superar los 15 caracteres."));
+                        }
+                        usuario.setMovil(movil);
                     }
 
                     // SEGURIDAD: Cambio de ROL
@@ -139,7 +149,13 @@ public class UsuarioController {
                         usuario.setTema((String) updates.get("tema"));
                     }
                     if (updates.containsKey("email")) {
-                        usuario.setEmail((String) updates.get("email"));
+                        String email = (String) updates.get("email");
+                        if (email != null && email.length() > 100) {
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                    .body(Map.of("message",
+                                            "El correo electrónico no puede superar los 100 caracteres."));
+                        }
+                        usuario.setEmail(email);
                     }
                     if (updates.containsKey("activo")) {
                         // Admin puede bloquear User, pero validamos arriba protección de Owner

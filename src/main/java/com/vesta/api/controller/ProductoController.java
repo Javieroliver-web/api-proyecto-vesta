@@ -97,12 +97,18 @@ public class ProductoController {
             Producto producto = productoRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-            producto.setNombre(productoDetails.getNombre());
-            producto.setDescripcion(productoDetails.getDescripcion());
-            producto.setPrecioBase(productoDetails.getPrecioBase());
-            producto.setCategoria(productoDetails.getCategoria());
-            producto.setImagenUrl(productoDetails.getImagenUrl());
-            producto.setActivo(productoDetails.getActivo());
+            if (productoDetails.getNombre() != null)
+                producto.setNombre(productoDetails.getNombre());
+            if (productoDetails.getDescripcion() != null)
+                producto.setDescripcion(productoDetails.getDescripcion());
+            if (productoDetails.getPrecioBase() != null)
+                producto.setPrecioBase(productoDetails.getPrecioBase());
+            if (productoDetails.getCategoria() != null)
+                producto.setCategoria(productoDetails.getCategoria());
+            if (productoDetails.getImagenUrl() != null)
+                producto.setImagenUrl(productoDetails.getImagenUrl());
+            if (productoDetails.getActivo() != null)
+                producto.setActivo(productoDetails.getActivo());
 
             Producto actualizado = productoRepository.save(producto);
             return ResponseEntity.ok(actualizado);

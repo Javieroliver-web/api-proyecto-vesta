@@ -20,4 +20,26 @@ public class AuditoriaService {
     public List<Auditoria> obtenerUltimosLogs() {
         return auditoriaRepository.findAllByOrderByFechaDesc();
     }
+
+    public String exportarLogsUsuario(String email) {
+        List<Auditoria> logs = auditoriaRepository.findByUsuarioEmailOrderByFechaDesc(email);
+        StringBuilder sb = new StringBuilder();
+        sb.append("LOGS DE ACTIVIDAD - USUARIO: ").append(email).append("\n");
+        sb.append("================================================================\n\n");
+
+        if (logs.isEmpty()) {
+            sb.append("No se han encontrado registros para este usuario.\n");
+        } else {
+            for (Auditoria log : logs) {
+                String fecha = log.getFecha()
+                        .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+                sb.append(String.format("[%s] [%s] %s: %s\n",
+                        fecha,
+                        log.getIp() != null ? log.getIp() : "N/A",
+                        log.getAccion(),
+                        log.getDetalle() != null ? log.getDetalle() : ""));
+            }
+        }
+        return sb.toString();
+    }
 }
