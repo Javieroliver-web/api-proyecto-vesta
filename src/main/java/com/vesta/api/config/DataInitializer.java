@@ -14,8 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import java.util.List;
-
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -112,42 +110,6 @@ public class DataInitializer implements CommandLineRunner {
                         // (Código eliminado a petición del usuario)
 
                         logger.info("✅ 5 productos creados correctamente.");
-                }
-
-                // ACTUALIZAR PRECIOS EXISTENTES (Parche para corregir precios mensuales ->
-                // diarios)
-                List<Producto> productos = productoRepository.findAll();
-                for (Producto p : productos) {
-                        boolean updated = false;
-                        if (p.getNombre().equals("Seguro de Viaje")) {
-                                p.setPrecioBase(new BigDecimal("1.50"));
-                                p.setImagenUrl("/vesta-web/images/productos/viaje-unique.png");
-                                updated = true;
-                        } else if (p.getNombre().equals("Seguro de Dispositivos")) {
-                                p.setPrecioBase(new BigDecimal("0.25"));
-                                p.setImagenUrl("/vesta-web/images/productos/movil-unique.png");
-                                updated = true;
-                        } else if (p.getNombre().equals("Seguro de Eventos")) {
-                                p.setPrecioBase(new BigDecimal("0.20"));
-                                updated = true;
-                        } else if (p.getNombre().equals("Seguro de Bicicleta")) {
-                                p.setPrecioBase(new BigDecimal("0.20"));
-                                updated = true;
-                        } else if (p.getNombre().equals("Seguro de Mascotas")) {
-                                p.setPrecioBase(new BigDecimal("1.00"));
-                                updated = true;
-                        } else if (p.getNombre().equals("Seguro de Equipaje")) {
-                                p.setPrecioBase(new BigDecimal("0.50")); // Ajustado a diario
-                                updated = true;
-                        } else if (p.getNombre().equals("Seguro Móvil Premium")) {
-                                p.setPrecioBase(new BigDecimal("0.45")); // Ajustado a diario (~13.5€/mes)
-                                updated = true;
-                        }
-
-                        if (updated) {
-                                productoRepository.save(p);
-                                logger.info("💰 Precio actualizado para: {} -> {}", p.getNombre(), p.getPrecioBase());
-                        }
                 }
 
                 // 3. Crear Póliza #1 (VINCULADA AL USUARIO DEMO)
