@@ -20,6 +20,7 @@ public class LoginDTO {
 
     // El frontend envía "contrasena"
     @NotBlank(message = "La contraseña es obligatoria")
+    @Size(max = 128, message = "Contraseña demasiado larga")
     @JsonProperty("contrasena")
     private String contrasena;
 }
