@@ -283,10 +283,11 @@ public class AuthController {
             String email = payload.get("email");
             String nombre = payload.get("nombre");
             String proveedor = payload.get("proveedor");
+            String providerId = payload.get("providerId");
 
-            logger.info("Social Login request: {} ({})", email, proveedor);
+            logger.info("Social Login request: {} ({}) ID: {}", email, proveedor, providerId);
 
-            AuthResponseDTO response = authService.socialLogin(email, nombre, proveedor);
+            AuthResponseDTO response = authService.socialLogin(email, nombre, proveedor, providerId);
 
             // Log Auditoría
             String clientIp = getClientIp(request);

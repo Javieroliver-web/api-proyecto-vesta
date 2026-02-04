@@ -184,11 +184,15 @@ public class UsuarioController {
     public ResponseEntity<?> linkOAuth(@PathVariable Long id, @RequestBody Map<String, String> payload) {
         String provider = payload.get("provider");
         String googleEmail = payload.get("googleEmail");
+        String providerId = payload.get("providerId");
 
         return usuarioRepository.findById(id)
                 .map(usuario -> {
-                    // Simplemente vincular el proveedor sin cambiar nada más
+                    // Vincular el proveedor y su ID único
                     usuario.setProvider(provider);
+                    if (providerId != null) {
+                        usuario.setProviderId(providerId);
+                    }
                     usuarioRepository.save(usuario);
 
                     // Log Auditoría

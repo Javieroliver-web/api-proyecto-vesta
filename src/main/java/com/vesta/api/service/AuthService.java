@@ -282,75 +282,90 @@ public class AuthService {
 
     /**
      * Login Social (Google/Apple)
-     * Recupera o crea el usuario automáticamente
+     * Recupera o crea el usuario automáticamente usando ID de proveedor
      */
     @Transactional
-    public AuthResponseDTO socialLogin(String email, String nombre, String proveedor) {
-        logger.info("Procesando login social para: {}", email);
+    public AuthResponseDTO socialLogin(String email, String nombre, String proveedor, String providerId) {
+        logger.info("Procesando login social para: {} ({}) ID: {}", email, proveedor, providerId);
 
-        // Buscar si existe
-        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email).orElse(null);
+        // 1. Intentar buscar por providerId (Prioridad máxima: vinculación fuerte)
+        Usuario usuario = null;
+        if (providerId != null && !providerId.isEmpty()) {
+            usuario = usuarioRepository.findByProviderId(providerId).orElse(null);
+        }
 
         if (usuario == null) {
-            // Usuario Nuevo: Registrar automáticamente PERO requerir confirmación
-            logger.info("Usuario nuevo detectado en social login. Registrando pendiente de confirmación...");
-            usuario = new Usuario();
-            usuario.setEmail(email);
-            usuario.setNombreCompleto(nombre);
-            usuario.setRol("USUARIO");
-            usuario.setEmailConfirmado(false); // Requiere confirmación manual por email
-            usuario.setProvider(proveedor); // Store OAuth provider ("google", "apple", etc.)
+            // 2. Si no existe por ID, buscar por Email (Legacy/First Time Link)
+            usuario = usuarioRepository.findByEmailIgnoreCase(email).orElse(null);
 
-            // Generar token de confirmación
-            String tokenConfirmacion = java.util.UUID.randomUUID().toString();
-            usuario.setConfirmationToken(tokenConfirmacion);
-
-            // Password aleatoria
-            usuario.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
-
-            usuario = usuarioRepository.save(usuario);
-
-            // Enviar email de confirmación
-            emailService.sendAccountConfirmationEmail(usuario.getEmail(), tokenConfirmacion,
-                    usuario.getNombreCompleto());
-
-            logger.info("Usuario creado y correo enviado. ID: {}", usuario.getId());
-
-            // Retornar sin token para indicar que falta verificar
-            return new AuthResponseDTO(
-                    null,
-                    usuario.getRol(),
-                    usuario.getNombreCompleto(),
-                    usuario.getId(),
-                    false);
-
-        } else {
-            // Usuario Existente
-
-            // Actualizar provider si es nuevo (vincular implícitamente)
-            if (usuario.getProvider() == null && proveedor != null) {
-                logger.info("Vinculando cuenta existente {} con proveedor {}", email, proveedor);
+            if (usuario == null) {
+                // CASO 3: Usuario Nuevo Absoluto
+                logger.info("Usuario nuevo detectado en social login. Registrando pendiente de confirmación...");
+                usuario = new Usuario();
+                usuario.setEmail(email);
+                usuario.setNombreCompleto(nombre);
+                usuario.setRol("USUARIO");
+                usuario.setEmailConfirmado(false); // Requiere confirmación
                 usuario.setProvider(proveedor);
-                usuarioRepository.save(usuario);
-            }
+                usuario.setProviderId(providerId); // Guardar el ID único
 
-            // VALIDACIÓN CRÍTICA: Verificar si el usuario está bloqueado
-            if (!Boolean.TRUE.equals(usuario.getActivo())) {
-                logger.warn("Intento de social login de usuario bloqueado: {}", email);
-                throw new RuntimeException(
-                        "Cuenta bloqueada por el administrador. Contacta con soporte para más información.");
-            }
+                // Token y Password
+                String tokenConfirmacion = java.util.UUID.randomUUID().toString();
+                usuario.setConfirmationToken(tokenConfirmacion);
+                usuario.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
 
-            if (!Boolean.TRUE.equals(usuario.getEmailConfirmado())) {
-                logger.warn("Usuario existente pero cuenta NO confirmada: {}", email);
-                // Opcional: Reenviar correo si ha pasado tiempo? Por ahora lanzamos error
-                throw new RuntimeException("Cuenta no verificada. Por favor, revisa tu email para activarla.");
+                usuario = usuarioRepository.save(usuario);
+
+                emailService.sendAccountConfirmationEmail(usuario.getEmail(), tokenConfirmacion,
+                        usuario.getNombreCompleto());
+
+                logger.info("Usuario creado y correo enviado. ID: {}", usuario.getId());
+
+                return new AuthResponseDTO(
+                        null,
+                        usuario.getRol(),
+                        usuario.getNombreCompleto(),
+                        usuario.getId(),
+                        false);
+
+            } else {
+                // CASO 2: Usuario existe por Email -> VINCULACIÓN AUTOMÁTICA
+                logger.info("Usuario encontrado por email. Vinculando ID de proveedor {}...", providerId);
+
+                // Si el usuario ya tenía otro providerId diferente, esto podría ser un
+                // conflicto de seguridad
+                // Pero asumimos que si tiene acceso al email, es el dueño.
+                if (usuario.getProviderId() == null) {
+                    usuario.setProvider(proveedor);
+                    usuario.setProviderId(providerId);
+                    usuario = usuarioRepository.save(usuario);
+                    logger.info("Vinculación de ID exitosa.");
+                } else if (!usuario.getProviderId().equals(providerId)) {
+                    logger.warn("ALERTA: El email {} ya está vinculado a otro ID de proveedor. Posible conflicto.",
+                            email);
+                    // Aquí podríamos lanzar error, pero dejamos pasar si es el mismo email
+                    // confiando en OAuth
+                    // Opcionalmente actualizar el ID si cambió (raro en Google/Apple)
+                }
             }
+        }
+
+        // --- A partir de aquí, usuario existe (ya sea por ID o Email vinculado) ---
+
+        // Validaciones comunes
+        if (!Boolean.TRUE.equals(usuario.getActivo())) {
+            logger.warn("Intento de social login de usuario bloqueado: {}", email);
+            throw new RuntimeException(
+                    "Cuenta bloqueada por el administrador. Contacta con soporte para más información.");
+        }
+
+        if (!Boolean.TRUE.equals(usuario.getEmailConfirmado())) {
+            logger.warn("Usuario existente pero cuenta NO confirmada: {}", email);
+            throw new RuntimeException("Cuenta no verificada. Por favor, revisa tu email para activarla.");
         }
 
         // 2FA Check
         if (Boolean.TRUE.equals(usuario.getTwoFactorEnabled())) {
-            // Generar token con rol limitado
             String tempToken = jwtUtil.generateToken(usuario.getEmail(), "PRE_VERIFICATION");
             return new AuthResponseDTO(
                     tempToken,
@@ -360,7 +375,7 @@ public class AuthService {
                     true);
         }
 
-        // Generar JWT si está confirmado
+        // Generar JWT
         String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
 
         return new AuthResponseDTO(
