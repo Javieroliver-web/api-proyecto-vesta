@@ -22,72 +22,73 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+        @Autowired
+        private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${cors.allowed.origins:*}")
-    private String allowedOrigins;
+        @Value("${cors.allowed.origins:*}")
+        private String allowedOrigins;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/productos/**").permitAll()
-                        .requestMatchers("/api/seguros/**").permitAll()
-                        .requestMatchers("/api/cookies/**").permitAll()
-                        .requestMatchers("/uploads/**").permitAll() // Permitir acceso a imágenes de siniestros
-                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .anyRequest().authenticated())
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login") // Use our custom login page
-                        .defaultSuccessUrl("/cliente/dashboard", true))
-                .sessionManagement(sess -> sess
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Filtro JWT antes de UsernamePasswordAuthenticationFilter
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable())
-                // Security Headers
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.deny())
-                        .xssProtection(xss -> xss.disable()) // Modern browsers have built-in XSS protection
-                        .contentTypeOptions(contentType -> contentType.disable())
-                        .httpStrictTransportSecurity(hsts -> hsts
-                                .includeSubDomains(true)
-                                .maxAgeInSeconds(31536000)));
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/api/auth/**").permitAll()
+                                                .requestMatchers(org.springframework.http.HttpMethod.GET,
+                                                                "/api/productos/**")
+                                                .permitAll()
+                                                .requestMatchers("/api/seguros/**").permitAll()
+                                                .requestMatchers("/api/cookies/**").permitAll()
+                                                .requestMatchers("/uploads/**").permitAll() // Permitir acceso a
+                                                                                            // imágenes de siniestros
+                                                .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                                .anyRequest().authenticated())
+                                .oauth2Login(oauth2 -> oauth2
+                                                .loginPage("/login") // Use our custom login page
+                                                .defaultSuccessUrl("/cliente/dashboard", true))
+                                .sessionManagement(sess -> sess
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                // Filtro JWT antes de UsernamePasswordAuthenticationFilter
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                                .formLogin(form -> form.disable())
+                                .httpBasic(basic -> basic.disable())
+                                // Security Headers
+                                .headers(headers -> headers
+                                                .frameOptions(frame -> frame.deny())
+                                                .httpStrictTransportSecurity(hsts -> hsts
+                                                                .includeSubDomains(true)
+                                                                .maxAgeInSeconds(31536000)));
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
 
-        // Configuración basada en entorno
-        // Use allowedOriginPatterns for both development and production to handle
-        // credentials correctly
-        // This avoids the "allowedOrigins cannot contain *" error and supports both
-        // wildcard and specific domains
-        List<String> origins = Arrays.asList(allowedOrigins.split(","));
-        configuration.setAllowedOriginPatterns(origins);
-        configuration.setAllowCredentials(true);
+                // Configuración basada en entorno
+                // Use allowedOriginPatterns for both development and production to handle
+                // credentials correctly
+                // This avoids the "allowedOrigins cannot contain *" error and supports both
+                // wildcard and specific domains
+                List<String> origins = Arrays.asList(allowedOrigins.split(","));
+                configuration.setAllowedOriginPatterns(origins);
+                configuration.setAllowCredentials(true);
 
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.setMaxAge(3600L);
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+                configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+                configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
+                configuration.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 }
