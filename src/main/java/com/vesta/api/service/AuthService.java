@@ -116,7 +116,8 @@ public class AuthService {
         }
 
         // 2FA Check
-        if (Boolean.TRUE.equals(usuario.getTwoFactorEnabled())) {
+        if (Boolean.TRUE.equals(usuario.getTwoFactorEnabled()) && usuario.getTwoFactorSecret() != null
+                && !usuario.getTwoFactorSecret().isEmpty()) {
             // Generar token con rol limitado
             String tempToken = jwtUtil.generateToken(usuario.getEmail(), "PRE_VERIFICATION");
             return new AuthResponseDTO(

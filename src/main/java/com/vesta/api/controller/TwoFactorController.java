@@ -34,9 +34,10 @@ public class TwoFactorController {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         String secret = twoFactorService.generateNewSecret();
-        // Guardar secreto temporalmente o permanentemente (pero disabled)
-        // Guardamos directamente en usuario, pero enabled=false
+        // Guardar secreto y DESACTIVAR temporalmente para evitar bloqueos si no se
+        // completa
         usuario.setTwoFactorSecret(secret);
+        usuario.setTwoFactorEnabled(false); // Resetear estado a no habilitado hasta verificar
         usuarioRepository.save(usuario);
 
         String qrUrl = twoFactorService.getQrCodeUrl(secret, email);
