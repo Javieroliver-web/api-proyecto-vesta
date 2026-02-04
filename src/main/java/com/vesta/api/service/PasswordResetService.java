@@ -72,6 +72,10 @@ public class PasswordResetService {
             if (usuario.getMovil() == null || usuario.getMovil().isEmpty()) {
                 throw new RuntimeException("El usuario no tiene un número de móvil registrado");
             }
+            if (!smsService.isEnabled()) {
+                throw new RuntimeException(
+                        "El servicio de SMS no está disponible temporalmente. Por favor, intenta por email.");
+            }
         }
 
         // Eliminar tokens anteriores del usuario

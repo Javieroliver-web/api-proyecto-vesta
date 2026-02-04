@@ -17,13 +17,13 @@ public class SmsService {
 
     private static final Logger logger = LoggerFactory.getLogger(SmsService.class);
 
-    @Value("${twilio.account.sid}")
+    @Value("${vesta.twilio.account.sid}")
     private String accountSid;
 
-    @Value("${twilio.auth.token}")
+    @Value("${vesta.twilio.auth.token}")
     private String authToken;
 
-    @Value("${twilio.messaging.service.sid}")
+    @Value("${vesta.twilio.messaging.service.sid}")
     private String messagingServiceSid;
 
     @Value("${sms.enabled:true}")
@@ -31,7 +31,12 @@ public class SmsService {
 
     @PostConstruct
     public void init() {
-        if (smsEnabled && accountSid != null && !accountSid.isEmpty()) {
+        // Verificar si las credenciales están presentes
+        boolean credentialsPresent = accountSid != null && !accountSid.isEmpty() &&
+                authToken != null && !authToken.isEmpty() &&
+                messagingServiceSid != null && !messagingServiceSid.isEmpty();
+
+        if (smsEnabled && credentialsPresent) {
             try {
                 Twilio.init(accountSid, authToken);
                 logger.info("✅ Twilio SMS service initialized successfully");
@@ -40,7 +45,8 @@ public class SmsService {
                 smsEnabled = false;
             }
         } else {
-            logger.warn("⚠️ SMS service is disabled or not configured");
+            logger.warn("⚠️ SMS service is disabled or not configured correctly");
+            smsEnabled = false; // Explicitly disable if config is missing
         }
     }
 
@@ -63,10 +69,20 @@ public class SmsService {
                     "Vesta: Tu código es %s. Válido 5 min.",
                     code);
 
-            Message message = Message.creator(
-                    new PhoneNumber(toPhoneNumber),
-                    messagingServiceSid,
-                    messageBody).create();
+            Message message;
+            if (messagingServiceSid.startsWith("MG")) {
+                // Es un Messaging Service SID
+                message = Message.creator(
+                        new PhoneNumber(toPhoneNumber),
+                        messagingServiceSid,
+                        messageBody).create();
+            } else {
+                // Asumimos que es un número de teléfono
+                message = Message.creator(
+                        new PhoneNumber(toPhoneNumber),
+                        new PhoneNumber(messagingServiceSid),
+                        messageBody).create();
+            }
 
             logger.info("✅ SMS enviado exitosamente a {} - SID: {}", toPhoneNumber, message.getSid());
 

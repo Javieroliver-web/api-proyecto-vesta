@@ -221,7 +221,7 @@ public class UsuarioController {
 
                     // Desvincular OAuth
                     usuario.setProvider(null);
-                    Usuario actualizado = usuarioRepository.save(usuario);
+                    usuarioRepository.save(usuario);
 
                     // Log Auditoría
                     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
