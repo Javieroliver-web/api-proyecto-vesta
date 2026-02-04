@@ -1,169 +1,16 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2026-01-26T00:00:00.000Z",
+  "__export_date": "2026-02-04T19:15:00.000Z",
   "__export_source": "insomnia.desktop.app:v2023.5.8",
   "resources": [
-    {
-      "_id": "req_auth_login",
-      "parentId": "fld_auth",
-      "modified": 1706227200000,
-      "created": 1706227200000,
-      "url": "{{ _.base_url }}/api/auth/login",
-      "name": "Login",
-      "description": "Autenticación de usuario",
-      "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"correoElectronico\": \"admin@vesta.com\",\n  \"password\": \"admin123\"\n}"
-      },
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1706227200000,
-      "_type": "request"
-    },
-    {
-      "_id": "fld_auth",
-      "parentId": "wrk_vesta",
-      "modified": 1706227200000,
-      "created": 1706227200000,
-      "name": "Authentication",
-      "description": "",
-      "environment": {},
-      "environmentPropertyOrder": null,
-      "metaSortKey": -1706227200000,
-      "_type": "request_group"
-    }
-,
-    {
-      "_id": "req_auth_register",
-      "parentId": "fld_auth",
-      "modified": 1706227200000,
-      "created": 1706227200000,
-      "url": "{{ _.base_url }}/api/auth/register",
-      "name": "Register",
-      "description": "Registro de nuevo usuario",
-      "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"nombreCompleto\": \"Test User\",\n  \"correoElectronico\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"movil\": \"+34600000000\"\n}"
-      },
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1706227100000,
-      "_type": "request"
-    },
-    {
-      "_id": "req_auth_test",
-      "parentId": "fld_auth",
-      "modified": 1706227200000,
-      "created": 1706227200000,
-      "url": "{{ _.base_url }}/api/auth/test",
-      "name": "Test Auth Endpoint",
-      "description": "Verificar que la API funciona",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [],
-      "authentication": {},
-      "metaSortKey": -1706227000000,
-      "_type": "request"
-    },
-    {
-      "_id": "req_products_all",
-      "parentId": "fld_products",
-      "modified": 1706227200000,
-      "created": 1706227200000,
-      "url": "{{ _.base_url }}/api/productos",
-      "name": "Get All Products",
-      "description": "Obtener todos los productos",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.auth_token }}"
-      },
-      "metaSortKey": -1706226900000,
-      "_type": "request"
-    }
-,
-    {
-      "_id": "fld_products",
-      "parentId": "wrk_vesta",
-      "modified": 1706227200000,
-      "created": 1706227200000,
-      "name": "Products",
-      "description": "",
-      "environment": {},
-      "environmentPropertyOrder": null,
-      "metaSortKey": -1706226900000,
-      "_type": "request_group"
-    },
-    {
-      "_id": "req_products_by_id",
-      "parentId": "fld_products",
-      "modified": 1706227200000,
-      "created": 1706227200000,
-      "url": "{{ _.base_url }}/api/productos/1",
-      "name": "Get Product by ID",
-      "description": "Obtener producto por ID",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.auth_token }}"
-      },
-      "metaSortKey": -1706226800000,
-      "_type": "request"
-    },
-    {
-      "_id": "req_products_search",
-      "parentId": "fld_products",
-      "modified": 1706227200000,
-      "created": 1706227200000,
-      "url": "{{ _.base_url }}/api/productos/buscar",
-      "name": "Search Products",
-      "description": "Buscar productos por término",
-      "method": "GET",
-      "body": {},
-      "parameters": [
-        {
-          "name": "q",
-          "value": "seguro"
-        }
-      ],
-      "headers": [],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.auth_token }}"
-      },
-      "metaSortKey": -1706226700000,
-      "_type": "request"
-    }
-,
     {
       "_id": "wrk_vesta",
       "parentId": null,
       "modified": 1706227200000,
       "created": 1706227200000,
-      "name": "Vesta API",
-      "description": "API completa para el proyecto Vesta",
+      "name": "Vesta API - Complete Collection",
+      "description": "Colección completa de endpoints para el proyecto Vesta",
       "scope": "collection",
       "_type": "workspace"
     },
@@ -174,11 +21,14 @@
       "created": 1706227200000,
       "name": "Base Environment",
       "data": {
-        "base_url": "https://vesta-web.duckdns.org",
+        "base_url": "https://vesta-web.duckdns.org/vesta-api",
         "auth_token": ""
       },
       "dataPropertyOrder": {
-        "&": ["base_url", "auth_token"]
+        "&": [
+          "base_url",
+          "auth_token"
+        ]
       },
       "color": null,
       "isPrivate": false,
@@ -196,7 +46,10 @@
         "auth_token": ""
       },
       "dataPropertyOrder": {
-        "&": ["base_url", "auth_token"]
+        "&": [
+          "base_url",
+          "auth_token"
+        ]
       },
       "color": "#7d69cb",
       "isPrivate": false,
@@ -204,76 +57,1306 @@
       "_type": "environment"
     },
     {
-      "_id": "env_prod",
+      "_id": "fld_auth",
       "parentId": "wrk_vesta",
       "modified": 1706227200000,
       "created": 1706227200000,
-      "name": "Production",
-      "data": {
-        "base_url": "https://vesta-web.duckdns.org",
-        "auth_token": ""
-      },
-      "dataPropertyOrder": {
-        "&": ["base_url", "auth_token"]
-      },
-      "color": "#d9534f",
-      "isPrivate": false,
-      "metaSortKey": 1706227400000,
-      "_type": "environment"
+      "name": "🔐 Authentication",
+      "description": "Autenticación y gestión de cuentas",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706227200000,
+      "_type": "request_group"
     },
     {
-      "_id": "env_http",
-      "parentId": "wrk_vesta",
+      "_id": "req_auth_login",
+      "parentId": "fld_auth",
       "modified": 1706227200000,
       "created": 1706227200000,
-      "name": "HTTP (vesta-web.duckdns.org)",
-      "data": {
-        "base_url": "http://vesta-web.duckdns.org",
-        "auth_token": ""
+      "url": "{{ _.base_url }}/api/auth/login",
+      "name": "Login",
+      "description": "POST /api/auth/login",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"correoElectronico\\\": \\\"admin@vesta.com\\\",\\n  \\\"contrasena\\\": \\\"admin123\\\"\\n}"
       },
-      "dataPropertyOrder": {
-        "&": ["base_url", "auth_token"]
-      },
-      "color": "#17a2b8",
-      "isPrivate": false,
-      "metaSortKey": 1706227450000,
-      "_type": "environment"
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1706227200000,
+      "_type": "request"
     },
     {
-      "_id": "env_https",
-      "parentId": "wrk_vesta",
+      "_id": "req_auth_register",
+      "parentId": "fld_auth",
       "modified": 1706227200000,
       "created": 1706227200000,
-      "name": "HTTPS (vesta-web2.duckdns.org)",
-      "data": {
-        "base_url": "https://vesta-web2.duckdns.org",
-        "auth_token": ""
+      "url": "{{ _.base_url }}/api/auth/register",
+      "name": "Register",
+      "description": "POST /api/auth/register",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"nombreCompleto\\\": \\\"Test User\\\",\\n  \\\"correoElectronico\\\": \\\"test@example.com\\\",\\n  \\\"contrasena\\\": \\\"Test123!\\\",\\n  \\\"movil\\\": \\\"+34600000000\\\"\\n}"
       },
-      "dataPropertyOrder": {
-        "&": ["base_url", "auth_token"]
-      },
-      "color": "#28a745",
-      "isPrivate": false,
-      "metaSortKey": 1706227475000,
-      "_type": "environment"
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1706227190000,
+      "_type": "request"
     },
     {
-      "_id": "env_direct",
+      "_id": "req_auth_forgot_password",
+      "parentId": "fld_auth",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/forgot-password",
+      "name": "Forgot Password",
+      "description": "POST /api/auth/forgot-password",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"email\\\": \\\"user@example.com\\\",\\n  \\\"metodo\\\": \\\"EMAIL\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1706227180000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_auth_reset_password",
+      "parentId": "fld_auth",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/reset-password",
+      "name": "Reset Password",
+      "description": "POST /api/auth/reset-password",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"token\\\": \\\"CODIGO_6_DIGITOS\\\",\\n  \\\"newPassword\\\": \\\"NewPass123!\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1706227170000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_auth_confirm_account",
+      "parentId": "fld_auth",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/confirm-account?token=TOKEN_HERE",
+      "name": "Confirm Account",
+      "description": "GET /api/auth/confirm-account",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "token",
+          "value": "TOKEN_HERE"
+        }
+      ],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1706227160000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_auth_social_login",
+      "parentId": "fld_auth",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/social-login",
+      "name": "Social Login (Google)",
+      "description": "POST /api/auth/social-login",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"provider\\\": \\\"GOOGLE\\\",\\n  \\\"token\\\": \\\"GOOGLE_ID_TOKEN\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1706227150000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_auth_test",
+      "parentId": "fld_auth",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/test",
+      "name": "Test Endpoint",
+      "description": "GET /api/auth/test",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1706227140000,
+      "_type": "request"
+    },
+    {
+      "_id": "fld_2fa",
       "parentId": "wrk_vesta",
       "modified": 1706227200000,
       "created": 1706227200000,
-      "name": "Direct IP (34.175.81.8)",
-      "data": {
-        "base_url": "http://34.175.81.8:8080",
-        "auth_token": ""
+      "name": "🔢 2FA - Two Factor Auth",
+      "description": "Autenticación de dos factores",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706227100000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_2fa_setup",
+      "parentId": "fld_2fa",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/2fa/setup",
+      "name": "Setup 2FA",
+      "description": "GET /api/auth/2fa/setup",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
       },
-      "dataPropertyOrder": {
-        "&": ["base_url", "auth_token"]
+      "metaSortKey": -1706227100000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_2fa_verify_setup",
+      "parentId": "fld_2fa",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/2fa/verify-setup",
+      "name": "Verify 2FA Setup",
+      "description": "POST /api/auth/2fa/verify-setup",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"code\\\": \\\"123456\\\"\\n}"
       },
-      "color": "#6c757d",
-      "isPrivate": false,
-      "metaSortKey": 1706227500000,
-      "_type": "environment"
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706227090000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_2fa_validate_login",
+      "parentId": "fld_2fa",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/2fa/validate-login",
+      "name": "Validate 2FA at Login",
+      "description": "POST /api/auth/2fa/validate-login",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"temporaryToken\\\": \\\"TEMP_TOKEN\\\",\\n  \\\"code\\\": \\\"123456\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1706227080000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_2fa_disable",
+      "parentId": "fld_2fa",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auth/2fa/disable",
+      "name": "Disable 2FA",
+      "description": "POST /api/auth/2fa/disable",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"code\\\": \\\"123456\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706227070000,
+      "_type": "request"
+    },
+    {
+      "_id": "fld_products",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "📦 Products",
+      "description": "Productos de seguros",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706226900000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_products_all",
+      "parentId": "fld_products",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/productos",
+      "name": "Get All Products",
+      "description": "GET /api/productos",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1706226900000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_products_by_id",
+      "parentId": "fld_products",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/productos/1",
+      "name": "Get Product by ID",
+      "description": "GET /api/productos/{id}",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1706226890000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_products_search",
+      "parentId": "fld_products",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/productos/buscar?q=viaje",
+      "name": "Search Products",
+      "description": "GET /api/productos/buscar",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "q",
+          "value": "viaje"
+        }
+      ],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1706226880000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_products_by_category",
+      "parentId": "fld_products",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/productos/categoria/Viaje",
+      "name": "Get Products by Category",
+      "description": "GET /api/productos/categoria/{categoria}",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1706226870000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_products_create",
+      "parentId": "fld_products",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/productos",
+      "name": "Create Product (Admin)",
+      "description": "POST /api/productos",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"nombre\\\": \\\"Nuevo Seguro\\\",\\n  \\\"descripcion\\\": \\\"Descripción del seguro\\\",\\n  \\\"precioBase\\\": 29.99,\\n  \\\"categoria\\\": \\\"Viaje\\\",\\n  \\\"activo\\\": true\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226860000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_products_update",
+      "parentId": "fld_products",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/productos/1",
+      "name": "Update Product (Admin)",
+      "description": "PUT /api/productos/{id}",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"nombre\\\": \\\"Seguro Actualizado\\\",\\n  \\\"precioBase\\\": 39.99\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226850000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_products_delete",
+      "parentId": "fld_products",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/productos/1",
+      "name": "Delete Product (Admin)",
+      "description": "DELETE /api/productos/{id}",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226840000,
+      "_type": "request"
+    },
+    {
+      "_id": "fld_orders",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "🛒 Orders",
+      "description": "Gestión de pedidos",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706226800000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_orders_checkout",
+      "parentId": "fld_orders",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/ordenes/checkout",
+      "name": "Checkout",
+      "description": "POST /api/ordenes/checkout",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"productoId\\\": 1,\\n  \\\"cantidad\\\": 1\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226800000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_orders_checkout_tpv",
+      "parentId": "fld_orders",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/ordenes/checkout-tpv",
+      "name": "Checkout with TPV",
+      "description": "POST /api/ordenes/checkout-tpv",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"productoId\\\": 1,\\n  \\\"datosPago\\\": {...}\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226790000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_orders_all",
+      "parentId": "fld_orders",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/ordenes",
+      "name": "Get All Orders",
+      "description": "GET /api/ordenes",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226780000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_orders_pending",
+      "parentId": "fld_orders",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/ordenes/usuario/1/pendientes",
+      "name": "Get Pending Orders by User",
+      "description": "GET /api/ordenes/usuario/{usuarioId}/pendientes",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226770000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_orders_update_status",
+      "parentId": "fld_orders",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/ordenes/1/estado",
+      "name": "Update Order Status",
+      "description": "PUT /api/ordenes/{id}/estado",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"estado\\\": \\\"COMPLETADO\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226760000,
+      "_type": "request"
+    },
+    {
+      "_id": "fld_polizas",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "📄 Policies (Pólizas)",
+      "description": "Gestión de pólizas de seguros",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706226700000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_polizas_all",
+      "parentId": "fld_polizas",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/polizas",
+      "name": "Get All Policies",
+      "description": "GET /api/polizas",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226700000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_polizas_by_user",
+      "parentId": "fld_polizas",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/polizas/usuario",
+      "name": "Get User Policies",
+      "description": "GET /api/polizas/usuario",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226690000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_polizas_contratar",
+      "parentId": "fld_polizas",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/polizas/contratar",
+      "name": "Contract Policy",
+      "description": "POST /api/polizas/contratar",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"productoId\\\": 1,\\n  \\\"usuarioId\\\": 1\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226680000,
+      "_type": "request"
+    },
+    {
+      "_id": "fld_siniestros",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "⚠️ Claims (Siniestros)",
+      "description": "Gestión de siniestros",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706226600000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_siniestros_all",
+      "parentId": "fld_siniestros",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/siniestros",
+      "name": "Get All Claims",
+      "description": "GET /api/siniestros",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226600000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_siniestros_create",
+      "parentId": "fld_siniestros",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/siniestros",
+      "name": "Create Claim (with file upload)",
+      "description": "POST /api/siniestros (multipart/form-data)",
+      "method": "POST",
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "polizaId",
+            "value": "1",
+            "type": "text"
+          },
+          {
+            "name": "descripcion",
+            "value": "Descripción del siniestro",
+            "type": "text"
+          },
+          {
+            "name": "file",
+            "value": "",
+            "type": "file"
+          }
+        ]
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226590000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_siniestros_update_status",
+      "parentId": "fld_siniestros",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/siniestros/1/estado",
+      "name": "Update Claim Status",
+      "description": "PUT /api/siniestros/{id}/estado",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"estado\\\": \\\"APROBADO\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226580000,
+      "_type": "request"
+    },
+    {
+      "_id": "fld_users",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "👤 Users",
+      "description": "Gestión de usuarios",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706226500000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_users_all",
+      "parentId": "fld_users",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/usuarios",
+      "name": "Get All Users",
+      "description": "GET /api/usuarios",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226500000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_users_by_id",
+      "parentId": "fld_users",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/usuarios/1",
+      "name": "Get User by ID",
+      "description": "GET /api/usuarios/{id}",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226490000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_users_update",
+      "parentId": "fld_users",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/usuarios/1",
+      "name": "Update User",
+      "description": "PUT /api/usuarios/{id}",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"nombreCompleto\\\": \\\"Nombre Actualizado\\\",\\n  \\\"movil\\\": \\\"+34611222333\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226480000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_users_link_oauth",
+      "parentId": "fld_users",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/usuarios/1/link-oauth",
+      "name": "Link OAuth Account",
+      "description": "POST /api/usuarios/{id}/link-oauth",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"provider\\\": \\\"GOOGLE\\\",\\n  \\\"providerUserId\\\": \\\"google_id_here\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226470000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_users_unlink_oauth",
+      "parentId": "fld_users",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/usuarios/1/unlink-oauth",
+      "name": "Unlink OAuth Account",
+      "description": "POST /api/usuarios/{id}/unlink-oauth",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"provider\\\": \\\"GOOGLE\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226460000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_users_delete",
+      "parentId": "fld_users",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/usuarios/1",
+      "name": "Delete User",
+      "description": "DELETE /api/usuarios/{id}",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226450000,
+      "_type": "request"
+    },
+    {
+      "_id": "fld_innovation",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "🤖 Innovation (AI/Weather)",
+      "description": "Funcionalidades de IA y clima",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706226400000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_innovation_chat",
+      "parentId": "fld_innovation",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/innovation/chat",
+      "name": "Chatbot Query",
+      "description": "POST /api/innovation/chat",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"pregunta\\\": \\\"¿Qué cubre el seguro de viaje?\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226400000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_innovation_recommendation",
+      "parentId": "fld_innovation",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/innovation/recommendation",
+      "name": "Get AI Recommendation",
+      "description": "GET /api/innovation/recommendation",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226390000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_weather_search",
+      "parentId": "fld_innovation",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/clima/buscar?ciudad=Valencia",
+      "name": "Get Weather",
+      "description": "GET /api/clima/buscar",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "ciudad",
+          "value": "Valencia"
+        }
+      ],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1706226380000,
+      "_type": "request"
+    },
+    {
+      "_id": "fld_gdpr",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "🔒 GDPR (Data Rights)",
+      "description": "Derechos de protección de datos",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706226300000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_gdpr_access",
+      "parentId": "fld_gdpr",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/derechos/solicitar-acceso",
+      "name": "Request Data Access",
+      "description": "POST /api/derechos/solicitar-acceso",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"usuarioId\\\": 1,\\n  \\\"detalles\\\": \\\"Solicito acceso a mis datos\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226300000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_gdpr_rectification",
+      "parentId": "fld_gdpr",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/derechos/solicitar-rectificacion",
+      "name": "Request Data Rectification",
+      "description": "POST /api/derechos/solicitar-rectificacion",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"usuarioId\\\": 1,\\n  \\\"detalles\\\": \\\"Datos incorrectos...\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226290000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_gdpr_deletion",
+      "parentId": "fld_gdpr",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/derechos/solicitar-supresion",
+      "name": "Request Data Deletion",
+      "description": "POST /api/derechos/solicitar-supresion",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"usuarioId\\\": 1,\\n  \\\"detalles\\\": \\\"Solicito eliminar mis datos\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226280000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_gdpr_portability",
+      "parentId": "fld_gdpr",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/derechos/solicitar-portabilidad",
+      "name": "Request Data Portability",
+      "description": "POST /api/derechos/solicitar-portabilidad",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"usuarioId\\\": 1,\\n  \\\"detalles\\\": \\\"Quiero exportar mis datos\\\"\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226270000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_gdpr_my_requests",
+      "parentId": "fld_gdpr",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/derechos/mis-solicitudes/1",
+      "name": "Get My Data Requests",
+      "description": "GET /api/derechos/mis-solicitudes/{usuarioId}",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226260000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_gdpr_all_requests",
+      "parentId": "fld_gdpr",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/derechos/todas",
+      "name": "Get All Data Requests (Admin)",
+      "description": "GET /api/derechos/todas",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226250000,
+      "_type": "request"
+    },
+    {
+      "_id": "fld_misc",
+      "parentId": "wrk_vesta",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "name": "🔧 Misc (TPV, Cookies, Stats, Reports)",
+      "description": "Otros endpoints",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1706226200000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_tpv_process_payment",
+      "parentId": "fld_misc",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/tpv/procesar-pago",
+      "name": "TPV - Process Payment",
+      "description": "POST /api/tpv/procesar-pago",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"numeroTarjeta\\\": \\\"4111111111111111\\\",\\n  \\\"monto\\\": 99.99\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1706226200000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_tpv_test_cards",
+      "parentId": "fld_misc",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/tpv/tarjetas-prueba",
+      "name": "TPV - Test Cards",
+      "description": "GET /api/tpv/tarjetas-prueba",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1706226190000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_cookies_save",
+      "parentId": "fld_misc",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/cookies/consentimiento",
+      "name": "Save Cookie Consent",
+      "description": "POST /api/cookies/consentimiento",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\\n  \\\"usuarioId\\\": 1,\\n  \\\"aceptado\\\": true\\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226180000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_cookies_get",
+      "parentId": "fld_misc",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/cookies/consentimiento/1",
+      "name": "Get Cookie Consent",
+      "description": "GET /api/cookies/consentimiento/{usuarioId}",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226170000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_stats_get",
+      "parentId": "fld_misc",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/admin/estadisticas",
+      "name": "Get Statistics (Admin)",
+      "description": "GET /api/admin/estadisticas",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226160000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_audit_logs",
+      "parentId": "fld_misc",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auditoria",
+      "name": "Get Audit Logs",
+      "description": "GET /api/auditoria",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226150000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_audit_export",
+      "parentId": "fld_misc",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/auditoria/exportar/admin@vesta.com",
+      "name": "Export Audit Logs",
+      "description": "GET /api/auditoria/exportar/{email}",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226140000,
+      "_type": "request"
+    },
+    {
+      "_id": "req_report_pdf",
+      "parentId": "fld_misc",
+      "modified": 1706227200000,
+      "created": 1706227200000,
+      "url": "{{ _.base_url }}/api/reportes/polizas/pdf?polizaId=1",
+      "name": "Generate Policy PDF",
+      "description": "GET /api/reportes/polizas/pdf",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "polizaId",
+          "value": "1"
+        }
+      ],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.auth_token }}"
+      },
+      "metaSortKey": -1706226130000,
+      "_type": "request"
     }
   ]
 }
