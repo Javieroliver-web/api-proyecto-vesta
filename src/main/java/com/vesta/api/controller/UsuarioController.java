@@ -36,16 +36,39 @@ public class UsuarioController {
     private RecommendationService recommendationService;
 
     @Autowired
-    private PolizaRepository polizaRepository;
+    private com.vesta.api.repository.PolizaRepository polizaRepository;
 
     @Autowired
-    private SiniestroRepository siniestroRepository;
+    private com.vesta.api.repository.SiniestroRepository siniestroRepository;
 
     @Autowired
-    private PasswordResetTokenRepository passwordResetTokenRepository;
+    private com.vesta.api.repository.PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Autowired
     private AuditoriaService auditoriaService;
+
+    @Autowired
+    private jakarta.servlet.http.HttpServletRequest request;
+
+    /**
+     * Helper para obtener la IP real del cliente
+     */
+    private String getClientIp() {
+        if (request == null)
+            return "";
+        String remoteAddr = request.getHeader("X-Forwarded-For");
+        if (remoteAddr == null || remoteAddr.isEmpty() || "unknown".equalsIgnoreCase(remoteAddr)) {
+            remoteAddr = request.getHeader("X-FORWARDED-FOR");
+        }
+        if (remoteAddr != null && !remoteAddr.isEmpty() && !"unknown".equalsIgnoreCase(remoteAddr)) {
+            return remoteAddr.split(",")[0].trim();
+        }
+        remoteAddr = request.getHeader("X-Real-IP");
+        if (remoteAddr != null && !remoteAddr.isEmpty() && !"unknown".equalsIgnoreCase(remoteAddr)) {
+            return remoteAddr;
+        }
+        return request.getRemoteAddr();
+    }
 
     @GetMapping
     public ResponseEntity<List<Usuario>> listarUsuarios() {
@@ -173,7 +196,7 @@ public class UsuarioController {
                     if (updates.containsKey("activo"))
                         detalleLog += " (Activo: " + usuario.getActivo() + ")";
 
-                    auditoriaService.registrarAccion(auth.getName(), accionLog, detalleLog, null);
+                    auditoriaService.registrarAccion(auth.getName(), accionLog, detalleLog, getClientIp());
 
                     return ResponseEntity.ok(actualizado);
                 })
@@ -198,9 +221,9 @@ public class UsuarioController {
                     // Log Auditoría
                     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
                     auditoriaService.registrarAccion(auth.getName(), "LINK_OAUTH",
-                            "Usuario vinculó cuenta OAuth " + provider + " (" + googleEmail + ") a su cuenta: "
+                            "Vinculación con provider: " + provider + " (" + googleEmail + ") a su cuenta: "
                                     + usuario.getEmail(),
-                            null);
+                            getClientIp());
 
                     return ResponseEntity
                             .ok(Map.of("message", "Cuenta de Google vinculada correctamente a tu usuario actual."));
@@ -226,7 +249,7 @@ public class UsuarioController {
                     // Log Auditoría
                     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
                     auditoriaService.registrarAccion(auth.getName(), "UNLINK_OAUTH",
-                            "Usuario desvinculó cuenta OAuth: " + usuario.getEmail(), null);
+                            "Usuario desvinculó cuenta OAuth: " + usuario.getEmail(), getClientIp());
 
                     return ResponseEntity.ok(Map.of("message", "Cuenta de Google desvinculada correctamente."));
                 })
@@ -284,8 +307,7 @@ public class UsuarioController {
 
                 // Log Auditoría
                 auditoriaService.registrarAccion(auth.getName(), "DELETE_USER",
-                        "Usuario eliminado: " + usuario.getEmail(),
-                        null);
+                        "Usuario eliminado: " + usuario.getEmail(), getClientIp());
 
                 return ResponseEntity.ok(Map.of("message", "Usuario eliminado correctamente"));
             } catch (Exception e) {

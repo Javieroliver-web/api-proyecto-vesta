@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.vesta.api.util.IpUtils;
 import java.net.URI; // Importante
 
 import java.util.HashMap;
@@ -44,20 +45,6 @@ public class AuthController {
     private String frontendUrl;
 
     /**
-     * Helper para obtener la IP real del cliente
-     */
-    private String getClientIp(jakarta.servlet.http.HttpServletRequest request) {
-        String remoteAddr = "";
-        if (request != null) {
-            remoteAddr = request.getHeader("X-FORWARDED-FOR");
-            if (remoteAddr == null || "".equals(remoteAddr)) {
-                remoteAddr = request.getRemoteAddr();
-            }
-        }
-        return remoteAddr;
-    }
-
-    /**
      * Endpoint de login
      * 
      * @param loginDTO Credenciales del usuario
@@ -72,7 +59,7 @@ public class AuthController {
             AuthResponseDTO response = authService.login(loginDTO);
 
             // Log Auditoría
-            String clientIp = getClientIp(request);
+            String clientIp = IpUtils.getClientIp(request);
             auditoriaService.registrarAccion(loginDTO.getCorreoElectronico(), "LOGIN_SUCCESS",
                     "Inicio de sesión exitoso", clientIp);
 
@@ -81,7 +68,7 @@ public class AuthController {
 
         } catch (RuntimeException e) {
             // Log Auditoría Fallo
-            String clientIp = getClientIp(request);
+            String clientIp = IpUtils.getClientIp(request);
             auditoriaService.registrarAccion(loginDTO.getCorreoElectronico(), "LOGIN_FAILED",
                     "Fallo de autenticación: " + e.getMessage(), clientIp);
 
@@ -290,7 +277,7 @@ public class AuthController {
             AuthResponseDTO response = authService.socialLogin(email, nombre, proveedor, providerId);
 
             // Log Auditoría
-            String clientIp = getClientIp(request);
+            String clientIp = IpUtils.getClientIp(request);
             auditoriaService.registrarAccion(email, "LOGIN_SOCIAL", "Login con provider: " + proveedor, clientIp);
 
             return ResponseEntity.ok(ApiResponse.success("Login social exitoso", response));
