@@ -17,6 +17,11 @@ public class AuditoriaService {
         auditoriaRepository.save(log);
     }
 
+    public org.springframework.data.domain.Page<Auditoria> obtenerLogsPaginados(
+            org.springframework.data.domain.Pageable pageable) {
+        return auditoriaRepository.findAll(pageable);
+    }
+
     public List<Auditoria> obtenerUltimosLogs() {
         return auditoriaRepository.findAllByOrderByFechaDesc();
     }

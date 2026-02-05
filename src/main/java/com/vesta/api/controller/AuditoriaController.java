@@ -16,8 +16,19 @@ public class AuditoriaController {
     private AuditoriaService auditoriaService;
 
     @GetMapping
-    public ResponseEntity<List<Auditoria>> obtenerLogs() {
-        return ResponseEntity.ok(auditoriaService.obtenerUltimosLogs());
+    public ResponseEntity<org.springframework.data.domain.Page<Auditoria>> obtenerLogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "fecha") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction) {
+
+        org.springframework.data.domain.Sort sort = direction.equalsIgnoreCase("desc")
+                ? org.springframework.data.domain.Sort.by(sortBy).descending()
+                : org.springframework.data.domain.Sort.by(sortBy).ascending();
+
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size,
+                sort);
+        return ResponseEntity.ok(auditoriaService.obtenerLogsPaginados(pageable));
     }
 
     @PostMapping("/exportar")

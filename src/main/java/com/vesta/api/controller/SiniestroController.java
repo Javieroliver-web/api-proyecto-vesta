@@ -39,8 +39,19 @@ public class SiniestroController {
     private FraudService fraudService;
 
     @GetMapping
-    public ResponseEntity<List<Siniestro>> listarSiniestros() {
-        return ResponseEntity.ok(siniestroRepository.findAll());
+    public ResponseEntity<org.springframework.data.domain.Page<Siniestro>> listarSiniestros(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "fecha") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction) {
+
+        org.springframework.data.domain.Sort sort = direction.equalsIgnoreCase("desc")
+                ? org.springframework.data.domain.Sort.by(sortBy).descending()
+                : org.springframework.data.domain.Sort.by(sortBy).ascending();
+
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size,
+                sort);
+        return ResponseEntity.ok(siniestroRepository.findAll(pageable));
     }
 
     @PostMapping
