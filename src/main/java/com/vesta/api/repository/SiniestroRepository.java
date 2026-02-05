@@ -10,4 +10,13 @@ public interface SiniestroRepository extends JpaRepository<Siniestro, Long> {
     java.util.List<java.util.Map<String, Object>> obtenerSiniestrosPorCategoria();
 
     void deleteByPoliza(com.vesta.api.entity.Poliza poliza); // Para cascading delete
+
+    org.springframework.data.domain.Page<Siniestro> findByEstado(String estado,
+            org.springframework.data.domain.Pageable pageable);
+
+    org.springframework.data.domain.Page<Siniestro> findByEstadoAndDescripcionContainingIgnoreCase(String estado,
+            String descripcion, org.springframework.data.domain.Pageable pageable);
+
+    org.springframework.data.domain.Page<Siniestro> findByDescripcionContainingIgnoreCaseOrEstadoContainingIgnoreCase(
+            String descripcion, String estado, org.springframework.data.domain.Pageable pageable);
 }

@@ -51,6 +51,15 @@ public class UsuarioService {
         return usuarioRepository.findAll(pageable);
     }
 
+    public Page<Usuario> findAllFiltered(Pageable pageable, String keyword, String role, String status) {
+        // Normalizar strings vacíos a null para el Query
+        String k = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
+        String r = (role != null && !role.trim().isEmpty() && !"ALL".equals(role)) ? role : null;
+        String s = (status != null && !status.trim().isEmpty() && !"ALL".equals(status)) ? status : null;
+
+        return usuarioRepository.findAllFiltered(k, r, s, pageable);
+    }
+
     public Optional<Usuario> findById(Long id) {
         return usuarioRepository.findById(id);
     }

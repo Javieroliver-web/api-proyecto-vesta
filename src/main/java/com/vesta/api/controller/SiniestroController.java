@@ -20,7 +20,6 @@ import java.nio.file.Paths; // Importar
 import java.nio.file.StandardCopyOption; // Importar
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -43,7 +42,9 @@ public class SiniestroController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "fecha") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction) {
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String estado) {
 
         org.springframework.data.domain.Sort sort = direction.equalsIgnoreCase("desc")
                 ? org.springframework.data.domain.Sort.by(sortBy).descending()
@@ -51,6 +52,21 @@ public class SiniestroController {
 
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size,
                 sort);
+
+        // Búsqueda combinada: Search y/o Estado
+        boolean hasSearch = search != null && !search.trim().isEmpty();
+        boolean hasEstado = estado != null && !estado.trim().isEmpty();
+
+        if (hasSearch && hasEstado) {
+            return ResponseEntity.ok(siniestroRepository
+                    .findByEstadoAndDescripcionContainingIgnoreCase(estado, search, pageable));
+        } else if (hasSearch) {
+            return ResponseEntity.ok(siniestroRepository
+                    .findByDescripcionContainingIgnoreCaseOrEstadoContainingIgnoreCase(search, search, pageable));
+        } else if (hasEstado) {
+            return ResponseEntity.ok(siniestroRepository.findByEstado(estado, pageable));
+        }
+
         return ResponseEntity.ok(siniestroRepository.findAll(pageable));
     }
 

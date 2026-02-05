@@ -5,7 +5,6 @@ import com.vesta.api.service.AuditoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/auditoria")
@@ -20,7 +19,8 @@ public class AuditoriaController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "fecha") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction) {
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(required = false) String search) {
 
         org.springframework.data.domain.Sort sort = direction.equalsIgnoreCase("desc")
                 ? org.springframework.data.domain.Sort.by(sortBy).descending()
@@ -28,7 +28,8 @@ public class AuditoriaController {
 
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size,
                 sort);
-        return ResponseEntity.ok(auditoriaService.obtenerLogsPaginados(pageable));
+
+        return ResponseEntity.ok(auditoriaService.obtenerLogsPaginados(pageable, search));
     }
 
     @PostMapping("/exportar")

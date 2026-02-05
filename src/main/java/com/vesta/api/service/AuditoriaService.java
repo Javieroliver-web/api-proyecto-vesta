@@ -18,7 +18,12 @@ public class AuditoriaService {
     }
 
     public org.springframework.data.domain.Page<Auditoria> obtenerLogsPaginados(
-            org.springframework.data.domain.Pageable pageable) {
+            org.springframework.data.domain.Pageable pageable, String search) {
+        if (search != null && !search.trim().isEmpty()) {
+            return auditoriaRepository
+                    .findByUsuarioEmailContainingIgnoreCaseOrAccionContainingIgnoreCaseOrDetalleContainingIgnoreCaseOrIpContainingIgnoreCaseOrderByFechaDesc(
+                            search, search, search, search, pageable);
+        }
         return auditoriaRepository.findAll(pageable);
     }
 
