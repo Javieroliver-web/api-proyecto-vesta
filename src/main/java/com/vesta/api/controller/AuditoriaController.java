@@ -20,8 +20,9 @@ public class AuditoriaController {
         return ResponseEntity.ok(auditoriaService.obtenerUltimosLogs());
     }
 
-    @GetMapping("/exportar/{email}")
-    public ResponseEntity<String> exportarLogs(@PathVariable String email) {
+    @PostMapping("/exportar")
+    public ResponseEntity<String> exportarLogs(@RequestBody java.util.Map<String, String> payload) {
+        String email = payload.get("email");
         String content = auditoriaService.exportarLogsUsuario(email);
 
         return org.springframework.http.ResponseEntity.ok()
