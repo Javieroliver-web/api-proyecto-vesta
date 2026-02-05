@@ -36,13 +36,13 @@ public class UsuarioController {
     private RecommendationService recommendationService;
 
     @Autowired
-    private com.vesta.api.repository.PolizaRepository polizaRepository;
+    private PolizaRepository polizaRepository;
 
     @Autowired
-    private com.vesta.api.repository.SiniestroRepository siniestroRepository;
+    private SiniestroRepository siniestroRepository;
 
     @Autowired
-    private com.vesta.api.repository.PasswordResetTokenRepository passwordResetTokenRepository;
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Autowired
     private AuditoriaService auditoriaService;

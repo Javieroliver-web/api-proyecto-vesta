@@ -54,63 +54,70 @@ public class DataInitializer implements CommandLineRunner {
                                         return usuarioRepository.save(u);
                                 });
 
-                // 2. Crear Productos (si no existen)
-                if (productoRepository.count() == 0) {
-                        // Seguro de Viaje
-                        Producto viaje = new Producto();
-                        viaje.setNombre("Seguro de Viaje");
-                        viaje.setDescripcion(
-                                        "Cobertura integral para tus viajes incluyendo asistencia médica, cancelación de vuelos, pérdida de equipaje y más. Actívalo solo cuando lo necesites.");
-                        viaje.setPrecioBase(new BigDecimal("1.50"));
-                        viaje.setCategoria("Viaje");
-                        viaje.setImagenUrl("/vesta-web/images/productos/viaje-unique.png");
-                        productoRepository.save(viaje);
-
-                        // Seguro de Dispositivos
-                        Producto dispositivos = new Producto();
-                        dispositivos.setNombre("Seguro de Dispositivos");
-                        dispositivos.setDescripcion(
-                                        "Protege tu smartphone y gadgets contra daños accidentales, robos y averías. Cobertura inmediata desde el momento de activación.");
-                        dispositivos.setPrecioBase(new BigDecimal("0.25"));
-                        dispositivos.setCategoria("Tecnología");
-                        dispositivos.setImagenUrl("/vesta-web/images/productos/movil-unique.png");
-                        productoRepository.save(dispositivos);
-
-                        // Seguro de Eventos
-                        Producto eventos = new Producto();
-                        eventos.setNombre("Seguro de Eventos");
-                        eventos.setDescripcion(
-                                        "Asegura tu entrada a conciertos y eventos. Protección contra cancelaciones, pérdidas y accidentes durante el evento.");
-                        eventos.setPrecioBase(new BigDecimal("0.20"));
-                        eventos.setCategoria("Entretenimiento");
-                        eventos.setImagenUrl("/vesta-web/images/productos/Entretenimiento.jpg");
-                        productoRepository.save(eventos);
-
-                        // Seguro de Bicicleta
-                        Producto bicicleta = new Producto();
-                        bicicleta.setNombre("Seguro de Bicicleta");
-                        bicicleta.setDescripcion(
-                                        "Protección para tu medio de transporte ecológico. Cobertura contra robos, daños y responsabilidad civil.");
-                        bicicleta.setPrecioBase(new BigDecimal("0.20"));
-                        bicicleta.setCategoria("Movilidad");
-                        bicicleta.setImagenUrl("/vesta-web/images/productos/movilidad.png");
-                        productoRepository.save(bicicleta);
-
-                        // Seguro de Mascotas
-                        Producto mascotas = new Producto();
-                        mascotas.setNombre("Seguro de Mascotas");
-                        mascotas.setDescripcion(
-                                        "Cuidado veterinario para tu mejor amigo. Cobertura de gastos médicos, cirugías y tratamientos de emergencia.");
-                        mascotas.setPrecioBase(new BigDecimal("1.00"));
-                        mascotas.setCategoria("Mascotas");
-                        mascotas.setImagenUrl("/vesta-web/images/productos/mascotas.png");
-                        productoRepository.save(mascotas);
-
-                        // Seguro de Equipaje ELIMINADO
-                        // (Código eliminado a petición del usuario)
-
-                        logger.info("✅ 5 productos creados correctamente.");
-                }
+                /*
+                 * // 2. Crear Productos (si no existen)
+                 * if (productoRepository.count() == 0) {
+                 * // Seguro de Viaje
+                 * Producto viaje = new Producto();
+                 * viaje.setNombre("Seguro de Viaje");
+                 * viaje.setDescripcion(
+                 * "Cobertura integral para tus viajes incluyendo asistencia médica, cancelación de vuelos, pérdida de equipaje y más. Actívalo solo cuando lo necesites."
+                 * );
+                 * viaje.setPrecioBase(new BigDecimal("1.50"));
+                 * viaje.setCategoria("Viaje");
+                 * viaje.setImagenUrl("/vesta-web/images/productos/viaje-unique.png");
+                 * productoRepository.save(viaje);
+                 * 
+                 * // Seguro de Dispositivos
+                 * Producto dispositivos = new Producto();
+                 * dispositivos.setNombre("Seguro de Dispositivos");
+                 * dispositivos.setDescripcion(
+                 * "Protege tu smartphone y gadgets contra daños accidentales, robos y averías. Cobertura inmediata desde el momento de activación."
+                 * );
+                 * dispositivos.setPrecioBase(new BigDecimal("0.25"));
+                 * dispositivos.setCategoria("Tecnología");
+                 * dispositivos.setImagenUrl("/vesta-web/images/productos/movil-unique.png");
+                 * productoRepository.save(dispositivos);
+                 * 
+                 * // Seguro de Eventos
+                 * Producto eventos = new Producto();
+                 * eventos.setNombre("Seguro de Eventos");
+                 * eventos.setDescripcion(
+                 * "Asegura tu entrada a conciertos y eventos. Protección contra cancelaciones, pérdidas y accidentes durante el evento."
+                 * );
+                 * eventos.setPrecioBase(new BigDecimal("0.20"));
+                 * eventos.setCategoria("Entretenimiento");
+                 * eventos.setImagenUrl("/vesta-web/images/productos/Entretenimiento.jpg");
+                 * productoRepository.save(eventos);
+                 * 
+                 * // Seguro de Bicicleta
+                 * Producto bicicleta = new Producto();
+                 * bicicleta.setNombre("Seguro de Bicicleta");
+                 * bicicleta.setDescripcion(
+                 * "Protección para tu medio de transporte ecológico. Cobertura contra robos, daños y responsabilidad civil."
+                 * );
+                 * bicicleta.setPrecioBase(new BigDecimal("0.20"));
+                 * bicicleta.setCategoria("Movilidad");
+                 * bicicleta.setImagenUrl("/vesta-web/images/productos/movilidad.png");
+                 * productoRepository.save(bicicleta);
+                 * 
+                 * // Seguro de Mascotas
+                 * Producto mascotas = new Producto();
+                 * mascotas.setNombre("Seguro de Mascotas");
+                 * mascotas.setDescripcion(
+                 * "Cuidado veterinario para tu mejor amigo. Cobertura de gastos médicos, cirugías y tratamientos de emergencia."
+                 * );
+                 * mascotas.setPrecioBase(new BigDecimal("1.00"));
+                 * mascotas.setCategoria("Mascotas");
+                 * mascotas.setImagenUrl("/vesta-web/images/productos/mascotas.png");
+                 * productoRepository.save(mascotas);
+                 * 
+                 * // Seguro de Equipaje ELIMINADO
+                 * // (Código eliminado a petición del usuario)
+                 * 
+                 * logger.info("✅ 5 productos creados correctamente.");
+                 * }
+                 */
 
                 // 3. Crear Póliza #1 (VINCULADA AL USUARIO DEMO)
                 if (polizaRepository.count() == 0) {
