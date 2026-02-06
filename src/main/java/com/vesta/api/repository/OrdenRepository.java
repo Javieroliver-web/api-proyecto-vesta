@@ -8,4 +8,11 @@ import java.util.List;
 @Repository
 public interface OrdenRepository extends JpaRepository<Orden, Long> {
     List<Orden> findByUsuarioIdOrderByFechaDesc(Long usuarioId);
+    
+    List<Orden> findByUsuarioIdAndEstado(Long usuarioId, String estado);
+    
+    List<Orden> findByEstado(String estado, org.springframework.data.domain.Sort sort);
+
+    @org.springframework.data.jpa.repository.Query(value = "SELECT CAST(EXTRACT(MONTH FROM ord_fecha) AS INTEGER) as mes, SUM(ord_total) as total FROM ordenes GROUP BY mes ORDER BY mes", nativeQuery = true)
+    List<java.util.Map<String, Object>> obtenerVentasPorMes();
 }
