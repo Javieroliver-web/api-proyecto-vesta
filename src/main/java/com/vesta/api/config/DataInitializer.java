@@ -115,7 +115,7 @@ public class DataInitializer implements CommandLineRunner {
                  * // Seguro de Equipaje ELIMINADO
                  * // (Código eliminado a petición del usuario)
                  * 
-                 * logger.info("✅ 5 productos creados correctamente.");
+                 * logger.info("5 productos creados correctamente.");
                  * }
                  */
 
@@ -132,7 +132,7 @@ public class DataInitializer implements CommandLineRunner {
                         poliza.setEstado("ACTIVA");
 
                         polizaRepository.save(poliza);
-                        System.out.println("✅ Póliza DEMO creada correctamente.");
+                        System.out.println("Póliza DEMO creada correctamente.");
                 }
 
                 logger.info("🌱 CARGA DE DATOS COMPLETADA.");
