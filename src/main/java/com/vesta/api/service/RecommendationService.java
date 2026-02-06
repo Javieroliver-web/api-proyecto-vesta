@@ -35,9 +35,11 @@ public class RecommendationService {
             RestTemplate restTemplate = new RestTemplate();
             String url = "http://api.openweathermap.org/data/2.5/weather?q=" + ciudad + "&appid=" + apiKey
                     + "&units=metric";
+            @SuppressWarnings("unchecked")
             Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
             if (response != null && response.containsKey("weather")) {
+                @SuppressWarnings("unchecked")
                 java.util.List<Map<String, Object>> weatherList = (java.util.List<Map<String, Object>>) response
                         .get("weather");
                 if (!weatherList.isEmpty()) {

@@ -116,7 +116,7 @@ public class PolizaController {
                 // Calcular el precio adicional
                 BigDecimal precioAdicional = producto.getPrecioBase()
                         .multiply(BigDecimal.valueOf(duracion))
-                        .divide(BigDecimal.valueOf(30), 2, BigDecimal.ROUND_HALF_UP);
+                        .divide(BigDecimal.valueOf(30), 2, java.math.RoundingMode.HALF_UP);
 
                 // Sumar al precio final existente
                 BigDecimal nuevoPrecioFinal = polizaExistente.getPrecioFinal().add(precioAdicional);
@@ -139,7 +139,7 @@ public class PolizaController {
                 // Calcular precio: precioBase * (duracion / 30) para mensualizar
                 BigDecimal precioTotal = producto.getPrecioBase()
                         .multiply(BigDecimal.valueOf(duracion))
-                        .divide(BigDecimal.valueOf(30), 2, BigDecimal.ROUND_HALF_UP);
+                        .divide(BigDecimal.valueOf(30), 2, java.math.RoundingMode.HALF_UP);
                 poliza.setPrecioFinal(precioTotal);
                 poliza.setEstado("ACTIVA");
 
