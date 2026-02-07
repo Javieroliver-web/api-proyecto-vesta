@@ -175,10 +175,10 @@ public class ChatbotService {
         // 1.8. Contacto (NUEVO)
         if (p.contains("contacto") || p.contains("teléfono") || p.contains("telefono") || p.contains("email")
                 || p.contains("correo") || p.contains("donde estan")) {
-            return "🤖 VestaBot: Puedes contactarnos por:\\n" +
-                    "📧 Email: javip200555@gmail.com\\n" +
-                    "📞 Teléfono: +34 622 645 922\\n" +
-                    "📍 Oficinas: C/ Francisco Arias, 22A, Lora del Río (Sevilla).\\n" +
+            return "🤖 VestaBot: Puedes contactarnos por:\n" +
+                    "📧 Email: javip200555@gmail.com\n" +
+                    "📞 Teléfono: +34 622 645 922\n" +
+                    "📍 Oficinas: C/ Francisco Arias, 22A, Lora del Río (Sevilla).\n" +
                     "¡Estaremos encantados de atenderte!";
         }
 
@@ -230,10 +230,10 @@ public class ChatbotService {
         }
 
         // 12. Default
-        return "🤖 VestaBot: Mmm... no estoy seguro de haber entendido eso. 🤔\\n" +
-                "Prueba a preguntarme por:\\n" +
-                "- El nombre de un seguro (ej: 'Patinete', 'Viaje', 'Mascota')\\n" +
-                "- 'Precios' o 'Tarifas'\\n" +
+        return "🤖 VestaBot: Mmm... no estoy seguro de haber entendido eso. 🤔\n" +
+                "Prueba a preguntarme por:\n" +
+                "- El nombre de un seguro (ej: 'Patinete', 'Viaje', 'Mascota')\n" +
+                "- 'Precios' o 'Tarifas'\n" +
                 "- 'Contacto' o 'Teléfono'";
     }
 }
