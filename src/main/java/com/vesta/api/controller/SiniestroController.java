@@ -130,9 +130,9 @@ public class SiniestroController {
             siniestro.setFraudeScore(fraudeScore);
 
             if (analisisIA.contains("APROBADO") && fraudeScore < 20) {
-                siniestro.setEstado("APROBADO");
+                siniestro.setEstado("RESUELTO");
             } else {
-                siniestro.setEstado("PENDIENTE_REVISION");
+                siniestro.setEstado("PENDIENTE");
             }
 
             siniestroRepository.save(siniestro);
@@ -156,6 +156,13 @@ public class SiniestroController {
             errorResponse.put("error", "Error al procesar el siniestro: " + e.getMessage());
             return ResponseEntity.internalServerError().body(errorResponse);
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Siniestro> obtenerPorId(@PathVariable Long id) {
+        return siniestroRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}/estado")

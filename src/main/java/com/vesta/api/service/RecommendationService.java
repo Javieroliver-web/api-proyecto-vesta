@@ -101,12 +101,16 @@ public class RecommendationService {
         String ciudad = "Sevilla, ES";
 
         // 1. Obtener ciudad del usuario
-        Usuario usuario = usuarioRepository.findByEmail(emailUsuario).orElse(null);
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(emailUsuario).orElse(null);
         if (usuario != null && usuario.getCiudad() != null && !usuario.getCiudad().isEmpty()) {
             ciudad = usuario.getCiudad();
-            log.info("[WEATHER] Ciudad del usuario {}: {}", emailUsuario, ciudad);
+            log.info("[WEATHER] Encontrado usuario {} (ID: {}). Ciudad: {}", emailUsuario, usuario.getId(), ciudad);
         } else {
-            log.info("[WEATHER] Usuario {} no encontrado o sin ciudad, usando default: {}", emailUsuario, ciudad);
+            log.warn("[WEATHER] No se pudo encontrar usuario o ciudad para email: {}. Autenticado como: {}",
+                    emailUsuario,
+                    org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication()
+                            .getName());
+            log.info("[WEATHER] Usando ciudad por defecto: {}", ciudad);
         }
 
         String ciudadNombre = ciudad.contains(",") ? ciudad.split(",")[0].trim() : ciudad;
