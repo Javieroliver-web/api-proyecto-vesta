@@ -100,6 +100,16 @@ public class RecommendationService {
     public Map<String, String> obtenerRecomendacion(String emailUsuario) {
         String ciudad = "Sevilla, ES";
 
+        // Decodificar el email si viene URL-encoded
+        if (emailUsuario != null && emailUsuario.contains("%40")) {
+            try {
+                emailUsuario = java.net.URLDecoder.decode(emailUsuario, java.nio.charset.StandardCharsets.UTF_8);
+                log.info("[WEATHER] Email decodificado: {}", emailUsuario);
+            } catch (Exception e) {
+                log.warn("[WEATHER] Error al decodificar email: {}", e.getMessage());
+            }
+        }
+
         // 1. Obtener ciudad del usuario
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(emailUsuario).orElse(null);
         if (usuario != null && usuario.getCiudad() != null && !usuario.getCiudad().isEmpty()) {
