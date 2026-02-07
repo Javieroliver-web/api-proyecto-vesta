@@ -46,6 +46,9 @@ public class SiniestroController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String estado) {
 
+        logger.info("🔍 Listando siniestros - page: {}, size: {}, search: '{}', estado: '{}'", 
+                    page, size, search, estado);
+
         org.springframework.data.domain.Sort sort = direction.equalsIgnoreCase("desc")
                 ? org.springframework.data.domain.Sort.by(sortBy).descending()
                 : org.springframework.data.domain.Sort.by(sortBy).ascending();
@@ -57,17 +60,28 @@ public class SiniestroController {
         boolean hasSearch = search != null && !search.trim().isEmpty();
         boolean hasEstado = estado != null && !estado.trim().isEmpty();
 
+        logger.info("🔍 Filtros - hasSearch: {}, hasEstado: {}", hasSearch, hasEstado);
+
+        org.springframework.data.domain.Page<Siniestro> result;
+
         if (hasSearch && hasEstado) {
-            return ResponseEntity.ok(siniestroRepository
-                    .findByEstadoAndDescripcionContainingIgnoreCase(estado, search, pageable));
+            logger.info("🔍 Buscando por estado '{}' y descripción '{}'", estado, search);
+            result = siniestroRepository
+                    .findByEstadoAndDescripcionContainingIgnoreCase(estado, search, pageable);
         } else if (hasSearch) {
-            return ResponseEntity.ok(siniestroRepository
-                    .findByDescripcionContainingIgnoreCaseOrEstadoContainingIgnoreCase(search, search, pageable));
+            logger.info("🔍 Buscando por descripción o estado: '{}'", search);
+            result = siniestroRepository
+                    .findByDescripcionContainingIgnoreCaseOrEstadoContainingIgnoreCase(search, search, pageable);
         } else if (hasEstado) {
-            return ResponseEntity.ok(siniestroRepository.findByEstado(estado, pageable));
+            logger.info("🔍 Buscando solo por estado: '{}'", estado);
+            result = siniestroRepository.findByEstado(estado, pageable);
+        } else {
+            logger.info("🔍 Listando todos los siniestros");
+            result = siniestroRepository.findAll(pageable);
         }
 
-        return ResponseEntity.ok(siniestroRepository.findAll(pageable));
+        logger.info("✅ Encontrados {} siniestros", result.getTotalElements());
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping

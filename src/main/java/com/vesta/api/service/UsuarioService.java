@@ -6,6 +6,8 @@ import com.vesta.api.repository.PasswordResetTokenRepository;
 import com.vesta.api.repository.PolizaRepository;
 import com.vesta.api.repository.SiniestroRepository;
 import com.vesta.api.repository.UsuarioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,8 @@ import java.util.Optional;
 
 @Service
 public class UsuarioService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -130,6 +134,8 @@ public class UsuarioService {
 
             if (updates.containsKey("ciudad")) {
                 String nuevaCiudad = (String) updates.get("ciudad");
+                logger.info("🌍 Actualizando ciudad del usuario {} de '{}' a '{}'", 
+                           usuario.getEmail(), usuario.getCiudad(), nuevaCiudad);
                 try {
                     if (!recommendationService.validarCiudad(nuevaCiudad)) {
                         throw new IllegalArgumentException("No se pudo obtener información climática para "
@@ -137,8 +143,10 @@ public class UsuarioService {
                     }
                 } catch (Exception e) {
                     // Ignorar error de validación clima si servicio falla
+                    logger.warn("⚠️ Error al validar ciudad, pero se guardará de todos modos: {}", e.getMessage());
                 }
                 usuario.setCiudad(nuevaCiudad);
+                logger.info("✅ Ciudad actualizada correctamente a: {}", nuevaCiudad);
             }
             if (updates.containsKey("tema")) {
                 usuario.setTema((String) updates.get("tema"));
