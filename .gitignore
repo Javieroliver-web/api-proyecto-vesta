@@ -63,3 +63,21 @@ spring-boot-*.log
 
 # Google OAuth credentials
 client_secret_*.json
+
+# ================================
+# ARCHIVOS SENSIBLES - NO SUBIR
+# ================================
+# SSH Keys (usadas para Google Cloud VM - conservar localmente)
+vesta_key
+vesta_key.pub
+
+# Credenciales y contraseñas
+contraseña privada google.txt
+Contraseñas.png
+Contraseñas*.png
+
+# Logs de la aplicación
+logs/
+
+# Archivos de configuración de servidor (solo para VM)
+# tomcat.service está versionado intencionalmente como referencia
