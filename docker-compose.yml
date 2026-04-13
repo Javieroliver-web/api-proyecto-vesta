@@ -1,9 +1,21 @@
 version: '3.8'
 
+# ================================================================
+# VESTA — Docker Compose unificado
+# ================================================================
+# Incluye: API (8080), Web (8081) y PostgreSQL
+# Usar con: docker compose --env-file .env up -d --build
+#
+# Para Oracle Cloud (prod):   SPRING_PROFILES_ACTIVE=prod
+# Para desarrollo local (dev): SPRING_PROFILES_ACTIVE=dev
+# ================================================================
+
 services:
+
+  # === BASE DE DATOS ===
   db:
     image: postgres:17
-    container_name: vesta-db # Sin guiones bajos
+    container_name: vesta-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -16,16 +28,17 @@ services:
     networks:
       - vesta_net
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U vesta_user -d vesta_db" ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  # === API BACKEND ===
   api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: vesta-api # Sin guiones bajos
+    container_name: vesta-api
     restart: unless-stopped
     depends_on:
       db:
@@ -33,28 +46,63 @@ services:
     ports:
       - "8080:8080"
     environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      # Base de datos
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      # JWT
       JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
-      # Email configuration
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      # Email
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
-      # OpenWeatherMap
-      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
-      # SMS configuration - Twilio
-      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
-      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
-      TWILIO_MESSAGING_SERVICE_SID: ${TWILIO_MESSAGING_SERVICE_SID}
-      # Google OAuth
+      # OAuth2 Google
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      # URLs for Email Links
+      # URLs para links en emails
       FRONTEND_URL: ${FRONTEND_URL}
       API_URL: ${API_URL}
+      # CORS
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      # Twilio SMS (opcional)
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_MESSAGING_SERVICE_SID: ${TWILIO_MESSAGING_SERVICE_SID:-}
+      SMS_ENABLED: ${SMS_ENABLED:-false}
     volumes:
       - ./logs/api:/logs
+      - vesta_uploads:/app/uploads
+    networks:
+      - vesta_net
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 90s
+      retries: 5
+
+  # === WEB FRONTEND ===
+  web:
+    build:
+      context: ../web-proyecto-vesta
+      dockerfile: Dockerfile
+    container_name: vesta-web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      # URL interna a la API (dentro de la red Docker)
+      API_URL: http://vesta-api:8080/vesta-api/api
+      # OAuth2 Google
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+    volumes:
+      - ./logs/web:/logs
     networks:
       - vesta_net
 
@@ -65,3 +113,4 @@ networks:
 
 volumes:
   vesta_pgdata:
+  vesta_uploads:
