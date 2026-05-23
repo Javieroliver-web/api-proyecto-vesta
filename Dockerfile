@@ -41,7 +41,7 @@ EXPOSE ${PORT}
 
 # Health check con start-period largo (JVM + cold start de Neon)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/actuator/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/vesta-api/actuator/health || exit 1
 
 # Ejecutar aplicación con JVM optimizada para 512MB RAM (free tier)
 ENTRYPOINT ["java", \
