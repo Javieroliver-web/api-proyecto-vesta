@@ -34,13 +34,13 @@ public class DataInitializer implements CommandLineRunner {
         if (adminEmail != null && !adminEmail.isBlank() && adminPassword != null && !adminPassword.isBlank()) {
             usuarioRepository.findByEmail(adminEmail)
                 .map(existingUser -> {
-                    if (!"ADMINISTRADOR".equals(existingUser.getRol())) {
-                        existingUser.setRol("ADMINISTRADOR");
-                        existingUser.setEmailConfirmado(true);
-                        existingUser.setActivo(true);
-                        return usuarioRepository.save(existingUser);
-                    }
-                    return existingUser;
+                    // Siempre actualizar rol y contraseña desde las variables de entorno
+                    existingUser.setRol("ADMINISTRADOR");
+                    existingUser.setPassword(passwordEncoder.encode(adminPassword));
+                    existingUser.setEmailConfirmado(true);
+                    existingUser.setActivo(true);
+                    logger.info("✅ Usuario administrador actualizado.");
+                    return usuarioRepository.save(existingUser);
                 })
                 .orElseGet(() -> {
                     Usuario admin = new Usuario();
