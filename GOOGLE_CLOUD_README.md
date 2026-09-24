@@ -10,7 +10,7 @@
 
 | Campo        | Valor                         |
 |--------------|-------------------------------|
-| IP pública   | `34.175.116.7`                |
+| IP pública   | `<IP_DEL_SERVIDOR>`                |
 | Dominio      | `vesta-web.duckdns.org`       |
 | Región       | `europe-southwest1` (Madrid)  |
 | SO           | Ubuntu 22.04 LTS              |
@@ -33,7 +33,7 @@ O desde la consola web: https://console.cloud.google.com/compute
 ### 2. Conectar por SSH
 
 ```bash
-ssh -i vesta_key altair@34.175.116.7
+ssh -i vesta_key altair@<IP_DEL_SERVIDOR>
 ```
 
 ### 3. Levantar servicios con Docker Compose

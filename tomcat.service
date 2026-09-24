@@ -18,29 +18,29 @@ Environment="JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./
 # --- DATOS DEL PROYECTO ---
 Environment="SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/vesta_db"
 Environment="SPRING_DATASOURCE_USERNAME=vesta_user"
-Environment="SPRING_DATASOURCE_PASSWORD=vesta_password"
+Environment="SPRING_DATASOURCE_PASSWORD=CAMBIAR_EN_EL_SERVIDOR"
 
 # --- SEGURIDAD JWT ---
-Environment="JWT_SECRET=ClaveSecretaSuperSeguraParaVestaProyecto2025ChangeThisInProduction"
+Environment="JWT_SECRET=CAMBIAR_EN_EL_SERVIDOR"
 Environment="JWT_EXPIRATION=86400000"
 
 # API URL
 Environment="API_URL=http://localhost:8080/vesta-api/api"
 
 # URL Publica
-Environment="FRONTEND_URL=http://34.175.75.145:8080/vesta-web"
+Environment="FRONTEND_URL=http://<IP_DEL_SERVIDOR>:8080/vesta-web"
 
 # --- CORREO ---
 Environment="MAIL_USERNAME=javip200555@gmail.com"
-Environment="MAIL_PASSWORD=ljnh lohb ajdj qtuk"
+Environment="MAIL_PASSWORD=CAMBIAR_EN_EL_SERVIDOR"
 
 # --- OAUTH2 (GOOGLE) ---
 Environment="GOOGLE_CLIENT_ID=249929311715-e9qf6foamkq5dftrpijv9phha1fltd29.apps.googleusercontent.com"
-Environment="GOOGLE_CLIENT_SECRET=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"
+Environment="GOOGLE_CLIENT_SECRET=CAMBIAR_EN_EL_SERVIDOR"
 
 # --- SMS (TWILIO) ---
-Environment="TWILIO_ACCOUNT_SID=AC773e7018a6264d128f3b19481fd7178d"
-Environment="TWILIO_AUTH_TOKEN=5e338c3a12b972e06b46c7d3f179b1cb"
+Environment="TWILIO_ACCOUNT_SID=CAMBIAR_EN_EL_SERVIDOR"
+Environment="TWILIO_AUTH_TOKEN=CAMBIAR_EN_EL_SERVIDOR"
 Environment="TWILIO_MESSAGING_SERVICE_SID=MG2d938b15ef1a4b1c272e5e250f78c96b"
 Environment="SMS_ENABLED=true"
 # --------------------
